@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #FAF6EE; padding: 24px 28px; font-family: var(--font-ui); }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 0 0 10px; font-weight: 600; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.divider { border: none; border-top: 1px solid #D9CDB5; margin: 4px 0 18px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .04em;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+/* Status */
+.badge-present  { background: #E8F5EC; color: #3A6B45; }
+.badge-absent   { background: #FAEAEA; color: #8B1F1F; }
+.badge-late     { background: #FEF6E0; color: #8B6A1F; }
+.badge-success  { background: #E8F5EC; color: #2D6A4F; }
+.badge-warning  { background: #FEF6E0; color: #B5850A; }
+.badge-error    { background: #FAEAEA; color: #8B1F1F; }
+.badge-info     { background: #E0EAF8; color: #1F4D8B; }
+.badge-neutral  { background: #F0F0F4; color: #5A5A6A; }
+/* Brand */
+.badge-maroon   { background: #6B1F1F; color: #E8D9B5; }
+.badge-gold     { background: #E8D9B5; color: #4A1313; }
+.badge-gold-solid { background: #C9A961; color: #4A1313; }
+.badge-dark     { background: #4A1313; color: #C9A961; }
+/* Age tags (program cards) */
+.age-tag {
+  background: #6B1F1F; color: #E8D9B5;
+  padding: 6px 12px; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .1em; font-weight: 500;
+}
+/* Lang toggle */
+.lang-toggle { display: inline-flex; background: rgba(74,19,19,.1); border-radius: 999px; padding: 3px; gap: 2px; }
+.lang-btn { padding: 4px 12px; font-size: 11px; letter-spacing: .08em; color: #5A4A4A; border-radius: 999px; transition: all .25s; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.lang-btn.active { background: #C9A961; color: #4A1313; font-weight: 700; }
+/* Number badge */
+.num-badge { background: #6B1F1F; color: white; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'DM Sans', sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Attendance Status Badges</div>
+<div class="row">
+  <span class="badge badge-present"><span class="badge-dot" style="background:#3A6B45"></span>Present</span>
+  <span class="badge badge-absent"><span class="badge-dot" style="background:#8B1F1F"></span>Absent</span>
+  <span class="badge badge-late"><span class="badge-dot" style="background:#8B6A1F"></span>Late · 12 min</span>
+  <span class="badge badge-neutral"><span class="badge-dot" style="background:#5A5A6A"></span>Holiday</span>
+</div>
+
+<div class="section-label">System Status Badges</div>
+<div class="row">
+  <span class="badge badge-success">Paid</span>
+  <span class="badge badge-warning">Overdue</span>
+  <span class="badge badge-error">Suspended</span>
+  <span class="badge badge-info">Pending review</span>
+  <span class="badge badge-neutral">Draft</span>
+</div>
+
+<div class="section-label">Brand Badges</div>
+<div class="row">
+  <span class="badge badge-maroon">Grade 3</span>
+  <span class="badge badge-gold">KG 1 &amp; KG 2</span>
+  <span class="badge badge-gold-solid">★ Active</span>
+  <span class="badge badge-dark">Admin</span>
+  <span class="badge badge-neutral">Teacher</span>
+</div>
+
+<div class="section-label">Age Tags (Program Cards)</div>
+<div class="row">
+  <span class="age-tag">6 months – 3 years</span>
+  <span class="age-tag">KG 1 &amp; KG 2 · ages 4–5</span>
+  <span class="age-tag">Grades 1–5 · ages 6–10</span>
+  <span class="age-tag">All ages · individual</span>
+</div>
+
+<div class="section-label">Language Toggle &amp; Notification Count</div>
+<div class="row">
+  <div class="lang-toggle">
+    <button class="lang-btn active">EN</button>
+    <button class="lang-btn" style="font-family:'Noto Nastaliq Urdu',serif; font-size:13px;">اردو</button>
+  </div>
+  <span class="num-badge">3</span>
+  <span class="num-badge" style="background:#C9A961; color:#4A1313; width:auto; padding:0 7px; border-radius:999px;">12 unread</span>
+</div>
+
+</body>
+</html>

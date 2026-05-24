@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #FAF6EE; padding: 24px 28px; font-family: var(--font-ui); }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 0 0 12px; font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.divider { border: none; border-top: 1px solid #D9CDB5; margin: 4px 0 20px; }
+/* Base button */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-weight: 500; letter-spacing: .04em;
+  cursor: pointer; border: none; text-decoration: none;
+  transition: all .2s;
+}
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+/* Variants */
+.btn-primary { background: #6B1F1F; color: #FAF6EE; }
+.btn-primary:hover { background: #4A1313; transform: translateY(-1px); }
+.btn-gold { background: #C9A961; color: #4A1313; }
+.btn-gold:hover { background: #b89651; transform: translateY(-1px); }
+.btn-outline { background: transparent; color: #6B1F1F; border: 1px solid #6B1F1F; }
+.btn-outline:hover { background: #6B1F1F; color: #FAF6EE; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: #E8D9B5; border: 1px solid #E8D9B5; }
+.btn-ghost:hover { background: rgba(255,255,255,.1); transform: translateY(-1px); }
+.btn-text { background: transparent; color: #6B1F1F; padding: 10px 0; font-size: 13px; font-weight: 500; letter-spacing:.04em; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+/* Dark bg preview */
+.dark-row { background: #4A1313; padding: 16px 20px; border-radius: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+/* States row */
+.state-row { display: flex; gap: 20px; align-items: center; }
+.state-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.state-label { font-size: 9px; color: #8A7A6A; letter-spacing: .1em; text-transform: uppercase; }
+.btn-disabled { background: #D9CDB5; color: #8A7A6A; cursor: not-allowed; }
+.btn-loading { background: #6B1F1F; color: #FAF6EE; opacity: .7; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Primary Variants</div>
+<div class="row">
+  <button class="btn btn-primary">Apply now →</button>
+  <button class="btn btn-gold">Book a campus visit →</button>
+  <button class="btn btn-outline">Explore programs</button>
+  <button class="btn btn-text">Read the full curriculum →</button>
+</div>
+
+<div class="section-label">On Dark Background</div>
+<div class="dark-row" style="margin-bottom:20px;">
+  <button class="btn btn-gold">Book a campus visit →</button>
+  <button class="btn btn-ghost">Or write to us</button>
+  <button class="btn btn-primary" style="border:1px solid rgba(201,169,97,.4);">Schedule visit →</button>
+</div>
+
+<div class="section-label">Sizes</div>
+<div class="row">
+  <button class="btn btn-primary btn-sm">Small button</button>
+  <button class="btn btn-primary">Default button</button>
+  <button class="btn btn-primary btn-lg">Large button</button>
+</div>
+
+<div class="section-label">States</div>
+<div class="state-row">
+  <div class="state-item">
+    <button class="btn btn-primary">Default</button>
+    <div class="state-label">Default</div>
+  </div>
+  <div class="state-item">
+    <button class="btn btn-primary" style="background:#4A1313; transform:translateY(-1px);">Hover</button>
+    <div class="state-label">Hover</div>
+  </div>
+  <div class="state-item">
+    <button class="btn btn-primary" style="background:#4A1313; transform:translateY(0); box-shadow:inset 0 2px 4px rgba(0,0,0,.2);">Active</button>
+    <div class="state-label">Active</div>
+  </div>
+  <div class="state-item">
+    <button class="btn btn-disabled" disabled>Disabled</button>
+    <div class="state-label">Disabled</div>
+  </div>
+  <div class="state-item">
+    <button class="btn btn-loading">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="9" stroke-dasharray="28.27" stroke-dashoffset="14.13"/></svg>
+      Loading…
+    </button>
+    <div class="state-label">Loading</div>
+  </div>
+</div>
+
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>

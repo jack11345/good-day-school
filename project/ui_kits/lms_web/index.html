@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Good Day School — LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: #FAF6EE; color: #2A1A1A; overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+/* ── DATA ── */
+const STUDENTS = [
+  { id:1, name:'Zainab Fatima',   initials:'ZF', grade:'3A', roll:'07', status:'present', note:'', photo: null },
+  { id:2, name:'Ahmad Mirza',     initials:'AM', grade:'3A', roll:'12', status:'absent',  note:'', photo: null },
+  { id:3, name:'Sara Iqbal',      initials:'SI', grade:'3A', roll:'03', status:'present', note:'Great work on sabaq today.', photo: null },
+  { id:4, name:'Hamza Khalid',    initials:'HK', grade:'3A', roll:'09', status:'late',    note:'', photo: null },
+  { id:5, name:'Fatima Noor',     initials:'FN', grade:'3A', roll:'01', status:'present', note:'', photo: null },
+  { id:6, name:'Umar Farooq',     initials:'UF', grade:'3A', roll:'15', status:'present', note:'', photo: null },
+  { id:7, name:'Aisha Rehman',    initials:'AR', grade:'3A', roll:'02', status:'present', note:'', photo: null },
+  { id:8, name:'Ali Hassan',      initials:'AH', grade:'3A', roll:'11', status:'absent',  note:'', photo: null },
+  { id:9, name:'Maryam Baig',     initials:'MB', grade:'3A', roll:'06', status:'present', note:'', photo: null },
+  { id:10,name:'Bilal Shahid',    initials:'BS', grade:'3A', roll:'14', status:'late',    note:'', photo: null },
+  { id:11,name:'Hira Aziz',       initials:'HA', grade:'3A', roll:'04', status:'present', note:'', photo: null },
+  { id:12,name:'Saud Mehmood',    initials:'SM', grade:'3A', roll:'16', status:'present', note:'', photo: null },
+];
+
+const ANNOUNCEMENTS = [
+  { id:1, type:'fee',       msg:'Fee invoices for May generated — 3 overdue', time:'9:14 AM' },
+  { id:2, type:'absent',    msg:'Ahmad Mirza absent — parent notified via WhatsApp', time:'8:32 AM' },
+  { id:3, type:'lesson',    msg:'Week 18 lesson plans approved by Head Teacher', time:'Yesterday' },
+];
+
+const FEE_DATA = [
+  { name:'Zainab Fatima', grade:'3A', amount:'PKR 8,500', due:'10 May', status:'paid' },
+  { name:'Ahmad Mirza',   grade:'3A', amount:'PKR 8,500', due:'10 May', status:'overdue' },
+  { name:'Sara Iqbal',    grade:'3A', amount:'PKR 8,500', due:'10 May', status:'paid' },
+  { name:'Hamza Khalid',  grade:'3A', amount:'PKR 8,500', due:'10 May', status:'pending' },
+  { name:'Fatima Noor',   grade:'3A', amount:'PKR 8,500', due:'10 May', status:'paid' },
+];
+
+/* ── ICONS ── */
+const Icon = ({ d, size=16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d}/>
+  </svg>
+);
+const icons = {
+  dashboard: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10",
+  attendance: "M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",
+  notes: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8",
+  students: "M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M9 3a4 4 0 110 8 4 4 0 010-8z M23 21v-2a4 4 0 00-3-3.87 M16 3.13a4 4 0 010 7.75",
+  fees: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z M12 6v6l4 2",
+  lessons: "M4 19.5A2.5 2.5 0 016.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",
+  quran: "M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z",
+  reports: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+  messages: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",
+  logout: "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4 M16 17l5-5-5-5 M21 12H9",
+  bell: "M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9 M13.73 21a2 2 0 01-3.46 0",
+  search: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0",
+  ai: "M12 2a10 10 0 110 20A10 10 0 0112 2z M8 12h8 M12 8v8",
+  check: "M20 6L9 17l-5-5",
+  x: "M18 6L6 18 M6 6l12 12",
+  clock: "M12 2a10 10 0 110 20A10 10 0 0112 2z M12 6v6l4 2",
+  whatsapp: "M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z",
+};
+
+/* ── COLOUR HELPERS ── */
+const statusBadge = (s) => {
+  const map = {
+    present: { bg:'#E8F5EC', color:'#3A6B45', label:'Present' },
+    absent:  { bg:'#FAEAEA', color:'#8B1F1F', label:'Absent' },
+    late:    { bg:'#FEF6E0', color:'#8B6A1F', label:'Late' },
+    paid:    { bg:'#E8F5EC', color:'#2D6A4F', label:'Paid' },
+    overdue: { bg:'#FAEAEA', color:'#8B1F1F', label:'Overdue' },
+    pending: { bg:'#FEF6E0', color:'#8B6A1F', label:'Pending' },
+  };
+  return map[s] || { bg:'#F0F0F4', color:'#5A5A6A', label: s };
+};
+
+const avatarColor = (initials) => {
+  const colors = ['#E8D9B5','#D4E8D9','#D9E0F0','#F0DDD9','#E0D9F0'];
+  return colors[(initials.charCodeAt(0) + initials.charCodeAt(1)) % colors.length];
+};
+
+/* ── COMPONENTS ── */
+const Avatar = ({ initials, size=40 }) => (
+  <div style={{
+    width:size, height:size, borderRadius:'50%',
+    background: avatarColor(initials),
+    display:'flex', alignItems:'center', justifyContent:'center',
+    fontFamily:"'Cormorant Garamond',serif", fontSize: size*0.38,
+    fontWeight:600, color:'#4A1313', flexShrink:0,
+    border:'2px solid #FAF6EE',
+  }}>{initials}</div>
+);
+
+const Badge = ({ status }) => {
+  const { bg, color, label } = statusBadge(status);
+  return (
+    <span style={{
+      background:bg, color, padding:'3px 9px', borderRadius:999,
+      fontSize:11, fontWeight:500, fontFamily:"'DM Sans',sans-serif",
+      whiteSpace:'nowrap',
+    }}>{label}</span>
+  );
+};
+
+const Sidebar = ({ active, onNav }) => {
+  const items = [
+    { key:'dashboard',  label:'Dashboard',    icon:icons.dashboard },
+    { key:'attendance', label:'Attendance',   icon:icons.attendance },
+    { key:'notes',      label:'Daily Notes',  icon:icons.notes,    badge:3 },
+    { key:'students',   label:'My Class',     icon:icons.students },
+    { key:'lessons',    label:'Lesson Plans', icon:icons.lessons },
+    { key:'quran',      label:'Quran Tracker',icon:icons.quran },
+    { key:'fees',       label:'Fees',         icon:icons.fees },
+    { key:'reports',    label:'Reports',      icon:icons.reports },
+    { key:'messages',   label:'Messages',     icon:icons.messages, badge:2 },
+  ];
+  return (
+    <div style={{
+      width:230, background:'#4A1313', display:'flex', flexDirection:'column',
+      flexShrink:0, height:'100%',
+    }}>
+      {/* Logo */}
+      <div style={{ padding:'20px 18px 16px', borderBottom:'1px solid rgba(201,169,97,.2)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <img src="../../assets/logo-photo.png" alt="Good Day School" style={{ width:42, height:42, objectFit:'contain', flexShrink:0, filter:'drop-shadow(0 2px 4px rgba(0,0,0,.3))' }}/>
+          <div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#E8D9B5', lineHeight:1.1 }}>Good Day School</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.14em', textTransform:'uppercase', color:'#C9A961', opacity:.8, marginTop:2 }}>Teacher Portal</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav items */}
+      <div style={{ flex:1, overflowY:'auto', padding:'8px 0' }}>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.18em', textTransform:'uppercase', color:'#C9A961', opacity:.6, padding:'10px 18px 4px' }}>Classroom</div>
+        {items.slice(0,5).map(it => (
+          <NavItem key={it.key} item={it} active={active===it.key} onClick={()=>onNav(it.key)}/>
+        ))}
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.18em', textTransform:'uppercase', color:'#C9A961', opacity:.6, padding:'12px 18px 4px' }}>Admin</div>
+        {items.slice(5).map(it => (
+          <NavItem key={it.key} item={it} active={active===it.key} onClick={()=>onNav(it.key)}/>
+        ))}
+      </div>
+
+      {/* User */}
+      <div style={{ borderTop:'1px solid rgba(201,169,97,.2)', padding:'14px 18px', display:'flex', alignItems:'center', gap:10 }}>
+        <Avatar initials="NH" size={32}/>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, color:'#E8D9B5', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>Ms. Nadia Habib</div>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#C9A961', opacity:.8 }}>Grade 3A Teacher</div>
+        </div>
+        <div style={{ color:'#C9A961', opacity:.7, cursor:'pointer' }}>
+          <Icon d={icons.logout} size={15}/>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NavItem = ({ item, active, onClick }) => (
+  <div onClick={onClick} style={{
+    display:'flex', alignItems:'center', gap:10, padding:'9px 18px',
+    fontFamily:"'DM Sans',sans-serif", fontSize:13,
+    color: active ? '#C9A961' : '#E8D9B5',
+    background: active ? 'rgba(201,169,97,.12)' : 'transparent',
+    borderRight: active ? '2px solid #C9A961' : '2px solid transparent',
+    cursor:'pointer', transition:'all .2s', userSelect:'none',
+  }}
+    onMouseEnter={e=>{ if(!active){ e.currentTarget.style.background='rgba(255,255,255,.06)'; e.currentTarget.style.color='#FAF6EE'; }}}
+    onMouseLeave={e=>{ if(!active){ e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#E8D9B5'; }}}
+  >
+    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d={item.icon}/>
+    </svg>
+    <span style={{ flex:1 }}>{item.label}</span>
+    {item.badge && (
+      <span style={{ background:'#6B1F1F', color:'#E8D9B5', width:18, height:18, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:700 }}>{item.badge}</span>
+    )}
+  </div>
+);
+
+const TopBar = ({ title, subtitle }) => (
+  <div style={{
+    background:'#FAF6EE', borderBottom:'1px solid #D9CDB5',
+    padding:'14px 28px', display:'flex', alignItems:'center', justifyContent:'space-between',
+    flexShrink:0,
+  }}>
+    <div>
+      <h1 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:'#4A1313', lineHeight:1 }}>{title}</h1>
+      {subtitle && <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#8A7A6A', marginTop:3 }}>{subtitle}</div>}
+    </div>
+    <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+      <div style={{ position:'relative' }}>
+        <svg style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', width:14, height:14 }} viewBox="0 0 24 24" fill="none" stroke="#8A7A6A" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        <input placeholder="Search…" style={{ background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:6, padding:'7px 12px 7px 32px', fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', outline:'none', width:180 }}/>
+      </div>
+      <div style={{ position:'relative', cursor:'pointer', color:'#5A4A4A' }}>
+        <Icon d={icons.bell} size={18}/>
+        <span style={{ position:'absolute', top:-4, right:-4, background:'#6B1F1F', color:'white', width:14, height:14, borderRadius:'50%', fontSize:8, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center' }}>3</span>
+      </div>
+      <Avatar initials="NH" size={32}/>
+    </div>
+  </div>
+);
+
+/* ── SCREENS ── */
+const DashboardScreen = ({ onNav }) => {
+  const present = STUDENTS.filter(s=>s.status==='present').length;
+  const absent  = STUDENTS.filter(s=>s.status==='absent').length;
+  const late    = STUDENTS.filter(s=>s.status==='late').length;
+
+  const StatCard = ({ label, value, sub, color='#4A1313', bg='white' }) => (
+    <div style={{ background:bg, border:'1px solid #D9CDB5', borderRadius:10, padding:'20px 22px' }}>
+      <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:8 }}>{label}</div>
+      <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:36, fontWeight:600, color, lineHeight:1 }}>{value}</div>
+      {sub && <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A', marginTop:6 }}>{sub}</div>}
+    </div>
+  );
+
+  return (
+    <div style={{ padding:'28px', overflowY:'auto', height:'100%' }}>
+      {/* Stats */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:28 }}>
+        <StatCard label="Present today"  value={present} sub="of 12 students" color="#3A6B45"/>
+        <StatCard label="Absent today"   value={absent}  sub="Parent notified" color="#8B1F1F"/>
+        <StatCard label="Late arrivals"  value={late}    sub="WhatsApp sent" color="#8B6A1F"/>
+        <StatCard label="Notes pending"  value="9"       sub="Due by 3 PM" color="#6B1F1F"/>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
+        {/* Today's class */}
+        <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+          <div style={{ background:'#6B1F1F', padding:'14px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#FAF6EE' }}>Grade 3A · Today</span>
+            <span onClick={()=>onNav('attendance')} style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', cursor:'pointer', letterSpacing:'.08em' }}>View all →</span>
+          </div>
+          <div style={{ padding:'14px 20px' }}>
+            {STUDENTS.slice(0,6).map(s=>(
+              <div key={s.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'9px 0', borderBottom:'1px solid #F2EBDB' }}>
+                <Avatar initials={s.initials} size={34}/>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', flex:1 }}>{s.name}</span>
+                <Badge status={s.status}/>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Alerts + Quick actions */}
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden', flex:1 }}>
+            <div style={{ padding:'14px 18px', borderBottom:'1px solid #D9CDB5' }}>
+              <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313' }}>Activity</span>
+            </div>
+            {ANNOUNCEMENTS.map(a=>(
+              <div key={a.id} style={{ padding:'11px 18px', borderBottom:'1px solid #F2EBDB', display:'flex', gap:10, alignItems:'flex-start' }}>
+                <div style={{ width:8, height:8, borderRadius:'50%', background: a.type==='fee'?'#8B1F1F': a.type==='absent'?'#8B6A1F':'#3A6B45', marginTop:5, flexShrink:0 }}></div>
+                <div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A' }}>{a.msg}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:2 }}>{a.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background:'#4A1313', borderRadius:10, padding:'18px 20px' }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, color:'#E8D9B5', marginBottom:12 }}>Quick actions</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              {[['Take attendance →', ()=>onNav('attendance')], ['Write daily notes →', ()=>onNav('notes')], ['View lesson plan →', ()=>onNav('lessons')]].map(([label, fn])=>(
+                <button key={label} onClick={fn} style={{
+                  background:'rgba(201,169,97,.12)', border:'1px solid rgba(201,169,97,.25)',
+                  borderRadius:6, padding:'9px 14px', fontFamily:"'DM Sans',sans-serif",
+                  fontSize:12, color:'#C9A961', cursor:'pointer', textAlign:'left',
+                  transition:'background .2s',
+                }} onMouseEnter={e=>e.target.style.background='rgba(201,169,97,.22)'}
+                   onMouseLeave={e=>e.target.style.background='rgba(201,169,97,.12)'}
+                >{label}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AttendanceScreen = () => {
+  const [students, setStudents] = useState(STUDENTS);
+  const [saved, setSaved] = useState(false);
+
+  const cycle = (id) => {
+    const order = ['present','absent','late'];
+    setStudents(prev => prev.map(s => s.id===id ? { ...s, status: order[(order.indexOf(s.status)+1)%order.length] } : s));
+    setSaved(false);
+  };
+
+  const statusColor = (s) => ({ present:'#E8F5EC', absent:'#FAEAEA', late:'#FEF6E0' }[s]);
+  const statusBorder = (s) => ({ present:'#3A6B45', absent:'#8B1F1F', late:'#8B6A1F' }[s]);
+
+  return (
+    <div style={{ padding:'24px 28px', overflowY:'auto', height:'100%' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#5A4A4A' }}>
+          Tap a student to cycle: <Badge status="present"/> → <Badge status="absent"/> → <Badge status="late"/>
+        </div>
+        <div style={{ display:'flex', gap:10 }}>
+          <div style={{ display:'flex', gap:8, alignItems:'center', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A' }}>
+            <span style={{ background:'#E8F5EC', color:'#3A6B45', padding:'3px 9px', borderRadius:999, fontSize:11, fontWeight:500 }}>{students.filter(s=>s.status==='present').length} Present</span>
+            <span style={{ background:'#FAEAEA', color:'#8B1F1F', padding:'3px 9px', borderRadius:999, fontSize:11, fontWeight:500 }}>{students.filter(s=>s.status==='absent').length} Absent</span>
+            <span style={{ background:'#FEF6E0', color:'#8B6A1F', padding:'3px 9px', borderRadius:999, fontSize:11, fontWeight:500 }}>{students.filter(s=>s.status==='late').length} Late</span>
+          </div>
+          <button onClick={()=>setSaved(true)} style={{ background: saved?'#3A6B45':'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'9px 18px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer', transition:'background .3s' }}>
+            {saved ? '✓ Saved & sent' : 'Save & notify →'}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+        {students.map(s=>(
+          <div key={s.id} onClick={()=>cycle(s.id)} style={{
+            background: statusColor(s.status), border:`2px solid ${statusBorder(s.status)}`,
+            borderRadius:10, padding:'16px 14px', cursor:'pointer',
+            display:'flex', flexDirection:'column', alignItems:'center', gap:10,
+            transition:'all .25s', userSelect:'none',
+          }}>
+            <Avatar initials={s.initials} size={48}/>
+            <div style={{ textAlign:'center' }}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, fontWeight:600, color:'#4A1313' }}>{s.name}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>Roll {s.roll}</div>
+            </div>
+            <Badge status={s.status}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const NotesScreen = () => {
+  const [notes, setNotes] = useState({});
+  const [aiLoading, setAiLoading] = useState(null);
+
+  const handleAI = (id, name) => {
+    setAiLoading(id);
+    setTimeout(()=>{
+      setNotes(prev=>({...prev, [id]: `${name} showed excellent focus in today's Quran revision. She completed her manzil independently and made strong progress on her sabaq. Ready to advance next week.`}));
+      setAiLoading(null);
+    }, 1200);
+  };
+
+  return (
+    <div style={{ padding:'24px 28px', overflowY:'auto', height:'100%' }}>
+      <div style={{ background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:8, padding:'11px 16px', marginBottom:20, fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A', display:'flex', alignItems:'center', gap:8 }}>
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#8B6A1F" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Notes are sent to parents at 6 PM via WhatsApp. Max 280 characters each.
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+        {STUDENTS.map(s=>{
+          const val = notes[s.id] || '';
+          return (
+            <div key={s.id} style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'16px 18px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
+                <Avatar initials={s.initials} size={36}/>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#4A1313' }}>{s.name}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>Grade 3A · Roll {s.roll}</div>
+                </div>
+                <Badge status={s.status}/>
+              </div>
+              <div style={{ position:'relative' }}>
+                <textarea
+                  value={val}
+                  onChange={e=>setNotes(prev=>({...prev,[s.id]:e.target.value}))}
+                  placeholder={`Write today's note for ${s.name.split(' ')[0]}…`}
+                  maxLength={280}
+                  rows={2}
+                  style={{ width:'100%', padding:'10px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE', resize:'none', outline:'none', lineHeight:1.6 }}
+                />
+              </div>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:8 }}>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>{val.length}/280</span>
+                <button onClick={()=>handleAI(s.id, s.name.split(' ')[0])} style={{
+                  background: aiLoading===s.id ? '#F2EBDB':'#FAF6EE',
+                  border:'1px solid #C9A961', borderRadius:6,
+                  padding:'5px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:11,
+                  color:'#4A1313', cursor:'pointer', display:'flex', alignItems:'center', gap:5,
+                }}>
+                  {aiLoading===s.id ? '…thinking' : '✦ Help me write'}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const StudentsScreen = ({ onSelect }) => (
+  <div style={{ padding:'24px 28px', overflowY:'auto', height:'100%' }}>
+    <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+      <div style={{ background:'#6B1F1F', display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'12px 20px', gap:12 }}>
+        {['Student','Roll','Status','Quran','Action'].map(h=>(
+          <span key={h} style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#E8D9B5' }}>{h}</span>
+        ))}
+      </div>
+      {STUDENTS.map((s,i)=>(
+        <div key={s.id} onClick={()=>onSelect(s)} style={{
+          display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'12px 20px',
+          gap:12, borderBottom:'1px solid #F2EBDB', alignItems:'center',
+          background: i%2===0?'white':'#FAFAF8', cursor:'pointer',
+          transition:'background .15s',
+        }}
+          onMouseEnter={e=>e.currentTarget.style.background='#F2EBDB'}
+          onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#FAFAF8'}
+        >
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <Avatar initials={s.initials} size={32}/>
+            <div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:500, color:'#2A1A1A' }}>{s.name}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>Grade {s.grade}</div>
+            </div>
+          </div>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#5A4A4A' }}>{s.roll}</span>
+          <Badge status={s.status}/>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A' }}>Juz {Math.floor(Math.random()*5)+1}</span>
+          <button onClick={e=>{e.stopPropagation();onSelect(s);}} style={{ background:'transparent', border:'1px solid #D9CDB5', borderRadius:6, padding:'5px 10px', fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#6B1F1F', cursor:'pointer' }}>View →</button>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const StudentProfileScreen = ({ student, onBack }) => (
+  <div style={{ padding:'24px 28px', overflowY:'auto', height:'100%' }}>
+    <button onClick={onBack} style={{ background:'none', border:'none', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#6B1F1F', cursor:'pointer', marginBottom:20, display:'flex', alignItems:'center', gap:6 }}>
+      ← Back to class
+    </button>
+    <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:20 }}>
+      {/* Left panel */}
+      <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+        <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'24px', textAlign:'center' }}>
+          <Avatar initials={student.initials} size={72}/>
+          <div style={{ marginTop:12 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600, color:'#4A1313' }}>{student.name}</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A', marginTop:4 }}>Grade {student.grade} · Roll {student.roll}</div>
+          </div>
+          <Badge status={student.status}/>
+          <div style={{ marginTop:16, display:'flex', flexDirection:'column', gap:8 }}>
+            <button style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'9px', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer' }}>Message parent →</button>
+            <button style={{ background:'transparent', border:'1px solid #D9CDB5', borderRadius:6, padding:'9px', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A', cursor:'pointer' }}>Print profile</button>
+          </div>
+        </div>
+        <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'18px 20px' }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#4A1313', marginBottom:12 }}>Quick info</div>
+          {[['Program','Primary · Grade 3'],['Section','3A'],['Blood Group','O+'],['Transport','Bus Route 4'],['Emergency','Father: +92 300 …']].map(([k,v])=>(
+            <div key={k} style={{ display:'grid', gridTemplateColumns:'1fr 1.5fr', gap:8, padding:'7px 0', borderBottom:'1px solid #F2EBDB' }}>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.1em', textTransform:'uppercase', color:'#8A7A6A' }}>{k}</span>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A' }}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Right panels */}
+      <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+        {/* Attendance this month */}
+        <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'18px 20px' }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313', marginBottom:14 }}>Attendance · May 2026</div>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {Array.from({length:22},(_,i)=>{
+              const s = i<2?'present':i===2?'absent':i===5?'late':i>=18?'future':'present';
+              const colors = {present:'#3A6B45',absent:'#8B1F1F',late:'#8B6A1F',future:'#D9CDB5'};
+              const bgs = {present:'#E8F5EC',absent:'#FAEAEA',late:'#FEF6E0',future:'#F0F0F4'};
+              return (
+                <div key={i} style={{ width:28, height:28, borderRadius:4, background:bgs[s], border:`1.5px solid ${colors[s]}`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'DM Sans',sans-serif", fontSize:10, color:colors[s], fontWeight:600 }}>
+                  {i+1}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ display:'flex', gap:12, marginTop:12 }}>
+            {[['present','#E8F5EC','#3A6B45','18 days'],['absent','#FAEAEA','#8B1F1F','1 day'],['late','#FEF6E0','#8B6A1F','1 day']].map(([k,bg,color,label])=>(
+              <span key={k} style={{ background:bg, color, padding:'3px 9px', borderRadius:999, fontSize:11, fontWeight:500, fontFamily:"'DM Sans',sans-serif" }}>{label}</span>
+            ))}
+          </div>
+        </div>
+        {/* Recent notes */}
+        <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'18px 20px' }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313', marginBottom:14 }}>Recent daily notes</div>
+          {['Completed manzil revision with excellent focus. Strong tajweed on Al-Mulk.',
+            'Showed great improvement in reading comprehension during English class today.',
+            'A wonderful day — participated actively in the science experiment.'
+          ].map((note,i)=>(
+            <div key={i} style={{ padding:'10px 0', borderBottom:'1px solid #F2EBDB' }}>
+              <div style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', lineHeight:1.55 }}>{note}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:4 }}>{['2 May','1 May','30 Apr'][i]} · Ms. Nadia Habib</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const FeesScreen = () => (
+  <div style={{ padding:'24px 28px', overflowY:'auto', height:'100%' }}>
+    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:24 }}>
+      {[['Total collected','PKR 42,500','#3A6B45'],['Outstanding','PKR 8,500','#8B1F1F'],['This month','May 2026','#4A1313']].map(([l,v,c])=>(
+        <div key={l} style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'18px 20px' }}>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:6 }}>{l}</div>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:28, fontWeight:600, color:c }}>{v}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+      <div style={{ background:'#6B1F1F', display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'12px 20px', gap:12 }}>
+        {['Student','Grade','Amount','Due Date','Status'].map(h=>(
+          <span key={h} style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#E8D9B5' }}>{h}</span>
+        ))}
+      </div>
+      {FEE_DATA.map((row,i)=>(
+        <div key={i} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'13px 20px', gap:12, borderBottom:'1px solid #F2EBDB', alignItems:'center', background:i%2===0?'white':'#FAFAF8' }}>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', fontWeight:500 }}>{row.name}</span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A' }}>{row.grade}</span>
+          <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#2A1A1A' }}>{row.amount}</span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A' }}>{row.due}</span>
+          <Badge status={row.status}/>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* ── LESSON PLANS / CURRICULUM ── */
+const SUBJECTS = [
+  { key:'english',  name:'English',         nameUr:'انگریزی',     color:'#6B1F1F', soft:'#FAEAEA', progress:48, current:'Ch. 9 · Adverbs of manner', teacher:'Ms. Nadia' },
+  { key:'urdu',     name:'Urdu',            nameUr:'اردو',          color:'#8B3434', soft:'#F5E6DC', progress:52, current:'سبق ۱۰ · واحد جمع',          teacher:'Ms. Tahira' },
+  { key:'math',     name:'Mathematics',     nameUr:'حساب',         color:'#1F3D5E', soft:'#DCE4EE', progress:55, current:'Ch. 7 · Fractions of a whole', teacher:'Mr. Imran' },
+  { key:'science',  name:'Science',         nameUr:'سائنس',        color:'#3F5A4A', soft:'#DCE6DF', progress:50, current:'Ch. 6 · Magnets',              teacher:'Ms. Sana' },
+  { key:'social',   name:'Social Studies',  nameUr:'معاشرتی علوم', color:'#8B6A1F', soft:'#F5EDD9', progress:46, current:'Ch. 5 · Cities of Pakistan',   teacher:'Mr. Imran' },
+  { key:'islam',    name:'Islamiyat',       nameUr:'اسلامیات',      color:'#3A6B45', soft:'#DCEEDF', progress:54, current:'باب ۴ · ارکانِ اسلام',         teacher:'Ustadha Kiran' },
+  { key:'quran',    name:'Quran',           nameUr:'قرآن',          color:'#4A1313', soft:'#F0DCDC', progress:62, current:'سورۃ الملک · آیہ ۱۲–۱۵',       teacher:'Ustadha Kiran' },
+  { key:'art',      name:'Art & Craft',     nameUr:'فنون',          color:'#A0532C', soft:'#F5DCD0', progress:50, current:'Watercolour basics',           teacher:'Ms. Sara' },
+  { key:'pe',       name:'Physical Ed.',    nameUr:'جسمانی تعلیم',  color:'#5A6B1F', soft:'#E6EDD0', progress:50, current:'Coordination games',           teacher:'Mr. Asif' },
+];
+
+const PERIODS = [
+  { time:'8:00 – 8:30',  label:'Period 1' },
+  { time:'8:30 – 9:10',  label:'Period 2' },
+  { time:'9:10 – 9:50',  label:'Period 3' },
+  { time:'9:50 – 10:20', label:'Recess',    isBreak:true },
+  { time:'10:20 – 11:00',label:'Period 4' },
+  { time:'11:00 – 11:40',label:'Period 5' },
+  { time:'11:40 – 12:20',label:'Period 6' },
+  { time:'12:20 – 12:50',label:'Lunch · Dhuhr', isBreak:true },
+  { time:'12:50 – 1:30', label:'Period 7' },
+];
+
+// Mon..Fri × 9 rows (matches PERIODS) — null = break
+const WEEK_PLAN = {
+  Mon: ['quran','english','math',null,'urdu','science','social',null,'art'],
+  Tue: ['islam','english','math',null,'urdu','science','pe',null,'english'],
+  Wed: ['quran','english','math',null,'urdu','social','art',null,'pe'],
+  Thu: ['islam','english','math',null,'urdu','science','social',null,'urdu'],
+  Fri: ['quran','english','math',null,'urdu','islam','pe',null,'art'],
+};
+
+const LESSONS = {
+  // key = day-period
+  'Mon-0': { subject:'quran',   topic:'Sabaq — Surah Al-Mulk ayah 12', topicUr:'سبق — سورۃ الملک آیہ ۱۲', status:'taught',
+    objectives:['Memorise ayah 12 with correct tajweed','Identify the makhraj of letter ع','Reflect on meaning: fearing Allah in private'],
+    objectivesUr:['آیہ ۱۲ صحیح تجوید کے ساتھ یاد کریں','حرف ع کا مخرج پہچانیں','مفہوم پر غور: تنہائی میں اللہ کا خوف'],
+    resources:['Quran cards · Set B','Tajweed wall chart','Voice recording reference'],
+    homework:'Recite ayah 12 to a parent and have them sign the manzil card.',
+    assessment:'Individual recitation in next sabqi session — 3 marks.',
+    notes:'9 of 12 students recited fluently. 3 students flagged for one-on-one practice with Ustadha tomorrow.' },
+  'Mon-1': { subject:'english', topic:'Adverbs of manner — quickly, softly, neatly', topicUr:'انداز کے متعلق', status:'taught',
+    objectives:['Identify adverbs of manner in a paragraph','Form adverbs from adjectives (-ly suffix)','Use in sentences orally and in writing'],
+    objectivesUr:['پیراگراف میں انداز کے قیود پہچانیں','صفت سے قید بنائیں (-ly)','بول کر اور لکھ کر استعمال کریں'],
+    resources:['Oxford English 3 · Pg 84','Adverb sorting cards','Sticker chart for 5 adverbs'],
+    homework:'Workbook Ex 9.2 — fill in adverbs (10 sentences). Due Tuesday.',
+    assessment:'Class quiz Friday · 10 marks.',
+    notes:'Hamza needs extra practice on -ly endings. Zainab read paragraph fluently and used 4 adverbs aloud.' },
+  'Mon-2': { subject:'math',    topic:'Fractions — halves, thirds, quarters', topicUr:'کسر — نصف، تہائی، چوتھائی', status:'taught',
+    objectives:['Recognise ½, ⅓, ¼ visually on shapes','Shade equal parts of a whole','Write fraction notation correctly'],
+    objectivesUr:['½، ⅓، ¼ کو شکلوں پر پہچانیں','مساوی حصے رنگ کریں','کسر کی صحیح علامت لکھیں'],
+    resources:['Fraction circles · 30 sets','Squared paper','Pizza slice cut-outs'],
+    homework:'Worksheet 7.1 — shade and label 8 shapes. Due Tuesday.',
+    assessment:'Quick check next Monday · 5 marks.',
+    notes:'Strong understanding overall. Whole class shaded confidently. Move to fractions of a quantity next.' },
+  'Mon-4': { subject:'urdu',    topic:'سبق ۱۰ — واحد جمع', topicUr:'سبق ۱۰ — واحد جمع', status:'taught',
+    objectives:['واحد سے جمع بنانے کا قاعدہ','مذکر اور مونث کا فرق','۱۵ نئے الفاظ کی مشق'],
+    objectivesUr:['واحد سے جمع بنانے کا قاعدہ','مذکر اور مونث کا فرق','۱۵ نئے الفاظ کی مشق'],
+    resources:['اردو کی پہلی کتاب · صفحہ ۶۲','الفاظ کے کارڈ','بورڈ پر مشقیں'],
+    homework:'مشق ۱۰ — دس واحد الفاظ کی جمع بنائیں۔ منگل تک۔',
+    assessment:'املا — جمعرات · ۱۰ نمبر',
+    notes:'بچوں کی دلچسپی اچھی رہی۔ تین بچوں کو املا میں مزید مدد چاہیے۔' },
+  'Mon-5': { subject:'science', topic:'Magnets — what they attract', topicUr:'مقناطیس — کیا کھینچتا ہے', status:'planned',
+    objectives:['Predict whether an object is attracted','Sort objects into magnetic / non-magnetic','Record observations in a science journal'],
+    objectivesUr:['اشیاء کی پیشین گوئی','مقناطیسی اور غیر مقناطیسی میں تقسیم','مشاہدات لکھیں'],
+    resources:['Bar magnets · 6 pcs','Sorting tray · paper clips, erasers, coins, plastic, keys','Journal page'],
+    homework:'Find 5 items at home — predict and test with a fridge magnet. Bring journal.',
+    assessment:'Lab notebook check Friday · 5 marks.',
+    notes:'' },
+  'Mon-6': { subject:'social',  topic:'Karachi — port city of Pakistan', topicUr:'کراچی — پاکستان کا بندرگاہی شہر', status:'planned',
+    objectives:['Locate Karachi on the map of Pakistan','Name two famous places in Karachi','Explain why a port city matters'],
+    objectivesUr:['نقشے پر کراچی تلاش کریں','کراچی کی دو مشہور جگہیں','بندرگاہ کیوں اہم ہے'],
+    resources:['Pakistan map · large laminated','Photo set: Quaid Mazar, Clifton, port','Worksheet 5.2'],
+    homework:'Draw the map of Pakistan and mark Karachi. Due Wednesday.',
+    assessment:'Term map test · scheduled 16 May.',
+    notes:'' },
+  'Mon-8': { subject:'art',     topic:'Watercolour wash — sky', topicUr:'پانی کے رنگ — آسمان', status:'planned',
+    objectives:['Wet-on-wet technique for a smooth sky','Mix three blues','Keep brush at 45°'],
+    objectivesUr:['گیلے پر گیلا تکنیک','تین نیلے رنگ ملائیں','برش ۴۵° پر رکھیں'],
+    resources:['Watercolour paper A4','Round brushes #6','Cobalt + ultramarine + cerulean'],
+    homework:'',
+    assessment:'Portfolio collection — end of term.',
+    notes:'' },
+};
+
+const STATUS_STYLE = {
+  taught:  { bg:'#E8F5EC', color:'#2D6A4F', label:'Taught', dot:'#2D6A4F' },
+  planned: { bg:'#FEF6E0', color:'#8B6A1F', label:'Planned',dot:'#8B6A1F' },
+  skipped: { bg:'#FAEAEA', color:'#8B1F1F', label:'Skipped',dot:'#8B1F1F' },
+};
+
+const LessonsScreen = () => {
+  const [grade, setGrade] = useState('3A');
+  const [week, setWeek]   = useState(18);
+  const [view, setView]   = useState('week'); // 'week' | 'term'
+  const [active, setActive] = useState('Mon-1');
+
+  const days = ['Mon','Tue','Wed','Thu','Fri'];
+  const dayLabels = { Mon:'Mon 28', Tue:'Tue 29', Wed:'Wed 30', Thu:'Thu 1', Fri:'Fri 2' };
+  const today = 'Mon'; // for "Today" indicator
+
+  const subjectsByKey = Object.fromEntries(SUBJECTS.map(s=>[s.key,s]));
+  const lesson = LESSONS[active];
+  const subj = lesson ? subjectsByKey[lesson.subject] : null;
+
+  return (
+    <div style={{ height:'100%', overflowY:'auto', background:'#FAF6EE' }}>
+      {/* Filter bar */}
+      <div style={{ background:'white', borderBottom:'1px solid #D9CDB5', padding:'14px 28px', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#8A7A6A' }}>Class</span>
+          <select value={grade} onChange={e=>setGrade(e.target.value)} style={{ border:'1px solid #D9CDB5', borderRadius:6, padding:'6px 10px', fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE' }}>
+            {['KG-A','KG-B','1A','1B','2A','3A','3B','4A','5A'].map(g=><option key={g}>{g}</option>)}
+          </select>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <button onClick={()=>setWeek(w=>Math.max(1,w-1))} style={{ border:'1px solid #D9CDB5', background:'white', borderRadius:6, width:30, height:30, cursor:'pointer', color:'#6B1F1F', fontSize:14 }}>‹</button>
+          <div style={{ background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:6, padding:'5px 14px', minWidth:200, textAlign:'center' }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#4A1313', lineHeight:1.1 }}>Week {week} · 28 Apr – 2 May</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:1 }}>Term 3 · 2025–26</div>
+          </div>
+          <button onClick={()=>setWeek(w=>Math.min(36,w+1))} style={{ border:'1px solid #D9CDB5', background:'white', borderRadius:6, width:30, height:30, cursor:'pointer', color:'#6B1F1F', fontSize:14 }}>›</button>
+        </div>
+        <div style={{ display:'flex', background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:6, padding:3 }}>
+          {[['week','Week'],['term','Term overview']].map(([k,l])=>(
+            <button key={k} onClick={()=>setView(k)} style={{ padding:'5px 12px', border:'none', background: view===k?'#6B1F1F':'transparent', color: view===k?'#FAF6EE':'#5A4A4A', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, borderRadius:4, cursor:'pointer' }}>{l}</button>
+          ))}
+        </div>
+        <div style={{ flex:1 }}></div>
+        <button style={{ background:'rgba(201,169,97,.15)', border:'1px solid #C9A961', color:'#6B1F1F', padding:'7px 14px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer' }}>+ Add lesson</button>
+        <button style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', padding:'7px 14px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer' }}>Send to Head Teacher</button>
+      </div>
+
+      {/* Term progress strip */}
+      <div style={{ padding:'12px 28px', borderBottom:'1px solid #F2EBDB', background:'#FAF6EE' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#8A7A6A' }}>Academic year · 36 weeks</span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#5A4A4A' }}>Week {week} of 36 · 50% complete</span>
+        </div>
+        <div style={{ height:6, background:'#F2EBDB', borderRadius:3, overflow:'hidden', display:'flex' }}>
+          <div style={{ width:'33.3%', background:'#C9A961', borderRight:'1px solid #FAF6EE' }} title="Term 1"></div>
+          <div style={{ width:'33.3%', background:'#C9A961', borderRight:'1px solid #FAF6EE' }} title="Term 2"></div>
+          <div style={{ width:'16.7%', background:'#6B1F1F' }} title="Term 3 (in progress)"></div>
+        </div>
+      </div>
+
+      {view==='week' ? (
+        <div style={{ display:'grid', gridTemplateColumns:'220px 1fr 340px', gap:18, padding:'18px 28px 28px' }}>
+          {/* Subjects column */}
+          <div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:10 }}>Subjects · {SUBJECTS.length}</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              {SUBJECTS.map(s=>(
+                <div key={s.key} style={{ background:'white', borderRadius:8, border:'1px solid #D9CDB5', borderLeft:`3px solid ${s.color}`, padding:'10px 12px' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
+                    <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:14, fontWeight:600, color:'#2A1A1A' }}>{s.name}</span>
+                    <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>{s.progress}%</span>
+                  </div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:2 }}>{s.current}</div>
+                  <div style={{ height:3, background:'#F2EBDB', borderRadius:2, marginTop:6, overflow:'hidden' }}>
+                    <div style={{ width:`${s.progress}%`, height:'100%', background:s.color }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Weekly grid */}
+          <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+            {/* Day headers */}
+            <div style={{ display:'grid', gridTemplateColumns:'90px repeat(5,1fr)', background:'#4A1313' }}>
+              <div style={{ padding:'10px 8px', fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.12em', textTransform:'uppercase', color:'#C9A961' }}>Time</div>
+              {days.map(d=>(
+                <div key={d} style={{ padding:'10px 8px', fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:500, color:'#E8D9B5', textAlign:'center', background: d===today?'rgba(201,169,97,.2)':'transparent' }}>
+                  {dayLabels[d]}{d===today && <div style={{ fontSize:8, color:'#C9A961', marginTop:1, letterSpacing:'.1em' }}>TODAY</div>}
+                </div>
+              ))}
+            </div>
+            {/* Period rows */}
+            {PERIODS.map((p,pi)=>(
+              <div key={pi} style={{ display:'grid', gridTemplateColumns:'90px repeat(5,1fr)', borderTop: pi===0?'none':'1px solid #F2EBDB', background: p.isBreak?'#FAF6EE':'white' }}>
+                <div style={{ padding:'10px 8px', borderRight:'1px solid #F2EBDB' }}>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, color:'#2A1A1A' }}>{p.label}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, color:'#8A7A6A', marginTop:1 }}>{p.time}</div>
+                </div>
+                {p.isBreak ? (
+                  <div style={{ gridColumn:'span 5', padding:'10px', textAlign:'center', fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', letterSpacing:'.14em', textTransform:'uppercase' }}>{p.label}</div>
+                ) : (
+                  days.map(d=>{
+                    const subjKey = WEEK_PLAN[d][pi];
+                    const s = subjectsByKey[subjKey];
+                    const cellKey = `${d}-${pi}`;
+                    const ls = LESSONS[cellKey];
+                    const isActive = cellKey===active;
+                    return (
+                      <div key={d} onClick={()=>setActive(cellKey)} style={{
+                        padding:'8px 10px', borderRight: d==='Fri'?'none':'1px solid #F2EBDB',
+                        cursor:'pointer', background: isActive ? s.soft : 'white',
+                        borderTop: isActive ? `2px solid ${s.color}` : '2px solid transparent',
+                        transition:'background .15s',
+                      }}
+                      onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background=s.soft+'80'; }}
+                      onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background='white'; }}
+                      >
+                        <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:3 }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%', background:s.color, flexShrink:0 }}></span>
+                          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, color:s.color, textTransform:'uppercase', letterSpacing:'.06em' }}>{s.name}</span>
+                          {ls && ls.status==='taught' && <span style={{ marginLeft:'auto', fontSize:11, color:'#2D6A4F' }}>✓</span>}
+                        </div>
+                        <div style={{ fontFamily:"'Lora',serif", fontSize:11, color:'#2A1A1A', lineHeight:1.3, overflow:'hidden', textOverflow:'ellipsis', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
+                          {ls ? ls.topic : <span style={{ color:'#8A7A6A', fontStyle:'italic' }}>Not yet planned</span>}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Lesson detail panel */}
+          <div style={{ position:'sticky', top:0, alignSelf:'start' }}>
+            {lesson && subj ? (
+              <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+                <div style={{ background:subj.color, padding:'14px 16px', color:'#FAF6EE' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
+                    <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.16em', textTransform:'uppercase', color:'rgba(255,255,255,.7)' }}>{subj.name} · {active.replace('-',' · P')}</span>
+                    <span style={{ background:STATUS_STYLE[lesson.status].bg, color:STATUS_STYLE[lesson.status].color, padding:'2px 9px', borderRadius:999, fontSize:10, fontWeight:600, fontFamily:"'DM Sans',sans-serif" }}>{STATUS_STYLE[lesson.status].label}</span>
+                  </div>
+                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, lineHeight:1.25 }}>{lesson.topic}</div>
+                  <div style={{ fontFamily:"'Lora',serif", fontSize:13, opacity:.85, marginTop:2, direction:'rtl', textAlign:'right' }}>{lesson.topicUr}</div>
+                </div>
+                <div style={{ padding:'14px 16px', maxHeight:580, overflowY:'auto' }}>
+                  <DetailBlock label="Learning objectives">
+                    <ul style={{ listStyle:'none', padding:0, margin:0 }}>
+                      {lesson.objectives.map((o,i)=>(
+                        <li key={i} style={{ display:'flex', gap:8, padding:'4px 0', fontFamily:"'Lora',serif", fontSize:12, color:'#2A1A1A', lineHeight:1.5 }}>
+                          <span style={{ color:subj.color, fontWeight:700, flexShrink:0 }}>{i+1}.</span>
+                          <span>{o}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </DetailBlock>
+                  <DetailBlock label="Resources">
+                    <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+                      {lesson.resources.map((r,i)=>(
+                        <div key={i} style={{ display:'flex', gap:6, alignItems:'center', fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#2A1A1A' }}>
+                          <span style={{ color:'#C9A961' }}>◆</span>{r}
+                        </div>
+                      ))}
+                    </div>
+                  </DetailBlock>
+                  {lesson.homework && (
+                    <DetailBlock label="Homework">
+                      <p style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#2A1A1A', lineHeight:1.55 }}>{lesson.homework}</p>
+                    </DetailBlock>
+                  )}
+                  <DetailBlock label="Assessment">
+                    <p style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#2A1A1A', lineHeight:1.55 }}>{lesson.assessment}</p>
+                  </DetailBlock>
+                  {lesson.notes && (
+                    <DetailBlock label="Teacher's note · post-class">
+                      <div style={{ background:'#FAF6EE', border:'1px solid #D9CDB5', borderRadius:6, padding:'10px 12px', fontFamily:"'Lora',serif", fontSize:12, color:'#2A1A1A', lineHeight:1.55 }}>{lesson.notes}</div>
+                    </DetailBlock>
+                  )}
+                  {!lesson.notes && lesson.status==='planned' && (
+                    <DetailBlock label="Teacher's note · post-class">
+                      <textarea placeholder="Add a note after the lesson — what worked, who needs follow-up…" style={{ width:'100%', minHeight:60, border:'1px solid #D9CDB5', borderRadius:6, padding:'8px 10px', fontFamily:"'Lora',serif", fontSize:12, color:'#2A1A1A', background:'#FAF6EE', resize:'vertical', outline:'none' }}/>
+                    </DetailBlock>
+                  )}
+                  <div style={{ display:'flex', gap:6, marginTop:12 }}>
+                    <button style={{ flex:1, background:subj.color, color:'#FAF6EE', border:'none', padding:'8px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:500, cursor:'pointer' }}>Edit lesson</button>
+                    <button style={{ flex:1, background:'white', color:'#5A4A4A', border:'1px solid #D9CDB5', padding:'8px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:500, cursor:'pointer' }}>Duplicate</button>
+                    <button title="AI suggest" style={{ background:'#C9A961', color:'#4A1313', border:'none', padding:'8px 10px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, cursor:'pointer' }}>✦ AI</button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background:'white', border:'1px dashed #D9CDB5', borderRadius:10, padding:'32px 16px', textAlign:'center', color:'#8A7A6A', fontFamily:"'Lora',serif", fontSize:13 }}>
+                Select a lesson from the grid to view objectives and notes.
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <TermOverview subjectsByKey={subjectsByKey}/>
+      )}
+    </div>
+  );
+};
+
+const DetailBlock = ({ label, children }) => (
+  <div style={{ marginBottom:14 }}>
+    <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:6 }}>{label}</div>
+    {children}
+  </div>
+);
+
+const TERM_CHAPTERS = {
+  english: [
+    { n:1, title:'Nouns revisited', weeks:'1–2', status:'taught' },
+    { n:2, title:'Verbs and tenses', weeks:'3–4', status:'taught' },
+    { n:3, title:'Pronouns', weeks:'5–6', status:'taught' },
+    { n:4, title:'Sentences — kinds', weeks:'7–8', status:'taught' },
+    { n:5, title:'Punctuation', weeks:'9–10', status:'taught' },
+    { n:6, title:'Reading comprehension I', weeks:'11–12', status:'taught' },
+    { n:7, title:'Adjectives', weeks:'13–14', status:'taught' },
+    { n:8, title:'Articles a/an/the', weeks:'15–16', status:'taught' },
+    { n:9, title:'Adverbs of manner', weeks:'17–18', status:'current' },
+    { n:10,title:'Prepositions', weeks:'19–20', status:'planned' },
+    { n:11,title:'Letter writing — friendly', weeks:'21–22', status:'planned' },
+    { n:12,title:'Reading comprehension II', weeks:'23–24', status:'planned' },
+  ],
+  math: [
+    { n:1, title:'Numbers up to 9,999', weeks:'1–2', status:'taught' },
+    { n:2, title:'Addition with carrying', weeks:'3–4', status:'taught' },
+    { n:3, title:'Subtraction with borrowing', weeks:'5–6', status:'taught' },
+    { n:4, title:'Multiplication tables 6–10', weeks:'7–9', status:'taught' },
+    { n:5, title:'Division — sharing', weeks:'10–12', status:'taught' },
+    { n:6, title:'Word problems', weeks:'13–15', status:'taught' },
+    { n:7, title:'Fractions of a whole', weeks:'16–18', status:'current' },
+    { n:8, title:'Money — rupees & paisa', weeks:'19–20', status:'planned' },
+    { n:9, title:'Time — analogue & digital', weeks:'21–22', status:'planned' },
+    { n:10,title:'Length & weight', weeks:'23–24', status:'planned' },
+  ],
+  quran: [
+    { n:1, title:'Surah Al-Mulk (Hifz)', weeks:'Year-long', status:'current' },
+    { n:2, title:'Daily Adhkaar (memorisation)', weeks:'Year-long', status:'current' },
+    { n:3, title:'Tajweed — heavy letters', weeks:'1–12', status:'taught' },
+    { n:4, title:'Tajweed — qalqalah', weeks:'13–18', status:'current' },
+    { n:5, title:'Manzil revision (Juz 28)', weeks:'19–24', status:'planned' },
+  ],
+};
+
+const TermOverview = ({ subjectsByKey }) => {
+  const [openSubj, setOpen] = useState('english');
+  return (
+    <div style={{ padding:'18px 28px 28px', display:'grid', gridTemplateColumns:'1fr 1.6fr', gap:20 }}>
+      {/* Subject list */}
+      <div>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:10 }}>Year curriculum · Grade 3</div>
+        <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+          {SUBJECTS.map(s=>(
+            <div key={s.key} onClick={()=>setOpen(s.key)} style={{ background: openSubj===s.key?'white':'transparent', borderRadius:8, border: openSubj===s.key?`1px solid ${s.color}`:'1px solid transparent', borderLeft:`3px solid ${s.color}`, padding:'12px 14px', cursor:'pointer', transition:'all .15s' }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:4 }}>
+                <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#2A1A1A' }}>{s.name}</span>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>{s.progress}% · {s.teacher}</span>
+              </div>
+              <div style={{ height:4, background:'#F2EBDB', borderRadius:2, overflow:'hidden' }}>
+                <div style={{ width:`${s.progress}%`, height:'100%', background:s.color }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Selected subject — chapter timeline */}
+      <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, overflow:'hidden' }}>
+        <div style={{ background:subjectsByKey[openSubj].color, padding:'16px 20px', color:'#FAF6EE' }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600 }}>{subjectsByKey[openSubj].name}</div>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'rgba(255,255,255,.7)', marginTop:2 }}>{subjectsByKey[openSubj].progress}% of year complete · {subjectsByKey[openSubj].teacher}</div>
+        </div>
+        <div style={{ padding:'16px 20px' }}>
+          {(TERM_CHAPTERS[openSubj] || TERM_CHAPTERS.english).map((c,i)=>(
+            <div key={i} style={{ display:'flex', gap:14, padding:'10px 0', borderBottom: i<TERM_CHAPTERS[openSubj]?.length-1?'1px solid #F2EBDB':'none', alignItems:'center' }}>
+              <div style={{ width:32, height:32, borderRadius:'50%', background: c.status==='taught'?'#E8F5EC':c.status==='current'?subjectsByKey[openSubj].soft:'#F2EBDB', color: c.status==='taught'?'#2D6A4F':c.status==='current'?subjectsByKey[openSubj].color:'#8A7A6A', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontWeight:600, fontSize:13, flexShrink:0 }}>{c.status==='taught'?'✓':c.n}</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontFamily:"'Lora',serif", fontSize:14, color:'#2A1A1A', fontWeight:500 }}>{c.title}</div>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:2 }}>Weeks {c.weeks}</div>
+              </div>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.1em', textTransform:'uppercase', color: c.status==='taught'?'#2D6A4F':c.status==='current'?subjectsByKey[openSubj].color:'#8A7A6A', fontWeight:600 }}>
+                {c.status==='current' ? '● In progress' : c.status==='taught' ? 'Complete' : 'Upcoming'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── SCREENS MAP ── */
+const SCREEN_TITLES = {
+  dashboard: ['Dashboard', 'Friday, 2 May 2026 · Grade 3A'],
+  attendance: ['Attendance', 'Grade 3A · 12 students · Today'],
+  notes: ['Daily Notes', 'Write and send today's notes by 3 PM'],
+  students: ['My Class', 'Grade 3A · 12 students enrolled'],
+  lessons: ['Lesson Plans', 'Week 18 · 28 Apr – 2 May 2026'],
+  fees: ['Fees', 'May 2026 · Collection overview'],
+  messages: ['Messages', '2 unread threads'],
+  reports: ['Reports', 'Quarterly & annual reports'],
+  quran: ['Quran Tracker', 'Sabaq, sabqi & manzil — daily entry'],
+};
+
+/* ── APP ── */
+const App = () => {
+  const [screen, setScreen] = useState('lessons');
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  if (!loggedIn) return <LoginScreen onLogin={()=>setLoggedIn(true)}/>;
+
+  const [title, subtitle] = SCREEN_TITLES[screen] || ['LMS',''];
+  const isProfile = screen==='students' && selectedStudent;
+
+  return (
+    <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
+      <Sidebar active={screen} onNav={(s)=>{ setScreen(s); setSelectedStudent(null); }}/>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+        <TopBar title={isProfile ? selectedStudent.name : title} subtitle={isProfile ? `Grade ${selectedStudent.grade} · Roll ${selectedStudent.roll}` : subtitle}/>
+        <div style={{ flex:1, overflow:'hidden' }}>
+          {screen==='dashboard'  && <DashboardScreen onNav={setScreen}/>}
+          {screen==='attendance' && <AttendanceScreen/>}
+          {screen==='notes'      && <NotesScreen/>}
+          {screen==='fees'       && <FeesScreen/>}
+          {screen==='lessons'    && <LessonsScreen/>}
+          {screen==='students'   && !selectedStudent && <StudentsScreen onSelect={setSelectedStudent}/>}
+          {screen==='students'   && selectedStudent  && <StudentProfileScreen student={selectedStudent} onBack={()=>setSelectedStudent(null)}/>}
+          {!['dashboard','attendance','notes','fees','students','lessons'].includes(screen) && (
+            <div style={{ padding:40, color:'#8A7A6A', fontFamily:"'DM Sans',sans-serif", fontSize:14 }}>
+              Screen coming soon — navigate using the sidebar.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LoginScreen = ({ onLogin }) => {
+  const [pw, setPw] = useState('');
+  return (
+    <div style={{ minHeight:'100vh', background:'#4A1313', display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div style={{ background:'#FAF6EE', borderRadius:12, padding:'48px 44px', width:380, boxShadow:'0 40px 80px -20px rgba(0,0,0,.5)' }}>
+        <div style={{ textAlign:'center', marginBottom:32 }}>
+          <img src="../../assets/logo-photo.png" alt="Good Day School" style={{ width:84, height:84, objectFit:'contain', margin:'0 auto 16px', display:'block' }}/>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:'#4A1313' }}>Good Day School</div>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, letterSpacing:'.18em', textTransform:'uppercase', color:'#8A7A6A', marginTop:4 }}>Teacher Portal</div>
+        </div>
+        <div style={{ marginBottom:14 }}>
+          <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Email address</label>
+          <input defaultValue="nadia.habib@gooddayschool.pk" style={{ width:'100%', padding:'11px 13px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', color:'#2A1A1A', outline:'none' }}/>
+        </div>
+        <div style={{ marginBottom:24 }}>
+          <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Password</label>
+          <input type="password" placeholder="••••••••" value={pw} onChange={e=>setPw(e.target.value)} style={{ width:'100%', padding:'11px 13px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', color:'#2A1A1A', outline:'none' }}/>
+        </div>
+        <button onClick={onLogin} style={{ width:'100%', background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'13px', fontFamily:"'DM Sans',sans-serif", fontSize:14, fontWeight:500, cursor:'pointer', letterSpacing:'.04em' }}>
+          Sign in to portal →
+        </button>
+        <div style={{ textAlign:'center', marginTop:16, fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A' }}>
+          Forgot password? Contact the school office.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  
+  <circle cx="100" cy="100" r="98" fill="#FAF6EE"></circle>
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#6B1F1F" stroke-width="2.5"></circle>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#C9A961" stroke-width="0.8" opacity="0.7"></circle>
+
+  
+  <defs>
+    <path id="arc-top" d="M 24,100 A 76,76 0 0 1 176,100" fill="none"></path>
+    <path id="arc-bot" d="M 28,108 A 72,72 0 0 0 172,108" fill="none"></path>
+  </defs>
+  <text font-family="&#39;Cormorant Garamond&#39;, Georgia, serif" font-size="14" font-weight="600" fill="#4A1313" letter-spacing="3.5">
+    <textPath href="#arc-top" startOffset="50%" text-anchor="middle">GOOD DAY SCHOOL</textPath>
+  </text>
+  <text font-family="&#39;DM Sans&#39;, sans-serif" font-size="7" font-weight="500" fill="#8A7A6A" letter-spacing="3.2">
+    <textPath href="#arc-bot" startOffset="50%" text-anchor="middle">EST · 2001 · RAWALPINDI</textPath>
+  </text>
+
+  
+  <g opacity="0.9">
+    <path d="M40,118 Q34,94 42,76 Q46,72 50,74 Q47,86 52,98 Q55,108 60,116 Z" fill="#8B7D3A" opacity="0.6"></path>
+    <ellipse cx="38" cy="92" rx="4" ry="2.5" fill="#C9A961" transform="rotate(-30 38 92)"></ellipse>
+    <ellipse cx="44" cy="80" rx="3.5" ry="2.2" fill="#C9A961" transform="rotate(-22 44 80)"></ellipse>
+    <ellipse cx="50" cy="106" rx="4" ry="2.2" fill="#C9A961" transform="rotate(-38 50 106)"></ellipse>
+  </g>
+  <g opacity="0.9">
+    <path d="M160,118 Q166,94 158,76 Q154,72 150,74 Q153,86 148,98 Q145,108 140,116 Z" fill="#8B7D3A" opacity="0.6"></path>
+    <ellipse cx="162" cy="92" rx="4" ry="2.5" fill="#C9A961" transform="rotate(30 162 92)"></ellipse>
+    <ellipse cx="156" cy="80" rx="3.5" ry="2.2" fill="#C9A961" transform="rotate(22 156 80)"></ellipse>
+    <ellipse cx="150" cy="106" rx="4" ry="2.2" fill="#C9A961" transform="rotate(38 150 106)"></ellipse>
+  </g>
+
+  
+  <circle cx="100" cy="100" r="46" fill="#6B1F1F"></circle>
+  <circle cx="100" cy="100" r="44" fill="none" stroke="#C9A961" stroke-width="1"></circle>
+  <circle cx="100" cy="100" r="40" fill="none" stroke="#C9A961" stroke-width="0.5" opacity="0.5"></circle>
+
+  
+  <g transform="translate(100,72)">
+    <polygon points="0,-5 1.4,-1.6 5,-1.6 2.2,0.6 3.2,4.4 0,2.2 -3.2,4.4 -2.2,0.6 -5,-1.6 -1.4,-1.6" fill="#C9A961"></polygon>
+  </g>
+
+  
+  <text x="100" y="116" font-family="&#39;Cormorant Garamond&#39;, Georgia, serif" font-size="56" font-weight="600" fill="#E8D9B5" text-anchor="middle">G</text>
+
+  
+  <g transform="translate(100,158)">
+    <path d="M-32,0 L32,0 L28,12 L-28,12 Z" fill="#4A1313"></path>
+    <path d="M-32,0 L-38,4 L-32,8 Z" fill="#3A0F0F"></path>
+    <path d="M32,0 L38,4 L32,8 Z" fill="#3A0F0F"></path>
+    <text x="0" y="8" font-family="&#39;DM Sans&#39;, sans-serif" font-size="6.5" font-weight="600" fill="#C9A961" text-anchor="middle" letter-spacing="2.5">SINCE 2001</text>
+  </g>
+</svg>

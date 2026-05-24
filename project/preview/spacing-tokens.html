@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #FAF6EE; padding: 24px 28px; font-family: var(--font-ui); }
+.row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 0 0 10px; font-weight: 600; }
+/* Spacing bars */
+.sp-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.sp-bar { background: #6B1F1F; border-radius: 2px; width: 100%; min-width: 8px; }
+.sp-meta { font-size: 9px; color: #5A4A4A; text-align: center; line-height: 1.3; }
+.sp-meta strong { display: block; color: #2A1A1A; }
+/* Radius demos */
+.rad-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.rad-box { background: #C9A961; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.rad-label { font-size: 9px; color: #5A4A4A; text-align: center; }
+.rad-label strong { display: block; color: #2A1A1A; }
+/* Shadow demos */
+.sh-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.sh-box { background: white; border: 1px solid #D9CDB5; border-radius: 10px; padding: 14px 18px; font-size: 10px; color: #5A4A4A; min-width: 120px; }
+.sh-box strong { display: block; color: #2A1A1A; margin-bottom: 2px; font-size: 10px; }
+.divider { border: none; border-top: 1px solid #D9CDB5; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Spacing Scale (4px base grid)</div>
+<div class="row" style="align-items: flex-end;">
+  <div class="sp-item"><div class="sp-bar" style="height:4px; width:20px;"></div><div class="sp-meta"><strong>sp-1</strong>4px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:8px; width:20px;"></div><div class="sp-meta"><strong>sp-2</strong>8px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:12px; width:20px;"></div><div class="sp-meta"><strong>sp-3</strong>12px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:16px; width:20px;"></div><div class="sp-meta"><strong>sp-4</strong>16px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:20px; width:20px;"></div><div class="sp-meta"><strong>sp-5</strong>20px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:24px; width:20px;"></div><div class="sp-meta"><strong>sp-6</strong>24px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:28px; width:20px;"></div><div class="sp-meta"><strong>sp-7</strong>28px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:32px; width:20px;"></div><div class="sp-meta"><strong>sp-8</strong>32px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:36px; width:20px;"></div><div class="sp-meta"><strong>sp-9</strong>36px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:40px; width:20px;"></div><div class="sp-meta"><strong>sp-10</strong>40px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:48px; width:20px;"></div><div class="sp-meta"><strong>sp-12</strong>48px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:56px; width:20px;"></div><div class="sp-meta"><strong>sp-14</strong>56px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:64px; width:20px;"></div><div class="sp-meta"><strong>sp-16</strong>64px</div></div>
+  <div class="sp-item"><div class="sp-bar" style="height:80px; width:20px;"></div><div class="sp-meta"><strong>sp-20</strong>80px</div></div>
+</div>
+
+<hr class="divider"/>
+
+<div class="section-label">Border Radius</div>
+<div class="rad-row">
+  <div>
+    <div class="rad-box" style="width:48px; height:48px; border-radius:4px;"></div>
+    <div class="rad-label"><strong>sm</strong>4px · tags</div>
+  </div>
+  <div>
+    <div class="rad-box" style="width:56px; height:36px; border-radius:6px;"></div>
+    <div class="rad-label"><strong>input</strong>6px · btns, inputs</div>
+  </div>
+  <div>
+    <div class="rad-box" style="width:72px; height:56px; border-radius:10px;"></div>
+    <div class="rad-label"><strong>card</strong>10px · cards, modals</div>
+  </div>
+  <div>
+    <div class="rad-box" style="width:80px; height:32px; border-radius:999px;"></div>
+    <div class="rad-label"><strong>pill</strong>999px · badges, pills</div>
+  </div>
+  <div>
+    <div class="rad-box" style="width:48px; height:48px; border-radius:50%;"></div>
+    <div class="rad-label"><strong>full</strong>50% · avatars</div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<div class="section-label">Shadow System</div>
+<div class="sh-row">
+  <div class="sh-box" style="box-shadow: 0 2px 8px rgba(74,19,19,0.08);">
+    <strong>shadow-sm</strong>
+    Topbar, light lift
+  </div>
+  <div class="sh-box" style="box-shadow: 0 8px 24px rgba(74,19,19,0.12);">
+    <strong>shadow-md</strong>
+    Dropdowns, popovers
+  </div>
+  <div class="sh-box" style="box-shadow: 0 30px 50px -25px rgba(74,19,19,0.30);">
+    <strong>shadow-card</strong>
+    Card hover state
+  </div>
+  <div class="sh-box" style="box-shadow: 0 30px 60px -20px rgba(74,19,19,0.35);">
+    <strong>shadow-photo</strong>
+    Photo frames
+  </div>
+  <div class="sh-box" style="box-shadow: 0 40px 80px -20px rgba(74,19,19,0.40);">
+    <strong>shadow-modal</strong>
+    Modals, drawers
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<div class="section-label">Borders</div>
+<div style="display:flex; gap:16px; flex-wrap:wrap;">
+  <div style="padding:12px 16px; border:1px solid #D9CDB5; border-radius:6px; font-size:11px; color:#5A4A4A;"><strong style="display:block; color:#2A1A1A;">border-base</strong>1px solid #D9CDB5</div>
+  <div style="padding:12px 16px; border:1px solid #6B1F1F; border-radius:6px; font-size:11px; color:#5A4A4A;"><strong style="display:block; color:#2A1A1A;">border-focus</strong>1px solid #6B1F1F</div>
+  <div style="padding:12px 16px; background:#4A1313; border:1px solid rgba(201,169,97,0.25); border-radius:6px; font-size:11px; color:#E8D9B5;"><strong style="display:block; color:#C9A961;">border-dark</strong>rgba(201,169,97,.25)</div>
+  <div style="padding:12px 16px; border:4px solid #6B1F1F; border-left-width:4px; border-top-width:1px; border-right-width:1px; border-bottom-width:1px; border-radius:6px; font-size:11px; color:#5A4A4A;"><strong style="display:block; color:#2A1A1A;">border-accent-left</strong>4px left · philosophy cards</div>
+  <div style="padding:12px 16px; border:6px solid #FAF6EE; box-shadow:0 30px 60px -20px rgba(74,19,19,.35); border-radius:8px; font-size:11px; color:#5A4A4A;"><strong style="display:block; color:#2A1A1A;">photo-frame</strong>6px cream border</div>
+</div>
+
+</body>
+</html>

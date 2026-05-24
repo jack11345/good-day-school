@@ -1,0 +1,506 @@
+/**
+ * Good Day School — Design Tokens
+ * Single source of truth for all color, typography, spacing, and component tokens.
+ * Import this file first in any Good Day School HTML artifact.
+ *
+ * Google Fonts import (include in <head> before this file):
+ * https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700
+ *   &family=Lora:wght@400;500;600
+ *   &family=DM+Sans:wght@400;500;700
+ *   &family=Noto+Nastaliq+Urdu:wght@400;500;700
+ *   &display=swap
+ */
+
+/* ─── GOOGLE FONTS ─── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Lora:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap');
+
+:root {
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BRAND COLORS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --maroon:           #6B1F1F;   /* Primary brand, CTA buttons */
+  --maroon-deep:      #4A1313;   /* Headers, dark sections, footer */
+  --maroon-soft:      #8B3434;   /* Hover on maroon */
+  --gold:             #C9A961;   /* Accent, badges, active states */
+  --gold-soft:        #E8D9B5;   /* Muted gold, text on dark, icon bg */
+  --cream:            #FAF6EE;   /* Primary background */
+  --cream-deep:       #F2EBDB;   /* Alternate section bg */
+  --ink:              #2A1A1A;   /* Body text */
+  --ink-soft:         #5A4A4A;   /* Secondary text, labels */
+  --line:             #D9CDB5;   /* Dividers, borders */
+  --white:            #FFFFFF;   /* Card backgrounds */
+  --sage:             #3F5A4A;   /* Book in logo, rare accent green */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SEMANTIC COLORS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Foregrounds */
+  --fg-primary:       var(--ink);
+  --fg-secondary:     var(--ink-soft);
+  --fg-inverse:       var(--cream);
+  --fg-accent:        var(--maroon);
+  --fg-gold:          var(--gold);
+  --fg-muted:         #8A7A6A;
+
+  /* Backgrounds */
+  --bg-base:          var(--cream);
+  --bg-alt:           var(--cream-deep);
+  --bg-dark:          var(--maroon-deep);
+  --bg-card:          var(--white);
+  --bg-overlay:       rgba(74, 19, 19, 0.08);
+
+  /* Borders */
+  --border-base:      var(--line);
+  --border-dark:      rgba(201, 169, 97, 0.25);  /* on dark sections */
+  --border-focus:     var(--maroon);
+
+  /* Status colors (LMS) */
+  --status-present:   #3A6B45;   /* attendance present */
+  --status-absent:    #8B1F1F;   /* attendance absent */
+  --status-late:      #8B6A1F;   /* late arrival */
+  --status-success:   #2D6A4F;
+  --status-warning:   #B5850A;
+  --status-error:     #8B1F1F;
+  --status-info:      #1F4D8B;
+  --status-neutral:   #5A5A6A;
+
+  /* Status backgrounds (pill badges) */
+  --status-present-bg:  #E8F5EC;
+  --status-absent-bg:   #FAEAEA;
+  --status-late-bg:     #FEF6E0;
+  --status-success-bg:  #E8F5EC;
+  --status-warning-bg:  #FEF6E0;
+  --status-error-bg:    #FAEAEA;
+  --status-info-bg:     #E0EAF8;
+  --status-neutral-bg:  #F0F0F4;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     TYPOGRAPHY
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Font families */
+  --font-display:     'Cormorant Garamond', Georgia, serif;
+  --font-body:        'Lora', Georgia, serif;
+  --font-ui:          'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-urdu:        'Noto Nastaliq Urdu', serif;
+
+  /* Aliases */
+  --serif:            var(--font-display);
+  --body:             var(--font-body);
+  --ui:               var(--font-ui);
+  --urdu:             var(--font-urdu);
+
+  /* Type scale */
+  --text-xs:          11px;
+  --text-sm:          13px;
+  --text-base:        15px;
+  --text-md:          17px;
+  --text-lg:          18px;
+  --text-xl:          22px;
+  --text-2xl:         26px;
+  --text-3xl:         32px;
+  --text-4xl:         38px;
+
+  /* Responsive hero headings (use clamp) */
+  --h1-hero:          clamp(40px, 5.5vw, 68px);
+  --h1-page:          clamp(36px, 5vw, 56px);
+  --h2-section:       clamp(32px, 4vw, 48px);
+  --h3-card:          26px;
+
+  /* Line heights */
+  --leading-tight:    1.05;
+  --leading-snug:     1.15;
+  --leading-normal:   1.4;
+  --leading-relaxed:  1.65;
+  --leading-loose:    2.2;   /* Urdu Nastaliq */
+
+  /* Letter spacing */
+  --tracking-tight:   -0.01em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.10em;
+  --tracking-widest:  0.24em;
+
+  /* Font weights */
+  --weight-light:     300;
+  --weight-normal:    400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SEMANTIC TYPE ROLES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Heading */
+  --h1-font:          var(--font-display);
+  --h1-weight:        500;
+  --h1-color:         var(--maroon-deep);
+  --h1-leading:       var(--leading-tight);
+
+  --h2-font:          var(--font-display);
+  --h2-weight:        500;
+  --h2-color:         var(--maroon-deep);
+  --h2-leading:       var(--leading-snug);
+
+  --h3-font:          var(--font-display);
+  --h3-weight:        600;
+  --h3-color:         var(--maroon-deep);
+
+  --h4-font:          var(--font-display);
+  --h4-weight:        600;
+  --h4-color:         var(--maroon-deep);
+
+  /* Body */
+  --p-font:           var(--font-body);
+  --p-size:           var(--text-base);
+  --p-color:          var(--ink-soft);
+  --p-leading:        var(--leading-relaxed);
+
+  /* UI label (DM Sans, all caps, tracked) */
+  --label-font:       var(--font-ui);
+  --label-size:       var(--text-xs);
+  --label-weight:     var(--weight-medium);
+  --label-tracking:   0.14em;
+  --label-transform:  uppercase;
+  --label-color:      var(--ink-soft);
+
+  /* Eyebrow */
+  --eyebrow-font:     var(--font-ui);
+  --eyebrow-size:     11px;
+  --eyebrow-tracking: 0.28em;
+  --eyebrow-color:    var(--maroon);
+  --eyebrow-transform: uppercase;
+
+  /* Blockquote */
+  --quote-font:       var(--font-display);
+  --quote-size:       21px;
+  --quote-leading:    1.4;
+  --quote-weight:     400;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SPACING SCALE (4px base grid)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --space-1:    4px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-7:    28px;
+  --space-8:    32px;
+  --space-9:    36px;
+  --space-10:   40px;
+  --space-12:   48px;
+  --space-14:   56px;
+  --space-16:   64px;
+  --space-20:   80px;
+  --space-24:   96px;
+
+  /* Section padding */
+  --section-padding:  90px;
+
+  /* Container */
+  --container-max:    1240px;
+  --container-pad:    28px;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BORDER RADIUS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --radius-sm:        4px;
+  --radius-input:     6px;    /* inputs, buttons */
+  --radius-card:      10px;   /* cards, modals */
+  --radius-pill:      999px;  /* pills, badges, lang toggle */
+  --radius-full:      50%;    /* avatars, circular elements */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SHADOWS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --shadow-card:      0 30px 50px -25px rgba(74, 19, 19, 0.30);
+  --shadow-photo:     0 30px 60px -20px rgba(74, 19, 19, 0.35);
+  --shadow-modal:     0 40px 80px -20px rgba(74, 19, 19, 0.40);
+  --shadow-sm:        0 2px 8px rgba(74, 19, 19, 0.08);
+  --shadow-md:        0 8px 24px rgba(74, 19, 19, 0.12);
+  --shadow-none:      none;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ANIMATION
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --ease-out:         cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:    0.2s;
+  --duration-normal:  0.35s;
+  --duration-slow:    0.55s;
+  --duration-image:   0.8s;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     COMPONENT TOKENS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Button */
+  --btn-radius:           var(--radius-input);
+  --btn-pad:              10px 20px;
+  --btn-font:             var(--font-ui);
+  --btn-size:             13px;
+  --btn-weight:           500;
+  --btn-tracking:         0.04em;
+  --btn-transition:       all var(--duration-fast);
+
+  /* Primary button */
+  --btn-primary-bg:       var(--maroon);
+  --btn-primary-color:    var(--cream);
+  --btn-primary-bg-hover: var(--maroon-deep);
+
+  /* Gold button */
+  --btn-gold-bg:          var(--gold);
+  --btn-gold-color:       var(--maroon-deep);
+  --btn-gold-bg-hover:    #b89651;
+
+  /* Outline button */
+  --btn-outline-border:   var(--maroon);
+  --btn-outline-color:    var(--maroon);
+  --btn-outline-bg-hover: var(--maroon);
+  --btn-outline-color-hover: var(--cream);
+
+  /* Ghost (on dark) */
+  --btn-ghost-border:     var(--gold-soft);
+  --btn-ghost-color:      var(--gold-soft);
+
+  /* Input */
+  --input-radius:         var(--radius-input);
+  --input-bg:             var(--cream);
+  --input-border:         var(--line);
+  --input-border-focus:   var(--maroon);
+  --input-font:           var(--font-body);
+  --input-size:           15px;
+  --input-color:          var(--ink);
+  --input-pad:            12px 14px;
+
+  /* Card */
+  --card-radius:          var(--radius-card);
+  --card-bg:              var(--white);
+  --card-border:          1px solid var(--line);
+  --card-shadow-hover:    var(--shadow-card);
+  --card-translate-hover: translateY(-6px);
+
+  /* Sidebar (LMS) */
+  --sidebar-bg:           var(--maroon-deep);
+  --sidebar-width:        260px;
+  --sidebar-color:        var(--gold-soft);
+  --sidebar-active-color: var(--gold);
+  --sidebar-active-bg:    rgba(201, 169, 97, 0.12);
+  --sidebar-hover-bg:     rgba(255, 255, 255, 0.06);
+
+  /* Table */
+  --table-header-bg:      var(--maroon);
+  --table-header-color:   var(--gold-soft);
+  --table-row-hover:      var(--cream);
+  --table-border:         var(--line);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Z-INDEX SCALE
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --z-base:       0;
+  --z-above:      1;
+  --z-sticky:     100;
+  --z-overlay:    150;
+  --z-modal:      200;
+  --z-toast:      300;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESETS & BASE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--fg-primary);
+  line-height: var(--leading-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; cursor: pointer; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+/* Urdu body */
+body.lang-ur {
+  font-family: var(--font-urdu);
+  direction: rtl;
+  line-height: var(--leading-loose);
+}
+body.lang-ur .keep-en { direction: ltr; font-family: var(--font-ui); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SEMANTIC TYPE STYLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.gd-h1 {
+  font-family: var(--h1-font);
+  font-weight: var(--h1-weight);
+  font-size: var(--h1-page);
+  line-height: var(--h1-leading);
+  color: var(--h1-color);
+}
+.gd-h2 {
+  font-family: var(--h2-font);
+  font-weight: var(--h2-weight);
+  font-size: var(--h2-section);
+  line-height: var(--h2-leading);
+  color: var(--h2-color);
+}
+.gd-h3 {
+  font-family: var(--h3-font);
+  font-weight: var(--h3-weight);
+  font-size: var(--h3-card);
+  color: var(--h3-color);
+}
+.gd-h4 {
+  font-family: var(--h4-font);
+  font-weight: var(--h4-weight);
+  font-size: var(--text-xl);
+  color: var(--h4-color);
+}
+.gd-eyebrow {
+  font-family: var(--eyebrow-font);
+  font-size: var(--eyebrow-size);
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: var(--eyebrow-transform);
+  color: var(--eyebrow-color);
+}
+.gd-label {
+  font-family: var(--label-font);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-tracking);
+  text-transform: var(--label-transform);
+  color: var(--label-color);
+  font-weight: var(--label-weight);
+}
+.gd-body {
+  font-family: var(--p-font);
+  font-size: var(--p-size);
+  color: var(--p-color);
+  line-height: var(--p-leading);
+}
+.gd-ui {
+  font-family: var(--font-ui);
+}
+.gd-urdu {
+  font-family: var(--font-urdu);
+  direction: rtl;
+  line-height: var(--leading-loose);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UTILITY CLASSES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-pad);
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BUTTONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.gd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--btn-pad);
+  border-radius: var(--btn-radius);
+  font-family: var(--btn-font);
+  font-size: var(--btn-size);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--btn-tracking);
+  transition: var(--btn-transition);
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+.gd-btn:hover { transform: translateY(-1px); }
+
+.gd-btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-color);
+}
+.gd-btn-primary:hover { background: var(--btn-primary-bg-hover); }
+
+.gd-btn-gold {
+  background: var(--btn-gold-bg);
+  color: var(--btn-gold-color);
+}
+.gd-btn-gold:hover { background: var(--btn-gold-bg-hover); }
+
+.gd-btn-outline {
+  background: transparent;
+  color: var(--btn-outline-color);
+  border: 1px solid var(--btn-outline-border);
+}
+.gd-btn-outline:hover {
+  background: var(--btn-outline-bg-hover);
+  color: var(--btn-outline-color-hover);
+}
+
+.gd-btn-ghost {
+  background: transparent;
+  color: var(--btn-ghost-color);
+  border: 1px solid var(--btn-ghost-border);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BADGES / PILLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.gd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.gd-badge-present  { background: var(--status-present-bg);  color: var(--status-present); }
+.gd-badge-absent   { background: var(--status-absent-bg);   color: var(--status-absent); }
+.gd-badge-late     { background: var(--status-late-bg);     color: var(--status-late); }
+.gd-badge-success  { background: var(--status-success-bg);  color: var(--status-success); }
+.gd-badge-warning  { background: var(--status-warning-bg);  color: var(--status-warning); }
+.gd-badge-error    { background: var(--status-error-bg);    color: var(--status-error); }
+.gd-badge-info     { background: var(--status-info-bg);     color: var(--status-info); }
+.gd-badge-neutral  { background: var(--status-neutral-bg);  color: var(--status-neutral); }
+.gd-badge-gold     { background: var(--gold-soft);          color: var(--maroon-deep); }
+.gd-badge-maroon   { background: var(--maroon);             color: var(--gold-soft); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@keyframes gd-fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes gd-floaty {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes gd-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.4); }
+}
+@keyframes gd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.gd-fadeUp   { animation: gd-fadeUp var(--duration-slow) var(--ease-out); }
+.gd-floaty   { animation: gd-floaty 4s ease-in-out infinite; }
+.gd-pulse    { animation: gd-pulse 2.4s ease-in-out infinite; }

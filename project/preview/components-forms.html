@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lora:wght@400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #FAF6EE; padding: 24px 28px; font-family: var(--font-ui); }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 0 0 10px; font-weight: 600; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+label {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #5A4A4A; font-weight: 500;
+}
+input, select, textarea {
+  width: 100%; padding: 11px 13px;
+  border: 1px solid #D9CDB5; border-radius: 6px;
+  background: #FAF6EE; font-family: 'Lora', serif;
+  font-size: 14px; color: #2A1A1A;
+  outline: none; transition: border-color .2s;
+  -webkit-appearance: none;
+}
+input:focus, select:focus, textarea:focus { border-color: #6B1F1F; }
+input.error { border-color: #8B1F1F; background: #FFF8F8; }
+input.success { border-color: #3A6B45; }
+input:disabled { opacity: .5; cursor: not-allowed; }
+textarea { resize: vertical; min-height: 72px; }
+.hint { font-size: 10px; color: #8A7A6A; margin-top: 3px; }
+.error-msg { font-size: 10px; color: #8B1F1F; margin-top: 3px; }
+/* Search input */
+.search-wrap { position: relative; }
+.search-wrap input { padding-left: 36px; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: #8A7A6A; fill: none; stroke-width: 2; }
+/* Checkbox / Radio */
+.check-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #2A1A1A; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; accent-color: #6B1F1F; cursor: pointer; }
+/* Select arrow */
+.select-wrap { position: relative; }
+.select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #5A4A4A; pointer-events: none; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Text Inputs</div>
+<div class="grid">
+  <div class="field">
+    <label>Student full name</label>
+    <input type="text" placeholder="e.g. Zainab Fatima" value=""/>
+    <div class="hint">As per B-Form / Form B</div>
+  </div>
+  <div class="field">
+    <label>Date of birth</label>
+    <input type="date" value="2018-03-15"/>
+  </div>
+  <div class="field">
+    <label>Father's CNIC</label>
+    <input type="text" value="35202-1234567-1" class="success"/>
+  </div>
+  <div class="field">
+    <label>Phone number</label>
+    <input type="tel" value="" placeholder="+92 300 000 0000" class="error"/>
+    <div class="error-msg">Please enter a valid Pakistani mobile number</div>
+  </div>
+  <div class="field">
+    <label>Search students</label>
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <input type="text" placeholder="Name, roll number, or class…"/>
+    </div>
+  </div>
+  <div class="field">
+    <label>Disabled field</label>
+    <input type="text" value="Read only value" disabled/>
+  </div>
+</div>
+
+<div class="section-label">Select &amp; Textarea</div>
+<div class="grid">
+  <div class="field">
+    <label>Program</label>
+    <div class="select-wrap">
+      <select>
+        <option>Primary School · Grade 3</option>
+        <option>Kindergarten · KG 1</option>
+        <option>Daycare</option>
+        <option>Learning Rehabilitation</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>Blood group</label>
+    <div class="select-wrap">
+      <select>
+        <option value="">Select…</option>
+        <option>A+</option><option>A−</option>
+        <option>B+</option><option>B−</option>
+        <option>O+</option><option selected>O−</option>
+        <option>AB+</option><option>AB−</option>
+      </select>
+    </div>
+  </div>
+  <div class="field" style="grid-column: span 2;">
+    <label>Daily note (max 280 chars)</label>
+    <textarea placeholder="Today Zainab showed great improvement in reading her manzil. She completed three new pages independently…"></textarea>
+    <div class="hint">0 / 280 characters</div>
+  </div>
+</div>
+
+<div class="section-label">Checkboxes &amp; Radios</div>
+<div class="check-row">
+  <label class="check-item"><input type="checkbox" checked/> Present today</label>
+  <label class="check-item"><input type="checkbox"/> On leave</label>
+  <label class="check-item"><input type="checkbox"/> Notify parent via WhatsApp</label>
+</div>
+<div class="check-row" style="margin-top: 10px;">
+  <label class="check-item"><input type="radio" name="lang" checked/> English</label>
+  <label class="check-item"><input type="radio" name="lang"/> اردو</label>
+</div>
+
+</body>
+</html>

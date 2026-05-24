@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Good Day School — Report Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #E8DFD0; min-height: 100vh; padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+/* Print styles */
+@media print {
+  body { background: white; padding: 0; }
+  .screen-only { display: none !important; }
+  .report-card { box-shadow: none !important; margin: 0 !important; }
+  @page { size: A4; margin: 12mm; }
+}
+
+/* Toolbar */
+.toolbar { background: #4A1313; color: #E8D9B5; padding: 12px 24px; border-radius: 8px; display: flex; align-items: center; gap: 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; screen-only: true; }
+.toolbar button { background: #C9A961; color: #4A1313; border: none; border-radius: 6px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; }
+.toolbar select { background: rgba(255,255,255,.1); border: 1px solid rgba(201,169,97,.4); border-radius: 6px; padding: 6px 10px; color: #E8D9B5; font-family: 'DM Sans', sans-serif; font-size: 12px; }
+
+/* Report card */
+.report-card {
+  width: 210mm;
+  min-height: 297mm;
+  background: #FDFAF4;
+  box-shadow: 0 20px 60px rgba(74,19,19,.25);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Decorative top stripe */
+.top-stripe { height: 6px; background: linear-gradient(90deg, #4A1313 0%, #C9A961 40%, #4A1313 100%); }
+
+/* Header */
+.header { padding: 24px 32px 20px; display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #D9CDB5; }
+.logo-circle { width: 72px; height: 72px; border-radius: 50%; background: #6B1F1F; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; color: #E8D9B5; border: 3px solid #FAF6EE; box-shadow: 0 0 0 1.5px #C9A961; flex-shrink: 0; }
+.school-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #4A1313; line-height: 1; }
+.school-tag { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin-top: 5px; }
+.school-sub { font-family: 'DM Sans', sans-serif; font-size: 10px; color: #8A7A6A; margin-top: 3px; }
+.report-title { margin-left: auto; text-align: right; }
+.report-title h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #4A1313; }
+.report-title .term { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #8A7A6A; margin-top: 4px; }
+.report-title .dates { font-family: 'DM Sans', sans-serif; font-size: 10px; color: #5A4A4A; margin-top: 2px; }
+
+/* Student info strip */
+.student-strip { background: #4A1313; padding: 16px 32px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 12px; align-items: center; }
+.strip-field .label { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: #C9A961; opacity: .8; margin-bottom: 3px; }
+.strip-field .value { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: #FAF6EE; }
+.photo-placeholder { width: 56px; height: 56px; border-radius: 6px; background: rgba(201,169,97,.2); border: 1.5px solid rgba(201,169,97,.5); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #E8D9B5; }
+
+/* Body */
+.body { padding: 20px 32px; }
+.section-head { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #6B1F1F; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.section-head::after { content: ''; flex: 1; height: 1px; background: #D9CDB5; }
+
+/* Grades table */
+.grades-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px; }
+.grades-table th { background: #6B1F1F; color: #E8D9B5; padding: 8px 12px; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+.grades-table td { padding: 9px 12px; border-bottom: 1px solid #F2EBDB; font-family: 'DM Sans', sans-serif; font-size: 12px; color: #2A1A1A; }
+.grades-table tr:last-child td { border-bottom: none; }
+.grades-table tr:nth-child(even) td { background: #FAFAF6; }
+.grade-score { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; }
+.grade-letter { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: #4A1313; }
+.descriptor { font-size: 11px; }
+.descriptor.excellent { color: #3A6B45; }
+.descriptor.good { color: #8B6A1F; }
+.descriptor.working { color: #8B6A1F; }
+.descriptor.needs { color: #8B1F1F; }
+
+/* Two-col layout */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+/* Quran section */
+.quran-box { background: #4A1313; border-radius: 8px; padding: 14px 16px; color: #FAF6EE; }
+.quran-box .q-label { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: #C9A961; margin-bottom: 4px; }
+.quran-box .q-value { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: #FAF6EE; }
+.quran-box .q-acc { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #C9A961; margin-top: 2px; }
+
+/* Attendance */
+.att-box { background: white; border: 1px solid #D9CDB5; border-radius: 8px; padding: 14px 16px; }
+.att-stat { text-align: center; }
+.att-stat .num { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #4A1313; line-height: 1; }
+.att-stat .lbl { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: #8A7A6A; margin-top: 3px; }
+.att-bar { height: 5px; background: #F2EBDB; border-radius: 3px; margin-top: 10px; }
+.att-bar-fill { height: 100%; background: #3A6B45; border-radius: 3px; }
+
+/* Notes highlights */
+.note-item { padding: 8px 12px; background: white; border-left: 3px solid #C9A961; border-radius: 0 6px 6px 0; margin-bottom: 6px; }
+.note-item p { font-family: 'Lora', serif; font-size: 11px; color: #2A1A1A; line-height: 1.5; }
+.note-item .date { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; margin-top: 3px; }
+
+/* Teacher comments */
+.comment-box { border: 1px solid #D9CDB5; border-radius: 8px; padding: 14px 16px; background: white; }
+.comment-box .who { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: #8A7A6A; margin-bottom: 6px; }
+.comment-box p { font-family: 'Lora', serif; font-size: 12px; color: #2A1A1A; line-height: 1.65; }
+.comment-box .sig-line { margin-top: 12px; border-top: 1px solid #D9CDB5; padding-top: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+.comment-box .sig { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-style: italic; color: #4A1313; }
+.comment-box .sig-label { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; }
+
+/* Co-curricular */
+.cocurr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cocurr-item { background: white; border: 1px solid #D9CDB5; border-radius: 6px; padding: 10px; text-align: center; }
+.cocurr-item .ic { font-size: 16px; margin-bottom: 4px; }
+.cocurr-item .name { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #5A4A4A; }
+.cocurr-item .val { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 600; color: #4A1313; margin-top: 2px; }
+
+/* Growth */
+.growth-row { display: flex; gap: 10px; align-items: flex-end; }
+.growth-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.growth-bar { width: 28px; border-radius: '3px 3px 0 0'; }
+.growth-lbl { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; }
+.growth-val { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; color: #4A1313; }
+
+/* Dates row */
+.dates-row { display: flex; gap: 24px; justify-content: flex-end; margin-bottom: 8px; }
+.date-pair { text-align: right; }
+.date-pair .gregorian { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #2A1A1A; }
+.date-pair .hijri { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; margin-top: 1px; }
+
+/* Footer */
+.footer { background: #4A1313; padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.footer .seal { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C9A961; }
+.footer .receipt { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #E8D9B5; opacity: .7; }
+
+/* Overall grade box */
+.overall-box { background: #6B1F1F; border-radius: 8px; padding: 14px 18px; text-align: center; }
+.overall-box .pct { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: #C9A961; line-height: 1; }
+.overall-box .lbl { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #E8D9B5; margin-top: 4px; }
+.overall-box .rank { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #E8D9B5; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Toolbar (screen only) -->
+<div class="toolbar screen-only">
+  <span>Good Day School · Report Card Preview</span>
+  <select>
+    <option>Zainab Fatima — Grade 3A</option>
+    <option>Ahmad Mirza — Grade 3A</option>
+    <option>Sara Iqbal — Grade 3A</option>
+  </select>
+  <select>
+    <option>Q3 · Jan – Mar 2026</option>
+    <option>Q2 · Oct – Dec 2025</option>
+    <option>Q1 · Jul – Sep 2025</option>
+  </select>
+  <button onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<!-- THE REPORT CARD -->
+<div class="report-card">
+  <div class="top-stripe"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-circle">G</div>
+    <div>
+      <div class="school-name">Good Day School</div>
+      <div class="school-tag">Established 2001 · Rawalpindi, Pakistan</div>
+      <div class="school-sub">Reg. No. PBTE-RWP-2001-042 · +92 300 123 4567</div>
+    </div>
+    <div class="report-title">
+      <h2>Progress Report</h2>
+      <div class="term">Third Quarter · Q3</div>
+      <div class="dates">January – March 2026</div>
+    </div>
+  </div>
+
+  <!-- Student info -->
+  <div class="student-strip">
+    <div class="photo-placeholder">ZF</div>
+    <div class="strip-field">
+      <div class="label">Student name</div>
+      <div class="value">Zainab Fatima</div>
+    </div>
+    <div class="strip-field">
+      <div class="label">Grade & section</div>
+      <div class="value">Grade 3 · Section A</div>
+    </div>
+    <div class="strip-field">
+      <div class="label">Roll number</div>
+      <div class="value">07</div>
+    </div>
+    <div class="strip-field">
+      <div class="label">Academic year</div>
+      <div class="value">2025 – 2026</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Dates -->
+    <div class="dates-row">
+      <div class="date-pair">
+        <div class="gregorian">Issue date: 5 April 2026</div>
+        <div class="hijri">٧ شوال ١٤٤٧</div>
+      </div>
+    </div>
+
+    <!-- Academic performance -->
+    <div class="section-head">Academic Performance</div>
+    <table class="grades-table">
+      <thead>
+        <tr>
+          <th style="width:30%">Subject</th>
+          <th style="width:12%">Score</th>
+          <th style="width:10%">Grade</th>
+          <th style="width:18%">Descriptor</th>
+          <th style="width:30%">Teacher's remark</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mathematics</td>
+          <td><span class="grade-score" style="color:#3A6B45">87%</span></td>
+          <td><span class="grade-letter">A</span></td>
+          <td><span class="descriptor excellent">Excellent</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Strong problem-solving. Excels in fractions.</td>
+        </tr>
+        <tr>
+          <td>Urdu</td>
+          <td><span class="grade-score" style="color:#8B6A1F">79%</span></td>
+          <td><span class="grade-letter">B</span></td>
+          <td><span class="descriptor good">Good</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Reading fluency improving. Handwriting excellent.</td>
+        </tr>
+        <tr>
+          <td>English</td>
+          <td><span class="grade-score" style="color:#3A6B45">91%</span></td>
+          <td><span class="grade-letter">A+</span></td>
+          <td><span class="descriptor excellent">Excellent</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Outstanding vocabulary. Reading chapter books.</td>
+        </tr>
+        <tr>
+          <td>General Science</td>
+          <td><span class="grade-score" style="color:#3A6B45">83%</span></td>
+          <td><span class="grade-letter">A</span></td>
+          <td><span class="descriptor excellent">Excellent</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Curious learner. Asks excellent questions.</td>
+        </tr>
+        <tr>
+          <td>Pakistan Studies</td>
+          <td><span class="grade-score" style="color:#8B6A1F">75%</span></td>
+          <td><span class="grade-letter">B</span></td>
+          <td><span class="descriptor good">Good</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Good recall of facts. Maps improving.</td>
+        </tr>
+        <tr>
+          <td>Islamiyat</td>
+          <td><span class="grade-score" style="color:#3A6B45">94%</span></td>
+          <td><span class="grade-letter">A+</span></td>
+          <td><span class="descriptor excellent">Excellent</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Memorised all 12 duas this quarter. Mashaa'Allah.</td>
+        </tr>
+        <tr>
+          <td>Art &amp; Craft</td>
+          <td><span class="grade-score" style="color:#3A6B45">88%</span></td>
+          <td><span class="grade-letter">A</span></td>
+          <td><span class="descriptor excellent">Excellent</span></td>
+          <td style="font-family:'Lora',serif;font-size:10px;color:#5A4A4A">Creative, detailed work. Winning entry in art fair.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Quran + Attendance + Overall -->
+    <div class="three-col">
+      <!-- Quran -->
+      <div class="quran-box">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#C9A961;margin-bottom:10px">Quran · Hifz Track</div>
+        <div class="q-label">Current position</div>
+        <div class="q-value">Juz 28 · Surah Al-Mulk</div>
+        <div style="height:1px;background:rgba(201,169,97,.2);margin:8px 0"></div>
+        <div class="q-label">Sabaq accuracy</div>
+        <div class="q-acc">95% · Excellent tajweed</div>
+        <div style="height:1px;background:rgba(201,169,97,.2);margin:8px 0"></div>
+        <div class="q-label">Manzil</div>
+        <div class="q-value" style="font-size:12px">Juz 28 · 88% accuracy</div>
+        <div style="height:1px;background:rgba(201,169,97,.2);margin:8px 0"></div>
+        <div class="q-label">Ustadha's note</div>
+        <div class="q-value" style="font-size:11px;color:#E8D9B5;font-family:'Lora',serif;line-height:1.5">Progressing beautifully. Ready for Juz 29.</div>
+      </div>
+
+      <!-- Attendance -->
+      <div class="att-box">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#4A1313;margin-bottom:10px">Attendance · Q3</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div class="att-stat">
+            <div class="num" style="color:#2A1A1A">60</div>
+            <div class="lbl">Working days</div>
+          </div>
+          <div class="att-stat">
+            <div class="num" style="color:#3A6B45">55</div>
+            <div class="lbl">Present</div>
+          </div>
+          <div class="att-stat">
+            <div class="num" style="color:#8B1F1F">5</div>
+            <div class="lbl">Absent</div>
+          </div>
+        </div>
+        <div class="att-bar"><div class="att-bar-fill" style="width:92%"></div></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#3A6B45;margin-top:5px;font-weight:600">92% attendance</div>
+        <div style="margin-top:10px;font-family:'DM Sans',sans-serif;font-size:10px;color:#8A7A6A">Late arrivals this quarter: 1</div>
+      </div>
+
+      <!-- Overall -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="overall-box">
+          <div class="pct">85.3%</div>
+          <div class="lbl">Overall average</div>
+          <div class="rank">Rank 2 of 12</div>
+        </div>
+        <div style="background:white;border:1px solid #D9CDB5;border-radius:8px;padding:12px 14px">
+          <div style="font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8A7A6A;margin-bottom:6px">Behaviour / Akhlaaq</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#3A6B45;font-weight:500">● Respectful &amp; cooperative</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#3A6B45;font-weight:500;margin-top:3px">● Excellent class participation</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#3A6B45;font-weight:500;margin-top:3px">● Helps classmates</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily note highlights -->
+    <div class="section-head">Five Daily Note Highlights · Q3</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div class="note-item"><p>Completed manzil revision independently. Excellent tajweed on Surah Al-Mulk.</p><div class="date">2 May 2026 · Ms. Nadia Habib</div></div>
+      <div class="note-item"><p>Scored 10/10 on the fractions test. Explained her method to the class beautifully.</p><div class="date">28 Apr 2026 · Ms. Nadia Habib</div></div>
+      <div class="note-item"><p>Her English reading circle presentation was outstanding — she chose a poem and read with expression.</p><div class="date">21 Apr 2026 · Ms. Nadia Habib</div></div>
+      <div class="note-item"><p>Art fair winning entry: a detailed watercolour of the school garden. We are proud!</p><div class="date">14 Apr 2026 · Ms. Nadia Habib</div></div>
+      <div class="note-item" style="grid-column:span 2"><p>Led the morning dua for the entire school today. Her voice was clear, her confidence beautiful to see.</p><div class="date">7 Apr 2026 · Ms. Nadia Habib</div></div>
+    </div>
+
+    <!-- Growth + Co-curricular -->
+    <div class="two-col" style="margin-bottom:16px">
+      <!-- Growth -->
+      <div>
+        <div class="section-head">Physical Growth</div>
+        <div style="background:white;border:1px solid #D9CDB5;border-radius:8px;padding:14px 16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;align-items:flex-end;margin-bottom:8px">
+            {['Q0','Q1','Q2','Q3'].forEach((q,i)=>{
+              const heights = [112, 113.5, 114.8, 116];
+            })}
+            <div style="text-align:center">
+              <div style="background:#E8D9B5;border-radius:3px 3px 0 0;height:50px;margin-bottom:4px"></div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:9px;color:#8A7A6A">Q0</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#4A1313">112cm</div>
+            </div>
+            <div style="text-align:center">
+              <div style="background:#C9A961;opacity:.6;border-radius:3px 3px 0 0;height:56px;margin-bottom:4px"></div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:9px;color:#8A7A6A">Q1</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#4A1313">113.5cm</div>
+            </div>
+            <div style="text-align:center">
+              <div style="background:#C9A961;opacity:.8;border-radius:3px 3px 0 0;height:62px;margin-bottom:4px"></div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:9px;color:#8A7A6A">Q2</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#4A1313">114.8cm</div>
+            </div>
+            <div style="text-align:center">
+              <div style="background:#6B1F1F;border-radius:3px 3px 0 0;height:68px;margin-bottom:4px"></div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:9px;color:#2A1A1A;font-weight:600">Q3</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#4A1313">116cm</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;padding-top:8px;border-top:1px solid #F2EBDB">
+            <div><span style="font-family:'DM Sans',sans-serif;font-size:9px;color:#8A7A6A">Weight: </span><span style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#4A1313">19.2 kg</span></div>
+            <div><span style="font-family:'DM Sans',sans-serif;font-size:9px;color:#8A7A6A">BMI: </span><span style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#3A6B45">14.3 — Normal</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Co-curricular -->
+      <div>
+        <div class="section-head">Co-Curricular</div>
+        <div class="cocurr-grid">
+          <div class="cocurr-item"><div class="name">Art Fair</div><div class="val" style="color:#3A6B45">1st</div></div>
+          <div class="cocurr-item"><div class="name">Reading</div><div class="val" style="color:#3A6B45">A</div></div>
+          <div class="cocurr-item"><div class="name">Sports Day</div><div class="val">Participated</div></div>
+          <div class="cocurr-item"><div class="name">Drama</div><div class="val">Lead role</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="section-head">Teacher Comments</div>
+    <div class="two-col">
+      <div class="comment-box">
+        <div class="who">Class teacher comment</div>
+        <p>Zainab has had an outstanding third quarter. She is a diligent and enthusiastic learner who always gives her best effort. Her Quran progress has been particularly commendable. We look forward to seeing her continue to flourish in Q4. Her leadership in the school dua was a proud moment for us all.</p>
+        <div class="sig-line">
+          <div>
+            <div class="sig">Nadia Habib</div>
+            <div class="sig-label">Class Teacher, Grade 3A</div>
+          </div>
+          <div style="width:80px;height:30px;border-bottom:1px solid #D9CDB5"></div>
+        </div>
+      </div>
+      <div class="comment-box">
+        <div class="who">Head teacher comment</div>
+        <p>Zainab represents the very best of what we work towards at Good Day School — a child who is academically strong, grounded in her deen, and kind to those around her. Her family's commitment, especially through the mother training programme, has made a visible difference. Keep going.</p>
+        <div class="sig-line">
+          <div>
+            <div class="sig">Zara Mahmood</div>
+            <div class="sig-label">Head Teacher</div>
+          </div>
+          <div style="width:80px;height:30px;border-bottom:1px solid #D9CDB5"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="seal">Good Day School · Rawalpindi · Est. 2001</div>
+    <div class="receipt">Report Card No. RC-2026-Q3-3A-007 · Generated 5 Apr 2026 · Verified</div>
+  </div>
+</div>
+
+</body>
+</html>

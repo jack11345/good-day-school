@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #F2EBDB; padding: 0; font-family: var(--font-ui); }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; font-weight: 600; padding: 16px 20px 8px; }
+
+/* ── Topbar ── */
+.topbar { background: #4A1313; color: #E8D9B5; font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: .06em; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; }
+.topbar .dot { width: 6px; height: 6px; background: #C9A961; border-radius: 50%; display: inline-block; margin-right: 8px; }
+.lang-toggle { display: inline-flex; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px; gap: 2px; }
+.lang-btn { padding: 4px 12px; font-size: 11px; letter-spacing: .08em; color: #E8D9B5; border-radius: 999px; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.lang-btn.active { background: #C9A961; color: #4A1313; font-weight: 700; }
+
+/* ── Main header ── */
+.header { background: #FAF6EE; border-bottom: 1px solid #D9CDB5; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 48px; height: 48px; border-radius: 50%; background: #6B1F1F; color: #E8D9B5; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; position: relative; flex-shrink: 0; }
+.brand-mark::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid #C9A961; opacity: .5; }
+.brand-text .name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #4A1313; line-height: 1; }
+.brand-text .tag { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #5A4A4A; margin-top: 4px; }
+.nav { display: flex; align-items: center; gap: 2px; }
+.nav-item { padding: 8px 12px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #2A1A1A; font-weight: 500; cursor: pointer; position: relative; transition: all .2s; }
+.nav-item:hover { color: #6B1F1F; background: #F2EBDB; }
+.nav-item.active { color: #6B1F1F; }
+.nav-item.active::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 16px; height: 2px; background: #6B1F1F; border-radius: 1px; }
+.cta-btn { background: #6B1F1F; color: #FAF6EE; padding: 9px 18px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .04em; border: none; cursor: pointer; }
+
+/* ── Sidebar (LMS) ── */
+.sidebar-demo { display: flex; }
+.sidebar { background: #4A1313; width: 220px; padding: 20px 0; flex-shrink: 0; }
+.sidebar .logo-row { display: flex; align-items: center; gap: 10px; padding: 0 18px 18px; border-bottom: 1px solid rgba(201,169,97,.2); margin-bottom: 10px; }
+.sidebar .logo-circle { width: 36px; height: 36px; border-radius: 50%; background: #6B1F1F; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: #E8D9B5; border: 1px solid rgba(201,169,97,.4); flex-shrink: 0; }
+.sidebar .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: #E8D9B5; line-height: 1.1; }
+.sidebar .logo-text span { display: block; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #C9A961; opacity: .8; }
+.sidebar-section { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: #C9A961; opacity: .6; padding: 8px 18px 4px; }
+.sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #E8D9B5; cursor: pointer; transition: all .2s; }
+.sidebar-item:hover { background: rgba(255,255,255,.06); color: #FAF6EE; }
+.sidebar-item.active { background: rgba(201,169,97,.12); color: #C9A961; border-right: 2px solid #C9A961; }
+.sidebar-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; flex-shrink: 0; }
+.sidebar-badge { margin-left: auto; background: #6B1F1F; color: #E8D9B5; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+.sidebar-content { background: #FAF6EE; flex: 1; padding: 16px; }
+.sidebar-content .breadcrumb { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #8A7A6A; margin-bottom: 12px; }
+.sidebar-content h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #4A1313; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Top Announcement Bar</div>
+<div class="topbar">
+  <span><span class="dot"></span>Admissions open for the 2026–2027 session</span>
+  <span style="display:flex; gap:16px; align-items:center;">
+    <span>+92 300 123 4567</span>
+    <div class="lang-toggle">
+      <button class="lang-btn active">EN</button>
+      <button class="lang-btn" style="font-family:'Noto Nastaliq Urdu',serif;font-size:12px;">اردو</button>
+    </div>
+  </span>
+</div>
+
+<div class="section-label">Main Site Header</div>
+<div class="header">
+  <div class="brand">
+    <div class="brand-mark">G</div>
+    <div class="brand-text">
+      <div class="name">Good Day School</div>
+      <div class="tag">Established 2001 · Pakistan</div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-item active">Home</div>
+    <div class="nav-item">About</div>
+    <div class="nav-item">Programs</div>
+    <div class="nav-item">Bus Service</div>
+    <div class="nav-item">Admissions</div>
+    <div class="nav-item">Contact</div>
+  </div>
+  <button class="cta-btn">Apply now →</button>
+</div>
+
+<div class="section-label">LMS Sidebar Navigation</div>
+<div class="sidebar-demo">
+  <div class="sidebar">
+    <div class="logo-row">
+      <div class="logo-circle">G</div>
+      <div class="logo-text">Good Day<span>Teacher Portal</span></div>
+    </div>
+    <div class="sidebar-section">Classroom</div>
+    <div class="sidebar-item active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+      Attendance
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Daily Notes
+      <span class="sidebar-badge">3</span>
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Lesson Plans
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+      Homework
+    </div>
+    <div class="sidebar-section" style="margin-top:6px;">Reports</div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Report Cards
+    </div>
+    <div class="sidebar-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7"/></svg>
+      My Class
+    </div>
+  </div>
+  <div class="sidebar-content">
+    <div class="breadcrumb">Classroom → Attendance</div>
+    <h2>Attendance · Grade 3A</h2>
+    <p style="font-size:13px; color:#5A4A4A; margin-top:6px; font-family:'DM Sans',sans-serif;">Friday, 2 May 2026 · 18 students</p>
+  </div>
+</div>
+
+</body>
+</html>

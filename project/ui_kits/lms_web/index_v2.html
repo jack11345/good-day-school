@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Good Day School — LMS v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: #FAF6EE; color: #2A1A1A; overflow: hidden; }
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #D9CDB5; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ── SHARED DATA ── */
+const STUDENTS = [
+  { id:1,  name:'Zainab Fatima', initials:'ZF', roll:'07', status:'present' },
+  { id:2,  name:'Ahmad Mirza',   initials:'AM', roll:'12', status:'absent'  },
+  { id:3,  name:'Sara Iqbal',    initials:'SI', roll:'03', status:'present' },
+  { id:4,  name:'Hamza Khalid',  initials:'HK', roll:'09', status:'late'    },
+  { id:5,  name:'Fatima Noor',   initials:'FN', roll:'01', status:'present' },
+  { id:6,  name:'Umar Farooq',   initials:'UF', roll:'15', status:'present' },
+  { id:7,  name:'Aisha Rehman',  initials:'AR', roll:'02', status:'present' },
+  { id:8,  name:'Ali Hassan',    initials:'AH', roll:'11', status:'absent'  },
+  { id:9,  name:'Maryam Baig',   initials:'MB', roll:'06', status:'present' },
+  { id:10, name:'Bilal Shahid',  initials:'BS', roll:'14', status:'late'    },
+  { id:11, name:'Hira Aziz',     initials:'HA', roll:'04', status:'present' },
+  { id:12, name:'Saud Mehmood',  initials:'SM', roll:'16', status:'present' },
+];
+
+const QURAN_DATA = [
+  { id:1,  name:'Zainab Fatima', initials:'ZF', type:'Hifz',   juz:28,  surah:'Al-Mulk',     ayah:12, sabaq:'Al-Mulk 12–15', sabaqAcc:95, manzil:'Juz 28', manzilAcc:88, tajweed:'Excellent', notes:'Ready to advance' },
+  { id:2,  name:'Ahmad Mirza',   initials:'AM', type:'Nazira',  juz:null,surah:'Al-Baqarah',  ayah:45, sabaq:'Al-Baqarah 45–52', sabaqAcc:78, manzil:'Juz 1', manzilAcc:72, tajweed:'Good', notes:'Absent today' },
+  { id:3,  name:'Sara Iqbal',    initials:'SI', type:'Hifz',   juz:25,  surah:'Al-Furqan',   ayah:20, sabaq:'Al-Furqan 20–25', sabaqAcc:92, manzil:'Juz 25', manzilAcc:90, tajweed:'Very good', notes:'' },
+  { id:4,  name:'Hamza Khalid',  initials:'HK', type:'Nazira',  juz:null,surah:'Qaida',       ayah:null,sabaq:'Lesson 14', sabaqAcc:70, manzil:'—', manzilAcc:null, tajweed:'Needs work', notes:'Focus on makhraj' },
+  { id:5,  name:'Fatima Noor',   initials:'FN', type:'Hifz',   juz:29,  surah:'Al-Inshiqaq', ayah:6,  sabaq:'Al-Inshiqaq 6–10', sabaqAcc:97, manzil:'Juz 29', manzilAcc:94, tajweed:'Excellent', notes:'Mashaa\'Allah' },
+  { id:6,  name:'Umar Farooq',   initials:'UF', type:'Nazira',  juz:null,surah:'Al-Imran',   ayah:110,sabaq:'Al-Imran 110–118', sabaqAcc:83, manzil:'Juz 3', manzilAcc:80, tajweed:'Good', notes:'' },
+];
+
+const LESSON_PLANS = [
+  {
+    id:1, subject:'Mathematics', teacher:'Ms. Nadia Habib', week:'Week 18 · 28 Apr – 2 May',
+    status:'approved', approvedBy:'Head Teacher Zara', approvedOn:'27 Apr',
+    objectives:['Understand fractions as parts of a whole','Compare fractions with same denominator','Solve word problems involving fractions'],
+    days:[
+      { day:'Mon', topic:'Introduction to fractions', activity:'Cutting paper into halves and quarters', resource:'Worksheet 5A' },
+      { day:'Tue', topic:'Numerator & denominator', activity:'Labelling fraction diagrams', resource:'Textbook p.67' },
+      { day:'Wed', topic:'Equivalent fractions', activity:'Fraction wall matching game', resource:'Worksheet 5B' },
+      { day:'Thu', topic:'Comparing fractions', activity:'Ordering fractions on number line', resource:'Textbook p.70' },
+      { day:'Fri', topic:'Word problems', activity:'Class problem-solving session', resource:'Worksheet 5C' },
+    ],
+    snc:'SNC Primary Mathematics Grade 3 · Strand 4: Number & Operations',
+    hw:'Worksheet 5A due Tuesday, 5B due Thursday',
+  },
+  {
+    id:2, subject:'Urdu', teacher:'Ms. Rukhsana', week:'Week 18 · 28 Apr – 2 May',
+    status:'approved', approvedBy:'Head Teacher Zara', approvedOn:'27 Apr',
+    objectives:['Read Nastaliq script fluently','Expand vocabulary with 10 new words','Write a short paragraph (5–7 sentences)'],
+    days:[
+      { day:'Mon', topic:'Reading: Sabak 12', activity:'Round-robin oral reading', resource:'Urdu Reader p.34' },
+      { day:'Tue', topic:'Vocabulary: 10 new words', activity:'Word cards + matching game', resource:'Vocabulary list sheet' },
+      { day:'Wed', topic:'Grammar: singular/plural', activity:'Worksheet exercise', resource:'Grammar book p.44' },
+      { day:'Thu', topic:'Dictation', activity:'10-word dictation test', resource:'Teacher-prepared' },
+      { day:'Fri', topic:'Writing: my school', activity:'Independent paragraph writing', resource:'Copy books' },
+    ],
+    snc:'SNC Primary Urdu Grade 3 · Strand 2: Reading Comprehension',
+    hw:'Read pages 34–36, write 5 new words in notebook',
+  },
+  {
+    id:3, subject:'General Science', teacher:'Ms. Nadia Habib', week:'Week 19 · 5–9 May',
+    status:'pending', approvedBy:null, approvedOn:null,
+    objectives:['Identify parts of a plant','Explain the function of roots, stem, leaves','Conduct a simple growing experiment'],
+    days:[
+      { day:'Mon', topic:'Parts of a plant', activity:'Labelling diagram', resource:'Science book p.55' },
+      { day:'Tue', topic:'Roots & stem functions', activity:'Dissecting a plant (roots visible)', resource:'Garden specimens' },
+      { day:'Wed', topic:'Leaves & photosynthesis (simple)', activity:'Leaf rubbing art + discussion', resource:'—' },
+      { day:'Thu', topic:'Experiment: growing a seed', activity:'Plant seeds in cups, observe', resource:'Seeds + soil + cups' },
+      { day:'Fri', topic:'Review & quiz', activity:'5-question quiz + draw a plant', resource:'Teacher-prepared' },
+    ],
+    snc:'SNC Primary Science Grade 3 · Unit 3: Living Things',
+    hw:'Observe your seed daily and draw what you see',
+  },
+];
+
+const MESSAGES_DATA = [
+  { id:1, from:'Fatima Aslam (Zainab\'s mother)', role:'Parent', time:'Today 11:22 AM', text:'JazakAllah khair for the note. Zainab was very happy today!', unread:true },
+  { id:2, from:'Head Teacher Zara', role:'Admin', time:'Today 9:05 AM', text:'Week 18 lesson plans approved. Please submit Week 19 by Sunday.', unread:true },
+  { id:3, from:'Dr. Sara (Nurse)', role:'Medical', time:'Yesterday', text:'Hamza Khalid visited sick bay — mild headache. Parent notified. He returned to class.', unread:false },
+];
+
+/* ── HELPERS ── */
+const Avatar = ({ initials, size=36, bg='#E8D9B5', color='#4A1313' }) => (
+  <div style={{ width:size, height:size, borderRadius:'50%', background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontSize:size*0.38, fontWeight:600, color, flexShrink:0 }}>{initials}</div>
+);
+
+const Badge = ({ label, bg='#F0F0F4', color='#5A5A6A', size=11 }) => (
+  <span style={{ background:bg, color, padding:'3px 9px', borderRadius:999, fontSize:size, fontWeight:500, fontFamily:"'DM Sans',sans-serif", whiteSpace:'nowrap' }}>{label}</span>
+);
+
+const statusStyle = s => ({ present:{bg:'#E8F5EC',color:'#3A6B45'}, absent:{bg:'#FAEAEA',color:'#8B1F1F'}, late:{bg:'#FEF6E0',color:'#8B6A1F'}, approved:{bg:'#E8F5EC',color:'#2D6A4F'}, pending:{bg:'#FEF6E0',color:'#B5850A'}, draft:{bg:'#F0F0F4',color:'#5A5A6A'} }[s] || {bg:'#F0F0F4',color:'#5A5A6A'});
+
+const Card = ({ children, style={} }) => (
+  <div style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, ...style }}>{children}</div>
+);
+
+const CardHeader = ({ children, style={} }) => (
+  <div style={{ background:'#6B1F1F', padding:'14px 20px', borderRadius:'10px 10px 0 0', display:'flex', justifyContent:'space-between', alignItems:'center', ...style }}>{children}</div>
+);
+
+const SectionLabel = ({ children }) => (
+  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.18em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:10, fontWeight:600 }}>{children}</div>
+);
+
+const Icon = ({ path, size=16, color='currentColor', strokeWidth=1.8 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"><path d={path}/></svg>
+);
+
+/* ── SIDEBAR ── */
+const NAV_ITEMS = [
+  { key:'dashboard',  label:'Dashboard',     icon:'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10', section:'Classroom' },
+  { key:'attendance', label:'Attendance',    icon:'M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11', section:'Classroom' },
+  { key:'notes',      label:'Daily Notes',  icon:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6 M16 13H8 M16 17H8', section:'Classroom', badge:3 },
+  { key:'quran',      label:'Quran Tracker',icon:'M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z', section:'Classroom' },
+  { key:'lessons',    label:'Lesson Plans', icon:'M4 19.5A2.5 2.5 0 016.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z', section:'Classroom' },
+  { key:'students',   label:'My Class',     icon:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M9 3a4 4 0 110 8 4 4 0 010-8z', section:'Classroom' },
+  { key:'reports',    label:'Report Cards', icon:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', section:'Admin' },
+  { key:'fees',       label:'Fees',         icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z M12 8v4l3 3', section:'Admin' },
+  { key:'messages',   label:'Messages',     icon:'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', section:'Admin', badge:2 },
+];
+
+const Sidebar = ({ active, onNav }) => {
+  const sections = ['Classroom','Admin'];
+  return (
+    <div style={{ width:230, background:'#4A1313', display:'flex', flexDirection:'column', flexShrink:0, height:'100%' }}>
+      <div style={{ padding:'20px 18px 16px', borderBottom:'1px solid rgba(201,169,97,.2)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ width:38, height:38, borderRadius:'50%', background:'rgba(201,169,97,.18)', border:'1.5px solid rgba(201,169,97,.45)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#E8D9B5', flexShrink:0 }}>G</div>
+          <div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#E8D9B5', lineHeight:1.1 }}>Good Day School</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.14em', textTransform:'uppercase', color:'#C9A961', opacity:.8, marginTop:2 }}>Teacher Portal</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ flex:1, overflowY:'auto', padding:'8px 0' }}>
+        {sections.map(sec => (
+          <div key={sec}>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.18em', textTransform:'uppercase', color:'#C9A961', opacity:.6, padding:'12px 18px 4px' }}>{sec}</div>
+            {NAV_ITEMS.filter(i=>i.section===sec).map(it => (
+              <div key={it.key} onClick={()=>onNav(it.key)} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 18px', fontFamily:"'DM Sans',sans-serif", fontSize:13, color:active===it.key?'#C9A961':'#E8D9B5', background:active===it.key?'rgba(201,169,97,.12)':'transparent', borderRight:active===it.key?'2px solid #C9A961':'2px solid transparent', cursor:'pointer', transition:'all .15s', userSelect:'none' }}
+                onMouseEnter={e=>{ if(active!==it.key){ e.currentTarget.style.background='rgba(255,255,255,.06)'; }}}
+                onMouseLeave={e=>{ if(active!==it.key){ e.currentTarget.style.background='transparent'; }}}
+              >
+                <Icon path={it.icon} size={15} color={active===it.key?'#C9A961':'#C9A96188'}/>
+                <span style={{ flex:1 }}>{it.label}</span>
+                {it.badge && <span style={{ background:'#6B1F1F', color:'#E8D9B5', width:18, height:18, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:700 }}>{it.badge}</span>}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ borderTop:'1px solid rgba(201,169,97,.2)', padding:'14px 18px', display:'flex', alignItems:'center', gap:10 }}>
+        <Avatar initials="NH" size={32} bg='rgba(201,169,97,.2)' color='#E8D9B5'/>
+        <div style={{ flex:1 }}>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, color:'#E8D9B5' }}>Ms. Nadia Habib</div>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#C9A961', opacity:.8 }}>Grade 3A Teacher</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TopBar = ({ title, subtitle }) => (
+  <div style={{ background:'#FAF6EE', borderBottom:'1px solid #D9CDB5', padding:'14px 28px', display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0 }}>
+    <div>
+      <h1 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:'#4A1313', lineHeight:1 }}>{title}</h1>
+      {subtitle && <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#8A7A6A', marginTop:3 }}>{subtitle}</div>}
+    </div>
+    <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+      <div style={{ position:'relative' }}>
+        <svg style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)' }} width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#8A7A6A" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        <input placeholder="Search…" style={{ background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:6, padding:'7px 12px 7px 30px', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A', outline:'none', width:170 }}/>
+      </div>
+      <div style={{ position:'relative', cursor:'pointer' }}>
+        <Icon path="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9 M13.73 21a2 2 0 01-3.46 0" size={18} color='#5A4A4A'/>
+        <span style={{ position:'absolute', top:-4, right:-4, background:'#6B1F1F', color:'white', width:13, height:13, borderRadius:'50%', fontSize:8, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center' }}>3</span>
+      </div>
+      <Avatar initials="NH" size={32}/>
+    </div>
+  </div>
+);
+
+/* ── QURAN TRACKER SCREEN ── */
+const QuranScreen = () => {
+  const [selected, setSelected] = useState(QURAN_DATA[0]);
+  const [entryMode, setEntryMode] = useState(false);
+  const [entries, setEntries] = useState({});
+
+  const AccBar = ({ value, color='#3A6B45' }) => value ? (
+    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+      <div style={{ flex:1, height:6, background:'#F2EBDB', borderRadius:3 }}>
+        <div style={{ width:`${value}%`, height:'100%', background:color, borderRadius:3, transition:'width .4s' }}></div>
+      </div>
+      <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color, fontWeight:600, minWidth:32 }}>{value}%</span>
+    </div>
+  ) : <span style={{ fontSize:11, color:'#8A7A6A' }}>—</span>;
+
+  const tajweedColor = t => ({ Excellent:'#3A6B45', 'Very good':'#3A6B45', Good:'#8B6A1F', 'Needs work':'#8B1F1F' }[t] || '#5A5A6A');
+  const tajweedBg = t => ({ Excellent:'#E8F5EC', 'Very good':'#E8F5EC', Good:'#FEF6E0', 'Needs work':'#FAEAEA' }[t] || '#F0F0F4');
+
+  return (
+    <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
+      {/* Student list */}
+      <div style={{ width:240, borderRight:'1px solid #D9CDB5', overflowY:'auto', flexShrink:0 }}>
+        <div style={{ padding:'14px 16px', borderBottom:'1px solid #D9CDB5', background:'#F2EBDB' }}>
+          <SectionLabel>Grade 3A · {QURAN_DATA.length} students</SectionLabel>
+        </div>
+        {QURAN_DATA.map(s => (
+          <div key={s.id} onClick={()=>setSelected(s)} style={{ padding:'12px 16px', borderBottom:'1px solid #F2EBDB', cursor:'pointer', background:selected?.id===s.id?'#FAF6EE':'white', borderLeft:selected?.id===s.id?'3px solid #6B1F1F':'3px solid transparent', display:'flex', alignItems:'center', gap:10 }}>
+            <Avatar initials={s.initials} size={34}/>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, color:'#2A1A1A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{s.name}</div>
+              <div style={{ display:'flex', gap:5, marginTop:3 }}>
+                <Badge label={s.type} bg={s.type==='Hifz'?'#4A1313':'#E8D9B5'} color={s.type==='Hifz'?'#E8D9B5':'#4A1313'} size={9}/>
+                {s.juz && <Badge label={`Juz ${s.juz}`} bg='#F0F0F4' color='#5A5A6A' size={9}/>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Detail panel */}
+      {selected && (
+        <div style={{ flex:1, overflowY:'auto', padding:24 }}>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+              <Avatar initials={selected.initials} size={52}/>
+              <div>
+                <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:24, fontWeight:600, color:'#4A1313' }}>{selected.name}</div>
+                <div style={{ display:'flex', gap:8, marginTop:4 }}>
+                  <Badge label={selected.type} bg={selected.type==='Hifz'?'#4A1313':'#E8D9B5'} color={selected.type==='Hifz'?'#E8D9B5':'#4A1313'}/>
+                  {selected.juz && <Badge label={`Currently Juz ${selected.juz}`} bg='#F0F0F4' color='#5A5A6A'/>}
+                </div>
+              </div>
+            </div>
+            <button onClick={()=>setEntryMode(!entryMode)} style={{ background:entryMode?'#3A6B45':'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'9px 18px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer' }}>
+              {entryMode ? '✓ Save entry' : '+ Today\'s entry'}
+            </button>
+          </div>
+
+          {/* Today's entry form */}
+          {entryMode && (
+            <Card style={{ marginBottom:20, padding:20, border:'2px solid #C9A961' }}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313', marginBottom:16 }}>Today's entry · 2 May 2026</div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+                {[['Sabaq (new lesson)','sabaq'],['Sabqi (recent revision)','sabqi'],['Manzil (long revision)','manzil']].map(([label,key])=>(
+                  <div key={key}>
+                    <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>{label}</label>
+                    <input placeholder="e.g. Al-Mulk 12–15" style={{ width:'100%', padding:'9px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'Lora',serif", fontSize:13, background:'#FAF6EE', outline:'none' }}/>
+                  </div>
+                ))}
+                <div>
+                  <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Tajweed rating</label>
+                  <select style={{ width:'100%', padding:'9px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', outline:'none' }}>
+                    <option>Excellent</option><option>Very good</option><option>Good</option><option>Needs work</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Accuracy %</label>
+                  <input type="number" min="0" max="100" placeholder="e.g. 92" style={{ width:'100%', padding:'9px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', outline:'none' }}/>
+                </div>
+                <div style={{ gridColumn:'span 2' }}>
+                  <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Teacher's notes</label>
+                  <textarea rows={2} placeholder="Any observations for parent…" style={{ width:'100%', padding:'9px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'Lora',serif", fontSize:13, background:'#FAF6EE', outline:'none', resize:'none' }}/>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+            {/* Sabaq */}
+            <Card style={{ padding:18 }}>
+              <SectionLabel>Sabaq · Today</SectionLabel>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:'#4A1313', marginBottom:10 }}>{selected.sabaq}</div>
+              <AccBar value={selected.sabaqAcc} color='#3A6B45'/>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:8 }}>New lesson accuracy</div>
+            </Card>
+            {/* Manzil */}
+            <Card style={{ padding:18 }}>
+              <SectionLabel>Manzil · Revision</SectionLabel>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:'#4A1313', marginBottom:10 }}>{selected.manzil}</div>
+              <AccBar value={selected.manzilAcc} color='#C9A961'/>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:8 }}>Long revision accuracy</div>
+            </Card>
+            {/* Tajweed */}
+            <Card style={{ padding:18 }}>
+              <SectionLabel>Tajweed</SectionLabel>
+              <div style={{ marginBottom:10 }}>
+                <Badge label={selected.tajweed} bg={tajweedBg(selected.tajweed)} color={tajweedColor(selected.tajweed)}/>
+              </div>
+              {selected.notes && <p style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#5A4A4A', lineHeight:1.5 }}>{selected.notes}</p>}
+            </Card>
+          </div>
+
+          {/* Progress over time */}
+          <Card>
+            <CardHeader><span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:'#FAF6EE' }}>Weekly progress</span><Badge label="Last 4 weeks" bg='rgba(201,169,97,.2)' color='#C9A961'/></CardHeader>
+            <div style={{ padding:20 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+                {['Week 15','Week 16','Week 17','Week 18'].map((w,i)=>{
+                  const acc = [72,78,85,selected.sabaqAcc][i];
+                  return (
+                    <div key={w} style={{ textAlign:'center' }}>
+                      <div style={{ height:80, display:'flex', alignItems:'flex-end', justifyContent:'center', marginBottom:6 }}>
+                        <div style={{ width:36, background:i===3?'#6B1F1F':'#E8D9B5', borderRadius:'4px 4px 0 0', height:`${acc}%`, transition:'height .4s', position:'relative' }}>
+                          <span style={{ position:'absolute', top:-18, left:'50%', transform:'translateX(-50%)', fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, color:i===3?'#6B1F1F':'#8A7A6A' }}>{acc}%</span>
+                        </div>
+                      </div>
+                      <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:i===3?'#2A1A1A':'#8A7A6A', fontWeight:i===3?600:400 }}>{w}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── LESSON PLANS SCREEN ── */
+const LessonsScreen = () => {
+  const [selected, setSelected] = useState(LESSON_PLANS[0]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const statusSt = s => statusStyle(s);
+
+  return (
+    <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
+      {/* Plan list */}
+      <div style={{ width:260, borderRight:'1px solid #D9CDB5', overflowY:'auto', flexShrink:0 }}>
+        <div style={{ padding:'14px 16px', borderBottom:'1px solid #D9CDB5', background:'#F2EBDB', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <SectionLabel>Lesson Plans</SectionLabel>
+          <button style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'6px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:11, cursor:'pointer' }}>+ New plan</button>
+        </div>
+        {LESSON_PLANS.map(p => {
+          const ss = statusSt(p.status);
+          return (
+            <div key={p.id} onClick={()=>setSelected(p)} style={{ padding:'14px 16px', borderBottom:'1px solid #F2EBDB', cursor:'pointer', background:selected?.id===p.id?'#FAF6EE':'white', borderLeft:selected?.id===p.id?'3px solid #6B1F1F':'3px solid transparent' }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+                <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#4A1313' }}>{p.subject}</div>
+                <Badge label={p.status==='approved'?'Approved':'Pending'} bg={ss.bg} color={ss.color} size={10}/>
+              </div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A' }}>{p.week}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#5A4A4A', marginTop:2 }}>{p.teacher}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Detail */}
+      {selected && (
+        <div style={{ flex:1, overflowY:'auto', padding:24 }}>
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:20 }}>
+            <div>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:28, fontWeight:600, color:'#4A1313' }}>{selected.subject}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#8A7A6A', marginTop:4 }}>{selected.week} · {selected.teacher}</div>
+              {selected.status==='approved' && <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#3A6B45', marginTop:6 }}>✓ Approved by {selected.approvedBy} on {selected.approvedOn}</div>}
+            </div>
+            <div style={{ display:'flex', gap:10 }}>
+              {selected.status==='pending' && (
+                <button onClick={()=>setSubmitting(true)} style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'9px 16px', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer' }}>
+                  {submitting?'Submitted ✓':'Submit for approval →'}
+                </button>
+              )}
+              <button style={{ background:'transparent', border:'1px solid #D9CDB5', borderRadius:6, padding:'9px 16px', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A', cursor:'pointer' }}>Print plan</button>
+            </div>
+          </div>
+
+          {/* SNC + objectives */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:20 }}>
+            <Card style={{ padding:18 }}>
+              <SectionLabel>Learning objectives</SectionLabel>
+              <ul style={{ paddingLeft:0, listStyle:'none' }}>
+                {selected.objectives.map((o,i)=>(
+                  <li key={i} style={{ display:'flex', gap:10, padding:'6px 0', borderBottom:'1px solid #F2EBDB', fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', lineHeight:1.5 }}>
+                    <span style={{ color:'#C9A961', fontWeight:700, flexShrink:0 }}>{i+1}.</span>{o}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            <Card style={{ padding:18 }}>
+              <SectionLabel>SNC alignment</SectionLabel>
+              <p style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', lineHeight:1.6, marginBottom:14 }}>{selected.snc}</p>
+              <SectionLabel>Homework</SectionLabel>
+              <p style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', lineHeight:1.6 }}>{selected.hw}</p>
+            </Card>
+          </div>
+
+          {/* Daily plan */}
+          <Card>
+            <CardHeader>
+              <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:'#FAF6EE' }}>Daily plan</span>
+            </CardHeader>
+            <div>
+              {selected.days.map((d,i)=>(
+                <div key={d.day} style={{ display:'grid', gridTemplateColumns:'60px 1fr 1.5fr 1fr', gap:12, padding:'14px 20px', borderBottom:i<selected.days.length-1?'1px solid #F2EBDB':'none', alignItems:'start' }}>
+                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#6B1F1F' }}>{d.day}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', fontWeight:500 }}>{d.topic}</div>
+                  <div style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#5A4A4A' }}>{d.activity}</div>
+                  <div>
+                    {d.resource !== '—' && <Badge label={d.resource} bg='#F2EBDB' color='#5A4A4A' size={10}/>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── REPORT CARDS SCREEN (generator) ── */
+const ReportsScreen = ({ onGenerate }) => {
+  const [term, setTerm] = useState('Q3');
+  const [generating, setGenerating] = useState(null);
+
+  const GRADES = [
+    { subject:'Mathematics',    score:87, grade:'A', descriptor:'Excellent' },
+    { subject:'Urdu',           score:79, grade:'B', descriptor:'Good' },
+    { subject:'English',        score:91, grade:'A', descriptor:'Excellent' },
+    { subject:'General Science',score:83, grade:'A', descriptor:'Excellent' },
+    { subject:'Pakistan Studies',score:75, grade:'B', descriptor:'Good' },
+    { subject:'Islamiyat',      score:94, grade:'A+',descriptor:'Excellent' },
+    { subject:'Quran',          score:null,grade:null,descriptor:'See Quran section' },
+    { subject:'Art',            score:88, grade:'A', descriptor:'Excellent' },
+  ];
+
+  const descriptorColor = d => ({ Excellent:'#3A6B45','Very good':'#3A6B45', Good:'#8B6A1F', 'Working on it':'#8B6A1F', 'Needs support':'#8B1F1F' }[d]||'#5A5A6A');
+
+  return (
+    <div style={{ padding:24, overflowY:'auto', height:'100%' }}>
+      <div style={{ display:'flex', gap:14, alignItems:'center', marginBottom:24 }}>
+        <div>
+          <SectionLabel>Academic term</SectionLabel>
+          <div style={{ display:'flex', gap:8 }}>
+            {['Q1','Q2','Q3','Q4'].map(q=>(
+              <button key={q} onClick={()=>setTerm(q)} style={{ padding:'7px 16px', borderRadius:6, border:`1px solid ${term===q?'#6B1F1F':'#D9CDB5'}`, background:term===q?'#6B1F1F':'white', color:term===q?'#FAF6EE':'#5A4A4A', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer' }}>{q}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginLeft:'auto', display:'flex', gap:10 }}>
+          <button onClick={onGenerate} style={{ background:'#C9A961', color:'#4A1313', border:'none', borderRadius:6, padding:'10px 20px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:600, cursor:'pointer' }}>Generate all PDFs →</button>
+          <button style={{ background:'transparent', border:'1px solid #D9CDB5', borderRadius:6, padding:'10px 16px', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#5A4A4A', cursor:'pointer' }}>Preview →</button>
+        </div>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
+        {/* Grade table preview */}
+        <Card>
+          <CardHeader>
+            <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:'#FAF6EE' }}>Grade preview · Zainab Fatima · {term}</span>
+          </CardHeader>
+          <div style={{ padding:0 }}>
+            {GRADES.map((g,i)=>(
+              <div key={g.subject} style={{ display:'grid', gridTemplateColumns:'1.5fr 70px 60px 1fr', padding:'12px 20px', borderBottom:i<GRADES.length-1?'1px solid #F2EBDB':'none', alignItems:'center', background:i%2===0?'white':'#FAFAF8' }}>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A' }}>{g.subject}</span>
+                <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:g.score>=90?'#3A6B45':g.score>=75?'#8B6A1F':'#8B1F1F' }}>{g.score ? `${g.score}%` : '—'}</span>
+                <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313' }}>{g.grade||'—'}</span>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:descriptorColor(g.descriptor) }}>{g.descriptor}</span>
+              </div>
+            ))}
+            <div style={{ padding:'14px 20px', background:'#F2EBDB', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#5A4A4A' }}>Overall average</span>
+              <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600, color:'#3A6B45' }}>85.3%</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Summary + generate */}
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <Card style={{ padding:20 }}>
+            <SectionLabel>Class teacher comment</SectionLabel>
+            <textarea rows={4} defaultValue={`Zainab has had an outstanding ${term} quarter. She is a diligent and enthusiastic learner who always gives her best effort. Her Quran progress has been particularly commendable. We look forward to seeing her continue to grow.`}
+              style={{ width:'100%', padding:'10px 12px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'Lora',serif", fontSize:13, background:'#FAF6EE', resize:'none', outline:'none', lineHeight:1.6 }}/>
+            <div style={{ marginTop:10, fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>Will appear on printed report card</div>
+          </Card>
+
+          <Card style={{ padding:20 }}>
+            <SectionLabel>Attendance summary · {term}</SectionLabel>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, marginBottom:12 }}>
+              {[['Working days','60','#2A1A1A'],['Present','55','#3A6B45'],['Absent','5','#8B1F1F']].map(([l,v,c])=>(
+                <div key={l} style={{ textAlign:'center' }}>
+                  <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:c }}>{v}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, color:'#8A7A6A', textTransform:'uppercase', letterSpacing:'.1em', marginTop:2 }}>{l}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ height:6, background:'#F2EBDB', borderRadius:3 }}>
+              <div style={{ width:'92%', height:'100%', background:'#3A6B45', borderRadius:3 }}></div>
+            </div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#3A6B45', marginTop:6, fontWeight:600 }}>92% attendance</div>
+          </Card>
+
+          <Card style={{ padding:20 }}>
+            <SectionLabel>Generating status</SectionLabel>
+            {STUDENTS.slice(0,5).map((s,i)=>(
+              <div key={s.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid #F2EBDB' }}>
+                <Avatar initials={s.initials} size={28}/>
+                <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A', flex:1 }}>{s.name}</span>
+                <Badge label={i<3?'Ready':'Pending'} bg={i<3?'#E8F5EC':'#FEF6E0'} color={i<3?'#3A6B45':'#8B6A1F'} size={10}/>
+              </div>
+            ))}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── MESSAGES SCREEN ── */
+const MessagesScreen = () => {
+  const [active, setActive] = useState(0);
+  const [reply, setReply] = useState('');
+  const msg = MESSAGES_DATA[active];
+
+  return (
+    <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
+      {/* Thread list */}
+      <div style={{ width:280, borderRight:'1px solid #D9CDB5', overflowY:'auto', flexShrink:0 }}>
+        <div style={{ padding:'14px 16px', borderBottom:'1px solid #D9CDB5', background:'#F2EBDB' }}>
+          <SectionLabel>Inbox · 2 unread</SectionLabel>
+        </div>
+        {MESSAGES_DATA.map((m,i)=>(
+          <div key={i} onClick={()=>setActive(i)} style={{ padding:'14px 16px', borderBottom:'1px solid #F2EBDB', cursor:'pointer', background:active===i?'#FAF6EE':'white', borderLeft:active===i?'3px solid #6B1F1F':'3px solid transparent', display:'flex', gap:10 }}>
+            <div style={{ position:'relative' }}>
+              <Avatar initials={m.from.substring(0,2).toUpperCase()} size={36} bg={m.unread?'#E8D9B5':'#F0F0F4'}/>
+              {m.unread && <div style={{ position:'absolute', top:0, right:0, width:9, height:9, borderRadius:'50%', background:'#6B1F1F', border:'2px solid white' }}></div>}
+            </div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:m.unread?600:400, color:'#2A1A1A', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{m.from}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A' }}>{m.time}</div>
+              <p style={{ fontFamily:"'Lora',serif", fontSize:11, color:'#5A4A4A', marginTop:3, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{m.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Conversation */}
+      <div style={{ flex:1, display:'flex', flexDirection:'column' }}>
+        <div style={{ padding:'14px 20px', borderBottom:'1px solid #D9CDB5', background:'#F2EBDB', display:'flex', alignItems:'center', gap:12 }}>
+          <Avatar initials={msg.from.substring(0,2).toUpperCase()} size={36}/>
+          <div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#4A1313' }}>{msg.from}</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A' }}>{msg.role}</div>
+          </div>
+          <div style={{ marginLeft:'auto', display:'flex', gap:8 }}>
+            <button style={{ background:'#25D366', color:'white', border:'none', borderRadius:6, padding:'7px 14px', fontFamily:"'DM Sans',sans-serif", fontSize:11, cursor:'pointer', display:'flex', alignItems:'center', gap:5 }}>
+              <svg width={12} height={12} viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp
+            </button>
+          </div>
+        </div>
+        <div style={{ flex:1, overflowY:'auto', padding:20 }}>
+          <div style={{ display:'flex', gap:10, marginBottom:16, justifyContent:'flex-start' }}>
+            <Avatar initials={msg.from.substring(0,2).toUpperCase()} size={30}/>
+            <div style={{ maxWidth:'70%' }}>
+              <div style={{ background:'white', borderRadius:'0 10px 10px 10px', padding:'12px 14px', border:'1px solid #D9CDB5' }}>
+                <p style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', lineHeight:1.6 }}>{msg.text}</p>
+              </div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:4 }}>{msg.time}</div>
+            </div>
+          </div>
+          <div style={{ display:'flex', gap:10, marginBottom:16, justifyContent:'flex-end' }}>
+            <div style={{ maxWidth:'70%' }}>
+              <div style={{ background:'#6B1F1F', borderRadius:'10px 0 10px 10px', padding:'12px 14px' }}>
+                <p style={{ fontFamily:"'Lora',serif", fontSize:13, color:'#FAF6EE', lineHeight:1.6 }}>JazakAllah khair. Will do!</p>
+              </div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#8A7A6A', marginTop:4, textAlign:'right' }}>Just now · Delivered ✓</div>
+            </div>
+            <Avatar initials="NH" size={30}/>
+          </div>
+        </div>
+        <div style={{ padding:'12px 16px', borderTop:'1px solid #D9CDB5', background:'white', display:'flex', gap:8 }}>
+          <input value={reply} onChange={e=>setReply(e.target.value)} placeholder="Reply…" style={{ flex:1, border:'1px solid #D9CDB5', borderRadius:20, padding:'9px 16px', fontFamily:"'DM Sans',sans-serif", fontSize:13, outline:'none', background:'#FAF6EE' }}/>
+          <button style={{ background:'#6B1F1F', color:'white', border:'none', borderRadius:'50%', width:38, height:38, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── DASHBOARD (inline, lighter) ── */
+const DashboardScreen = ({ onNav }) => (
+  <div style={{ padding:24, overflowY:'auto', height:'100%' }}>
+    <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
+      {[['Present today','10','of 12','#3A6B45'],['Absent','2','Parent notified','#8B1F1F'],['Notes pending','9','Due by 3 PM','#8B6A1F'],['Week 19 plans','Pending','Submit by Sunday','#6B1F1F']].map(([l,v,s,c])=>(
+        <div key={l} style={{ background:'white', border:'1px solid #D9CDB5', borderRadius:10, padding:'18px 20px' }}>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:6 }}>{l}</div>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:32, fontWeight:600, color, lineHeight:1 }}>{v}</div>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A', marginTop:4 }}>{s}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{ display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:18 }}>
+      <Card>
+        <CardHeader><span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, color:'#FAF6EE' }}>Today's class · Grade 3A</span><span onClick={()=>onNav('attendance')} style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', cursor:'pointer' }}>Attendance →</span></CardHeader>
+        <div style={{ padding:'8px 0' }}>
+          {[...STUDENTS].slice(0,6).map(s=>{ const ss = statusStyle(s.status); return (
+            <div key={s.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'9px 20px', borderBottom:'1px solid #F2EBDB' }}>
+              <Avatar initials={s.initials} size={32}/><span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, flex:1 }}>{s.name}</span>
+              <Badge label={s.status} bg={ss.bg} color={ss.color}/>
+            </div>
+          );})}
+        </div>
+      </Card>
+      <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+        <Card style={{ padding:18 }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, fontWeight:600, color:'#4A1313', marginBottom:12 }}>Quick actions</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {[['Take attendance →','attendance'],['Write daily notes →','notes'],['Quran tracker →','quran'],['Submit lesson plan →','lessons']].map(([l,k])=>(
+              <button key={k} onClick={()=>onNav(k)} style={{ background:'#F2EBDB', border:'1px solid #D9CDB5', borderRadius:6, padding:'9px 14px', fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#4A1313', cursor:'pointer', textAlign:'left', transition:'background .15s' }}
+                onMouseEnter={e=>e.target.style.background='#E8D9B5'} onMouseLeave={e=>e.target.style.background='#F2EBDB'}>{l}</button>
+            ))}
+          </div>
+        </Card>
+        <Card style={{ background:'#4A1313', padding:18 }}>
+          <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, color:'#E8D9B5', marginBottom:10 }}>Upcoming</div>
+          {[['Sun 4 May','Week 19 lesson plans due'],['Wed 7 May','Parent–teacher meetings'],['Fri 9 May','Q3 report card deadline']].map(([d,e])=>(
+            <div key={d} style={{ padding:'8px 0', borderBottom:'1px solid rgba(201,169,97,.15)', display:'flex', gap:12 }}>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'#C9A961', whiteSpace:'nowrap', marginTop:1 }}>{d}</span>
+              <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#E8D9B5' }}>{e}</span>
+            </div>
+          ))}
+        </Card>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── SCREEN TITLES ── */
+const TITLES = {
+  dashboard: ['Dashboard', 'Friday, 2 May 2026 · Grade 3A'],
+  attendance: ['Attendance', 'Grade 3A · 12 students · Today'],
+  notes: ['Daily Notes', 'Write and send today's notes by 3 PM'],
+  quran: ['Quran Tracker', 'Sabaq · Sabqi · Manzil — daily entry'],
+  lessons: ['Lesson Plans', 'Review, submit and approve weekly plans'],
+  students: ['My Class', 'Grade 3A · 12 students enrolled'],
+  reports: ['Report Cards', 'Q3 2025–2026 · Generate and review'],
+  fees: ['Fees', 'May 2026 · Collection overview'],
+  messages: ['Messages', '2 unread threads'],
+};
+
+/* ── LOGIN ── */
+const LoginScreen = ({ onLogin }) => (
+  <div style={{ minHeight:'100vh', background:'#4A1313', display:'flex', alignItems:'center', justifyContent:'center' }}>
+    <div style={{ background:'#FAF6EE', borderRadius:12, padding:'48px 44px', width:380, boxShadow:'0 40px 80px -20px rgba(0,0,0,.5)' }}>
+      <div style={{ textAlign:'center', marginBottom:32 }}>
+        <div style={{ width:64, height:64, borderRadius:'50%', background:'#6B1F1F', margin:'0 auto 16px', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontSize:30, fontWeight:600, color:'#E8D9B5', border:'3px solid #FAF6EE', boxShadow:'0 0 0 1.5px #C9A961' }}>G</div>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:'#4A1313' }}>Good Day School</div>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, letterSpacing:'.18em', textTransform:'uppercase', color:'#8A7A6A', marginTop:4 }}>Teacher Portal · v2</div>
+      </div>
+      <div style={{ marginBottom:14 }}>
+        <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Email address</label>
+        <input defaultValue="nadia.habib@gooddayschool.pk" style={{ width:'100%', padding:'11px 13px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', color:'#2A1A1A', outline:'none' }}/>
+      </div>
+      <div style={{ marginBottom:24 }}>
+        <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.14em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Password</label>
+        <input type="password" placeholder="••••••••" style={{ width:'100%', padding:'11px 13px', border:'1px solid #D9CDB5', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:13, background:'#FAF6EE', color:'#2A1A1A', outline:'none' }}/>
+      </div>
+      <button onClick={onLogin} style={{ width:'100%', background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'13px', fontFamily:"'DM Sans',sans-serif", fontSize:14, fontWeight:500, cursor:'pointer', letterSpacing:'.04em' }}>Sign in →</button>
+      <div style={{ textAlign:'center', marginTop:16, fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A' }}>Forgot password? Contact the school office.</div>
+    </div>
+  </div>
+);
+
+/* ── APP ── */
+const App = () => {
+  const [screen, setScreen] = useState('dashboard');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [showPrint, setShowPrint] = useState(false);
+
+  if (!loggedIn) return <LoginScreen onLogin={()=>setLoggedIn(true)}/>;
+
+  const [title, subtitle] = TITLES[screen] || ['LMS',''];
+
+  const renderScreen = () => {
+    switch(screen) {
+      case 'dashboard': return <DashboardScreen onNav={setScreen}/>;
+      case 'quran':     return <QuranScreen/>;
+      case 'lessons':   return <LessonsScreen/>;
+      case 'reports':   return <ReportsScreen onGenerate={()=>setShowPrint(true)}/>;
+      case 'messages':  return <MessagesScreen/>;
+      default: return <div style={{ padding:40, color:'#8A7A6A', fontFamily:"'DM Sans',sans-serif", fontSize:14 }}>Navigate using the sidebar.</div>;
+    }
+  };
+
+  return (
+    <>
+      <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
+        <Sidebar active={screen} onNav={s=>{ setScreen(s); setShowPrint(false); }}/>
+        <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+          <TopBar title={title} subtitle={subtitle}/>
+          <div style={{ flex:1, overflow:'hidden', background:'#F2EBDB' }}>
+            {renderScreen()}
+          </div>
+        </div>
+      </div>
+      {showPrint && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:300 }}>
+          <div style={{ background:'white', borderRadius:12, padding:32, width:400, textAlign:'center', boxShadow:'0 40px 80px rgba(0,0,0,.3)' }}>
+            <div style={{ width:56, height:56, borderRadius:'50%', background:'#E8F5EC', margin:'0 auto 16px', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#3A6B45" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:24, fontWeight:600, color:'#4A1313', marginBottom:8 }}>12 report cards generated</div>
+            <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#5A4A4A', marginBottom:20 }}>PDFs ready. WhatsApp to all parents? Digital signatures applied.</p>
+            <div style={{ display:'flex', gap:10 }}>
+              <button style={{ flex:1, background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:6, padding:'11px', fontFamily:"'DM Sans',sans-serif", fontSize:13, cursor:'pointer' }}>Send via WhatsApp →</button>
+              <button onClick={()=>setShowPrint(false)} style={{ flex:1, background:'transparent', border:'1px solid #D9CDB5', borderRadius:6, padding:'11px', fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#5A4A4A', cursor:'pointer' }}>Download ZIPs</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

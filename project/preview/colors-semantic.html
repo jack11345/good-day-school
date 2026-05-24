@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #FAF6EE; padding: 24px; font-family: var(--font-ui); }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.swatch { border-radius: 8px; overflow: hidden; }
+.color { height: 56px; display: flex; align-items: center; padding: 0 12px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+.label-text { font-size: 11px; font-weight: 600; }
+.meta { background: white; padding: 7px 10px; }
+.name { font-size: 10px; font-weight: 700; color: #2A1A1A; }
+.hex { font-size: 9px; color: #8A7A6A; font-family: monospace; margin-top: 1px; }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 16px 0 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="section-label">Status Colors (LMS Badges)</div>
+<div class="grid">
+  <div class="swatch">
+    <div class="color" style="background:#E8F5EC">
+      <div class="dot" style="background:#3A6B45"></div>
+      <span class="label-text" style="color:#3A6B45">Present</span>
+    </div>
+    <div class="meta"><div class="name">Status Present</div><div class="hex">fg #3A6B45 · bg #E8F5EC</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#FAEAEA">
+      <div class="dot" style="background:#8B1F1F"></div>
+      <span class="label-text" style="color:#8B1F1F">Absent</span>
+    </div>
+    <div class="meta"><div class="name">Status Absent</div><div class="hex">fg #8B1F1F · bg #FAEAEA</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#FEF6E0">
+      <div class="dot" style="background:#8B6A1F"></div>
+      <span class="label-text" style="color:#8B6A1F">Late</span>
+    </div>
+    <div class="meta"><div class="name">Status Late</div><div class="hex">fg #8B6A1F · bg #FEF6E0</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#E0EAF8">
+      <div class="dot" style="background:#1F4D8B"></div>
+      <span class="label-text" style="color:#1F4D8B">Info</span>
+    </div>
+    <div class="meta"><div class="name">Status Info</div><div class="hex">fg #1F4D8B · bg #E0EAF8</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#E8F5EC">
+      <div class="dot" style="background:#2D6A4F"></div>
+      <span class="label-text" style="color:#2D6A4F">Success</span>
+    </div>
+    <div class="meta"><div class="name">Status Success</div><div class="hex">fg #2D6A4F · bg #E8F5EC</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#FEF6E0">
+      <div class="dot" style="background:#B5850A"></div>
+      <span class="label-text" style="color:#B5850A">Warning</span>
+    </div>
+    <div class="meta"><div class="name">Status Warning</div><div class="hex">fg #B5850A · bg #FEF6E0</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#FAEAEA">
+      <div class="dot" style="background:#8B1F1F"></div>
+      <span class="label-text" style="color:#8B1F1F">Error</span>
+    </div>
+    <div class="meta"><div class="name">Status Error</div><div class="hex">fg #8B1F1F · bg #FAEAEA</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#F0F0F4">
+      <div class="dot" style="background:#5A5A6A"></div>
+      <span class="label-text" style="color:#5A5A6A">Neutral</span>
+    </div>
+    <div class="meta"><div class="name">Status Neutral</div><div class="hex">fg #5A5A6A · bg #F0F0F4</div></div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:20px;">Brand Badge Colors</div>
+<div class="grid">
+  <div class="swatch">
+    <div class="color" style="background:#6B1F1F">
+      <span class="label-text" style="color:#E8D9B5; margin-left:12px;">Maroon badge</span>
+    </div>
+    <div class="meta"><div class="name">Maroon Badge</div><div class="hex">bg #6B1F1F · fg #E8D9B5</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#E8D9B5">
+      <span class="label-text" style="color:#4A1313; margin-left:12px;">Gold soft badge</span>
+    </div>
+    <div class="meta"><div class="name">Gold Badge</div><div class="hex">bg #E8D9B5 · fg #4A1313</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#4A1313">
+      <span class="label-text" style="color:#C9A961; margin-left:12px;">Deep maroon</span>
+    </div>
+    <div class="meta"><div class="name">Dark Badge</div><div class="hex">bg #4A1313 · fg #C9A961</div></div>
+  </div>
+  <div class="swatch">
+    <div class="color" style="background:#C9A961">
+      <span class="label-text" style="color:#4A1313; margin-left:12px;">Gold accent</span>
+    </div>
+    <div class="meta"><div class="name">Gold Accent</div><div class="hex">bg #C9A961 · fg #4A1313</div></div>
+  </div>
+</div>
+</body>
+</html>

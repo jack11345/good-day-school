@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+body { background: #F2EBDB; padding: 24px 28px; font-family: var(--font-ui); }
+.section-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #8A7A6A; margin: 0 0 10px; font-weight: 600; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; align-items: flex-start; }
+.divider { border: none; border-top: 1px solid #D9CDB5; margin: 4px 0 20px; }
+
+/* Program card */
+.program-card {
+  background: white; border-radius: 10px; overflow: hidden;
+  border: 1px solid #D9CDB5; width: 200px; cursor: pointer;
+  transition: all .35s cubic-bezier(.2,.7,.3,1);
+  display: flex; flex-direction: column;
+}
+.program-card:hover { transform: translateY(-6px); box-shadow: 0 30px 50px -25px rgba(74,19,19,.3); border-color: #8B3434; }
+.program-card .pic { height: 110px; overflow: hidden; position: relative; background: #E8D9B5; }
+.program-card .pic img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s; }
+.program-card:hover .pic img { transform: scale(1.06); }
+.program-card .age-tag { position: absolute; top: 10px; left: 10px; background: #6B1F1F; color: #E8D9B5; padding: 4px 8px; border-radius: 4px; font-size: 10px; letter-spacing: .08em; font-family: 'DM Sans', sans-serif; }
+.program-card .body { padding: 16px; flex: 1; }
+.program-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #4A1313; line-height: 1.15; margin-bottom: 6px; }
+.program-card p { color: #5A4A4A; font-size: 12px; line-height: 1.55; font-family: 'Lora', serif; margin-bottom: 10px; }
+.program-card .more { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #6B1F1F; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+
+/* Student card (LMS) */
+.student-card {
+  background: white; border-radius: 10px; border: 1px solid #D9CDB5;
+  padding: 16px; width: 180px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  cursor: pointer; transition: all .25s;
+}
+.student-card:hover { box-shadow: 0 8px 24px rgba(74,19,19,.12); transform: translateY(-3px); }
+.student-avatar { width: 56px; height: 56px; border-radius: 50%; background: #E8D9B5; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #4A1313; border: 3px solid #FAF6EE; box-shadow: 0 0 0 1px #D9CDB5; }
+.student-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: #4A1313; text-align: center; }
+.student-meta { font-size: 10px; color: #8A7A6A; font-family: 'DM Sans', sans-serif; text-align: center; }
+.badge-sm { background: #E8F5EC; color: #3A6B45; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+
+/* Testimonial card */
+.t-card {
+  background: #6B1F1F; color: #FAF6EE; border-radius: 10px;
+  padding: 24px 22px; width: 220px; position: relative;
+  transition: transform .35s;
+}
+.t-card:hover { transform: translateY(-5px); }
+.t-card .quote-mark { font-family: 'Cormorant Garamond', serif; font-size: 64px; line-height: 0.6; color: #E8D9B5; opacity: .4; position: absolute; top: 18px; right: 18px; }
+.t-card blockquote { font-family: 'Cormorant Garamond', serif; font-size: 16px; line-height: 1.45; margin-bottom: 16px; position: relative; z-index: 1; }
+.t-card .who { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.18); }
+.t-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: #E8D9B5; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; color: #4A1313; font-weight: 600; font-size: 13px; flex-shrink: 0; }
+.t-card .name { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; }
+.t-card .role { font-family: 'DM Sans', sans-serif; font-size: 10px; opacity: .8; margin-top: 1px; }
+
+/* Daily note card */
+.note-card {
+  background: white; border-radius: 10px; border: 1px solid #D9CDB5;
+  padding: 16px 18px; width: 220px;
+}
+.note-card .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.note-card .child { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: #4A1313; }
+.note-card .date { font-size: 10px; color: #8A7A6A; font-family: 'DM Sans', sans-serif; }
+.note-card p { font-family: 'Lora', serif; font-size: 12px; color: #2A1A1A; line-height: 1.6; margin-bottom: 10px; }
+.note-card .footer { display: flex; justify-content: space-between; align-items: center; }
+.note-card .teacher { font-size: 10px; color: #8A7A6A; font-family: 'DM Sans', sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="section-label">Program Cards (Website)</div>
+<div class="row">
+  <div class="program-card">
+    <div class="pic">
+      <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=400&q=80" alt="Daycare"/>
+      <div class="age-tag">6 months – 3 years</div>
+    </div>
+    <div class="body">
+      <h3>Daycare</h3>
+      <p>Loving caregivers in a calm, safe space. Naps, meals, sensory play.</p>
+      <span class="more">See the daycare day →</span>
+    </div>
+  </div>
+  <div class="program-card">
+    <div class="pic">
+      <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=400&q=80" alt="Primary"/>
+      <div class="age-tag">Grades 1–5 · ages 6–10</div>
+    </div>
+    <div class="body">
+      <h3>Primary School</h3>
+      <p>Pakistan's unified curriculum, taught conventionally and unconventionally.</p>
+      <span class="more">Curriculum &amp; method →</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Student Cards (LMS)</div>
+<div class="row">
+  <div class="student-card">
+    <div class="student-avatar">ZF</div>
+    <div class="student-name">Zainab Fatima</div>
+    <div class="student-meta">Grade 3 · Section A · Roll 07</div>
+    <span class="badge-sm">Present</span>
+  </div>
+  <div class="student-card">
+    <div class="student-avatar" style="background:#FAEAEA; color:#8B1F1F;">AM</div>
+    <div class="student-name">Ahmad Mirza</div>
+    <div class="student-meta">Grade 3 · Section A · Roll 12</div>
+    <span class="badge-sm" style="background:#FAEAEA; color:#8B1F1F;">Absent</span>
+  </div>
+</div>
+
+<div class="section-label">Testimonial Card</div>
+<div class="row">
+  <div class="t-card">
+    <div class="quote-mark">"</div>
+    <blockquote>They did not push her, they did not shame her — they slowed down with her.</blockquote>
+    <div class="who">
+      <div class="avatar">FA</div>
+      <div>
+        <div class="name">Fatima Aslam</div>
+        <div class="role">Mother · Rehab program</div>
+      </div>
+    </div>
+  </div>
+  <div class="t-card" style="background: #C9A961; color: #4A1313;">
+    <div class="quote-mark" style="color:#4A1313; opacity:.2;">"</div>
+    <blockquote>The most useful 12 weeks of my life.</blockquote>
+    <div class="who" style="border-top-color: rgba(74,19,19,.18);">
+      <div class="avatar" style="background:#6B1F1F; color:#E8D9B5;">AR</div>
+      <div>
+        <div class="name">Ayesha Rashid</div>
+        <div class="role">Mother · Trainee 2024</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Daily Note Card (LMS)</div>
+<div class="row">
+  <div class="note-card">
+    <div class="header">
+      <div class="child">Zainab Fatima</div>
+      <div class="date">Fri 2 May 2026</div>
+    </div>
+    <p>Zainab completed her manzil revision independently today. Excellent tajweed on Surah Al-Mulk. Ready to move to the next sabaq.</p>
+    <div class="footer">
+      <div class="teacher">Ms. Nadia Habib</div>
+      <span style="background:#E8D9B5; color:#4A1313; padding:3px 8px; border-radius:999px; font-size:10px; font-family:'DM Sans',sans-serif;">Sent ✓</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
