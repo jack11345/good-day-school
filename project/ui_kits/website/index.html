@@ -225,6 +225,7 @@ body.ur .day-scene-text .ur-line{display:none;}
   .nav{display:none;} .menu-toggle{display:flex;}
   .hero-grid,.day-stage,.contact-grid{grid-template-columns:1fr;}
   .programs,.features,.testimonials,.adm-steps{grid-template-columns:1fr 1fr;}
+  .adm-form-grid{grid-template-columns:1fr!important;}
   .footer .grid{grid-template-columns:1fr 1fr;}
   .hero-img{height:300px;}
   .phil-grid{grid-template-columns:1fr;}
@@ -569,8 +570,119 @@ body.ur .day-scene-text .ur-line{display:none;}
         <div class="adm-step"><div class="num">3</div><h4 data-en="Offer letter" data-ur="آفر لیٹر">Offer letter</h4><p data-en="If we have a place, we issue a formal offer within 2 working days with the full fee schedule." data-ur="اگر جگہ دستیاب ہو تو ۲ کاری دنوں کے اندر فیس شیڈول کے ساتھ آفر لیٹر جاری کریں گے۔">If we have a place, we issue a formal offer within 2 working days with the full fee schedule.</p></div>
         <div class="adm-step"><div class="num">4</div><h4 data-en="Enrol" data-ur="داخلہ">Enrol</h4><p data-en="Submit B-Form, CNIC, and documents. Pay admission and first month's fee. Your child starts." data-ur="بی فارم، شناختی کارڈ اور دستاویزات جمع کریں۔ داخلہ فیس ادا کریں۔ بچّہ شروع کرے۔">Submit B-Form, CNICs, and documents. Pay admission and first month's fee. Your child starts.</p></div>
       </div>
-      <div style="margin-top:44px;text-align:center;">
-        <a class="cta-btn gold" onclick="showPage('contact')" data-en="Book a campus visit →" data-ur="کیمپس وزٹ بُک کریں ←">Book a campus visit →</a>
+
+      <!-- Admissions Application Form -->
+      <div id="admForm" style="margin-top:56px;">
+        <div id="admFormContent">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;" class="adm-form-grid">
+            <!-- Left: form -->
+            <div class="contact-form" style="padding:36px 40px;">
+              <h3 data-en="Apply for admission" data-ur="داخلہ کے لیے درخواست دیں" style="margin-bottom:6px;">Apply for admission</h3>
+              <p style="font-family:var(--ui);font-size:12px;color:var(--ink-soft);margin-bottom:24px;" data-en="Fill in the form and we will call you within one working day to schedule a campus visit." data-ur="فارم بھریں اور ہم ایک کاری دن کے اندر کیمپس وزٹ کے لیے آپ سے رابطہ کریں گے۔">Fill in the form and we will call you within one working day to schedule a campus visit.</p>
+
+              <div style="background:var(--cream-deep);border-radius:8px;padding:14px 18px;margin-bottom:22px;border-left:3px solid var(--gold);">
+                <div style="font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--maroon);margin-bottom:6px;" data-en="Child's information" data-ur="بچّے کی معلومات">Child's information</div>
+                <div class="field"><label data-en="Child's full name" data-ur="بچّے کا پورا نام">Child's full name</label><input type="text" placeholder="e.g. Zainab Fatima Akhtar"/></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="field"><label data-en="Date of birth" data-ur="تاریخِ پیدائش">Date of birth</label><input type="date"/></div>
+                  <div class="field"><label data-en="Gender" data-ur="جنس">Gender</label>
+                    <select>
+                      <option data-en="Select…" data-ur="چنیں…">Select…</option>
+                      <option data-en="Female" data-ur="لڑکی">Female</option>
+                      <option data-en="Male" data-ur="لڑکا">Male</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field"><label data-en="Program applying for" data-ur="پروگرام جس کے لیے درخواست ہے">Program applying for</label>
+                  <select>
+                    <option data-en="Choose a program…" data-ur="پروگرام چنیں…">Choose a program…</option>
+                    <option data-en="Daycare (6 months – 3 years)" data-ur="ڈے کیئر (۶ ماہ – ۳ سال)">Daycare (6 months – 3 years)</option>
+                    <option data-en="KG 1 (3–4 years)" data-ur="کے جی ۱ (۳–۴ سال)">KG 1 (3–4 years)</option>
+                    <option data-en="KG 2 (4–5 years)" data-ur="کے جی ۲ (۴–۵ سال)">KG 2 (4–5 years)</option>
+                    <option data-en="Grade 1" data-ur="کلاس ۱">Grade 1</option>
+                    <option data-en="Grade 2" data-ur="کلاس ۲">Grade 2</option>
+                    <option data-en="Grade 3" data-ur="کلاس ۳">Grade 3</option>
+                    <option data-en="Grade 4" data-ur="کلاس ۴">Grade 4</option>
+                    <option data-en="Grade 5" data-ur="کلاس ۵">Grade 5</option>
+                    <option data-en="Learning Rehabilitation" data-ur="تعلیمی بحالی">Learning Rehabilitation</option>
+                  </select>
+                </div>
+                <div class="field"><label data-en="Previous school (if any)" data-ur="پہلا اسکول (اگر کوئی ہو)">Previous school (if any)</label><input type="text" placeholder="School name and last class attended"/></div>
+              </div>
+
+              <div style="background:var(--cream-deep);border-radius:8px;padding:14px 18px;margin-bottom:22px;border-left:3px solid var(--maroon);">
+                <div style="font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--maroon);margin-bottom:6px;" data-en="Parent / guardian" data-ur="والدین / سرپرست">Parent / guardian</div>
+                <div class="field"><label data-en="Father's / guardian's name" data-ur="والد / سرپرست کا نام">Father's / guardian's name</label><input type="text" placeholder="e.g. Abdul Rahim Akhtar"/></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="field"><label data-en="Mobile number" data-ur="موبائل نمبر">Mobile number</label><input type="tel" placeholder="+92 300 000 0000"/></div>
+                  <div class="field"><label data-en="WhatsApp (if different)" data-ur="واٹس ایپ (اگر مختلف ہو)">WhatsApp (if different)</label><input type="tel" placeholder="+92 300 000 0000"/></div>
+                </div>
+                <div class="field"><label data-en="Home address" data-ur="گھر کا پتہ">Home address</label><input type="text" placeholder="Street, area, Rawalpindi"/></div>
+              </div>
+
+              <div style="background:var(--cream-deep);border-radius:8px;padding:14px 18px;margin-bottom:22px;border-left:3px solid #3A6B45;">
+                <div style="font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#3A6B45;margin-bottom:6px;" data-en="Siblings & extras" data-ur="بہن بھائی اور اضافی">Siblings & extras</div>
+                <div class="field"><label data-en="Siblings already at Good Day School" data-ur="بہن بھائی جو پہلے سے اسکول میں ہیں">Siblings already at Good Day School</label>
+                  <select>
+                    <option data-en="None" data-ur="کوئی نہیں">None</option>
+                    <option>1</option><option>2</option><option>3+</option>
+                  </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="field"><label data-en="Bus service needed?" data-ur="بس سروس چاہیے؟">Bus service needed?</label>
+                    <select><option data-en="Yes" data-ur="جی ہاں">Yes</option><option data-en="No" data-ur="نہیں">No</option></select>
+                  </div>
+                  <div class="field"><label data-en="Preferred visit day" data-ur="ترجیحی وزٹ کا دن">Preferred visit day</label>
+                    <select>
+                      <option data-en="Thursday morning" data-ur="جمعرات کی صبح">Thursday morning</option>
+                      <option data-en="Saturday morning" data-ur="سنیچر کی صبح">Saturday morning</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field"><label data-en="Anything we should know?" data-ur="کچھ اور جو ہمیں پتہ ہو؟">Anything we should know?</label><textarea placeholder="Learning needs, health conditions, language at home, or any questions…" style="height:80px;"></textarea></div>
+              </div>
+
+              <button class="cta-btn" onclick="submitAdmForm()" style="width:100%;justify-content:center;font-size:15px;padding:16px;" data-en="Submit application →" data-ur="درخواست جمع کریں ←">Submit application →</button>
+              <p style="font-family:var(--ui);font-size:11px;color:var(--ink-soft);text-align:center;margin-top:12px;" data-en="We respond within one working day. No commitment required at this stage." data-ur="ہم ایک کاری دن کے اندر جواب دیتے ہیں۔ ابھی کوئی عہد ضروری نہیں۔">We respond within one working day. No commitment required at this stage.</p>
+            </div>
+
+            <!-- Right: sidebar info -->
+            <div>
+              <div style="background:var(--maroon-deep);border-radius:10px;padding:28px;color:var(--cream);margin-bottom:20px;">
+                <h4 style="font-family:var(--serif);font-size:22px;color:var(--gold);margin-bottom:16px;" data-en="Fee overview" data-ur="فیس کا خاکہ">Fee overview</h4>
+                <div style="font-family:var(--ui);font-size:11px;color:var(--gold-soft);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;" data-en="Monthly fees · 2025–26 rates" data-ur="ماہانہ فیس · ۲۰۲۵ ۔۲۶">Monthly fees · 2025–26 rates</div>
+                <table style="width:100%;border-collapse:collapse;font-family:var(--ui);font-size:13px;">
+                  <tr><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);color:var(--gold-soft);" data-en="Daycare / KG" data-ur="ڈے کیئر / کے جی">Daycare / KG</td><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);text-align:right;font-weight:600;">PKR 6,500 – 7,000</td></tr>
+                  <tr><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);color:var(--gold-soft);" data-en="Grade 1–3" data-ur="کلاس ۱ تا ۳">Grade 1–3</td><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);text-align:right;font-weight:600;">PKR 7,000</td></tr>
+                  <tr><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);color:var(--gold-soft);" data-en="Grade 4–5" data-ur="کلاس ۴ تا ۵">Grade 4–5</td><td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);text-align:right;font-weight:600;">PKR 7,500</td></tr>
+                  <tr><td style="padding:7px 0;color:var(--gold-soft);" data-en="Bus service (per route)" data-ur="بس سروس (فی روٹ)">Bus service (per route)</td><td style="padding:7px 0;text-align:right;font-weight:600;">PKR 1,500</td></tr>
+                </table>
+                <div style="margin-top:16px;font-size:12px;opacity:.7;font-family:var(--ui);" data-en="One-time admission fee: PKR 5,000. Sibling discount: 10% from the second child." data-ur="ایک وقتی داخلہ فیس: پی کے آر ۵٬۰۰۰۔ بہن بھائی ڈسکاؤنٹ: دوسرے بچّے سے ۱۰٪۔">One-time admission fee: PKR 5,000. Sibling discount: 10% from the second child.</div>
+              </div>
+              <div style="background:var(--cream-deep);border-radius:10px;padding:24px;">
+                <h4 style="font-family:var(--serif);font-size:19px;color:var(--maroon-deep);margin-bottom:14px;" data-en="Documents required" data-ur="ضروری دستاویزات">Documents required</h4>
+                <ul style="font-family:var(--ui);font-size:13px;color:var(--ink-soft);line-height:2;list-style:none;padding:0;">
+                  <li>📄 <span data-en="Child's B-Form (original + photocopy)" data-ur="بچّے کا بی فارم (اصل + فوٹو کاپی)">Child's B-Form (original + photocopy)</span></li>
+                  <li>🪪 <span data-en="Father's & mother's CNIC copies" data-ur="والدین کے شناختی کارڈ کی کاپیاں">Father's & mother's CNIC copies</span></li>
+                  <li>📷 <span data-en="2 passport-size photos of the child" data-ur="بچّے کی ۲ پاسپورٹ سائز تصاویر">2 passport-size photos of the child</span></li>
+                  <li>📋 <span data-en="School leaving certificate (if Grade 1+)" data-ur="اسکول چھوڑنے کا سرٹیفکیٹ (کلاس ۱ اور اوپر)">School leaving certificate (if Grade 1+)</span></li>
+                  <li>💉 <span data-en="Vaccination card (for daycare & KG)" data-ur="ویکسینیشن کارڈ (ڈے کیئر اور کے جی کے لیے)">Vaccination card (for daycare & KG)</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success state (hidden) -->
+        <div id="admSuccess" style="display:none;text-align:center;padding:60px 40px;">
+          <div style="font-size:64px;margin-bottom:20px;">🌟</div>
+          <h2 style="font-family:var(--serif);font-size:34px;color:var(--maroon-deep);margin-bottom:10px;" data-en="Application received!" data-ur="درخواست موصول ہوئی!">Application received!</h2>
+          <p style="font-family:var(--ui);font-size:15px;color:var(--ink-soft);max-width:500px;margin:0 auto 28px;line-height:1.7;" data-en="Jazakallah khair for your interest in Good Day School. We will call you within one working day to schedule your campus visit." data-ur="گڈ ڈے اسکول میں آپ کی دلچسپی کا شکریہ۔ ہم ایک کاری دن کے اندر کیمپس وزٹ کے لیے آپ سے فون پر رابطہ کریں گے۔">Jazakallah khair for your interest in Good Day School. We will call you within one working day to schedule your campus visit.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a class="cta-btn" onclick="showPage('programs')" data-en="Explore programs →" data-ur="پروگرام دیکھیں ←">Explore programs →</a>
+            <a class="cta-btn outline" onclick="resetAdmForm()" data-en="Submit another" data-ur="دوسری درخواست">Submit another</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -698,6 +810,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+function submitAdmForm() {
+  document.getElementById('admFormContent').style.display = 'none';
+  document.getElementById('admSuccess').style.display = 'block';
+  window.scrollTo({top: document.getElementById('admForm').offsetTop - 80, behavior:'smooth'});
+}
+function resetAdmForm() {
+  document.getElementById('admFormContent').style.display = '';
+  document.getElementById('admSuccess').style.display = 'none';
+}
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));

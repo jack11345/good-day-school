@@ -284,6 +284,35 @@ const PAYROLL = [
   { name:'Mr. Asif Khan',    role:'PE Teacher',    salary:'PKR 28,000', advance:0,       net:'PKR 28,000', status:'pending' },
   { name:'Ms. Razia Begum',  role:'KG Teacher',    salary:'PKR 30,000', advance:3000,    net:'PKR 27,000', status:'pending' },
 ];
+const STUDENT_LEDGERS = {
+  'Zainab Fatima': { grade:'3A', monthly:8500, entries:[
+    { month:'May 2026', amount:8500, paid:8500, date:'2 May', method:'JazzCash', ref:'JC-20240502-001', status:'paid' },
+    { month:'Apr 2026', amount:8500, paid:8500, date:'1 Apr', method:'Cash',     ref:'CASH-0401',       status:'paid' },
+    { month:'Mar 2026', amount:9200, paid:9200, date:'3 Mar', method:'JazzCash', ref:'JC-20240303-099', status:'paid' },
+    { month:'Feb 2026', amount:8500, paid:8500, date:'2 Feb', method:'Bank',     ref:'TF-20240202-44',  status:'paid' },
+    { month:'Jan 2026', amount:8500, paid:8500, date:'5 Jan', method:'Cash',     ref:'CASH-0105',       status:'paid' },
+  ]},
+  'Sara Malik': { grade:'3A', monthly:8500, entries:[
+    { month:'May 2026', amount:8500, paid:0,    date:'—',      method:'—',       ref:'—',               status:'overdue' },
+    { month:'Apr 2026', amount:8500, paid:0,    date:'—',      method:'—',       ref:'—',               status:'overdue' },
+    { month:'Mar 2026', amount:9200, paid:9200, date:'10 Mar', method:'JazzCash',ref:'JC-20240310-011', status:'paid' },
+    { month:'Feb 2026', amount:8500, paid:8500, date:'8 Feb',  method:'Cash',    ref:'CASH-0208',       status:'paid' },
+    { month:'Jan 2026', amount:8500, paid:8500, date:'4 Jan',  method:'Cash',    ref:'CASH-0104',       status:'paid' },
+  ]},
+  'Bilal Ahmad': { grade:'3A', monthly:8500, entries:[
+    { month:'May 2026', amount:8500, paid:0,    date:'—',      method:'—',       ref:'—',               status:'overdue' },
+    { month:'Apr 2026', amount:8500, paid:0,    date:'—',      method:'—',       ref:'—',               status:'overdue' },
+    { month:'Mar 2026', amount:8500, paid:0,    date:'—',      method:'—',       ref:'—',               status:'overdue' },
+    { month:'Feb 2026', amount:8500, paid:8500, date:'6 Feb',  method:'Cash',    ref:'CASH-0206',       status:'paid' },
+    { month:'Jan 2026', amount:8500, paid:8500, date:'3 Jan',  method:'JazzCash',ref:'JC-20240103-007', status:'paid' },
+  ]},
+  'Ahmed Raza': { grade:'3A', monthly:8500, entries:[
+    { month:'May 2026', amount:8500, paid:8500, date:'1 May', method:'Cash',     ref:'CASH-0501',       status:'paid' },
+    { month:'Apr 2026', amount:8500, paid:8500, date:'2 Apr', method:'Cash',     ref:'CASH-0402',       status:'paid' },
+    { month:'Mar 2026', amount:9200, paid:9200, date:'5 Mar', method:'Bank',     ref:'TF-20240305-22',  status:'paid' },
+  ]},
+};
+
 const GRADES = [
   { subject:'English',   q1:82, q2:87, q3:null, final:null },
   { subject:'Urdu',      q1:75, q2:79, q3:null, final:null },
@@ -297,6 +326,70 @@ const ASSIGNMENTS = [
   { title:'Science Chapter 4 Questions', class:'Grade 3A', due:'Fri 9 May', submitted:0, total:30, status:'upcoming' },
   { title:'Urdu Reading Comprehension', class:'Grade 3A', due:'Fri 2 May', submitted:30, total:30, status:'closed' },
 ];
+
+// ─── Student Fee Ledger Modal ──────────────────────────────────────
+function StudentLedgerModal({ studentName, onClose }) {
+  const ledger = STUDENT_LEDGERS[studentName];
+  if (!ledger) return null;
+  const totalOwed = ledger.entries.filter(e=>e.status==='overdue').reduce((s,e)=>s+e.amount,0);
+  const totalPaid = ledger.entries.filter(e=>e.status==='paid').reduce((s,e)=>s+e.paid,0);
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(26,16,8,.55)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+      <div style={{ background:'var(--white)', borderRadius:16, width:'100%', maxWidth:620, maxHeight:'85vh', overflow:'hidden', display:'flex', flexDirection:'column', boxShadow:'0 20px 60px rgba(0,0,0,.35)' }}>
+        <div style={{ background:'var(--maroon)', padding:'18px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div>
+            <div style={{ fontFamily:'Cormorant Garamond,serif', fontSize:22, fontWeight:700, color:'var(--cream)' }}>{studentName}</div>
+            <div style={{ fontSize:12, color:'var(--gold)', marginTop:2 }}>Class {ledger.grade} · Fee Ledger</div>
+          </div>
+          <button onClick={onClose} style={{ background:'rgba(255,255,255,.15)', border:'none', color:'white', width:34, height:34, borderRadius:8, cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
+        </div>
+        <div style={{ display:'flex', gap:0, borderBottom:'1px solid var(--line)' }}>
+          {[
+            { label:'Total paid', value:`PKR ${totalPaid.toLocaleString()}`, color:'var(--green)' },
+            { label:'Outstanding', value: totalOwed > 0 ? `PKR ${totalOwed.toLocaleString()}` : '—', color: totalOwed > 0 ? 'var(--red)' : 'var(--muted)' },
+            { label:'Monthly rate', value:`PKR ${ledger.monthly.toLocaleString()}`, color:'var(--maroon)' },
+          ].map((s,i) => (
+            <div key={i} style={{ flex:1, padding:'14px 20px', borderRight: i<2 ? '1px solid var(--line)' : 'none' }}>
+              <div style={{ fontSize:11, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:4 }}>{s.label}</div>
+              <div style={{ fontFamily:'Cormorant Garamond,serif', fontSize:24, fontWeight:700, color:s.color }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ overflowY:'auto', flex:1 }}>
+          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+            <thead>
+              <tr style={{ background:'var(--cream)', position:'sticky', top:0 }}>
+                {['Month','Charged','Paid','Date','Method','Ref','Status'].map(h => (
+                  <th key={h} style={{ padding:'9px 14px', textAlign:'left', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--muted)', borderBottom:'1px solid var(--line)' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {ledger.entries.map((e,i) => (
+                <tr key={i} style={{ background: e.status==='overdue' ? '#FFF8F8' : 'transparent' }}>
+                  <td style={{ padding:'11px 14px', fontSize:13, fontWeight:600 }}>{e.month}</td>
+                  <td style={{ padding:'11px 14px', fontSize:13 }}>PKR {e.amount.toLocaleString()}</td>
+                  <td style={{ padding:'11px 14px', fontSize:13, fontWeight:600, color: e.paid>0?'var(--green)':'var(--red)' }}>{e.paid>0?`PKR ${e.paid.toLocaleString()}`:'—'}</td>
+                  <td style={{ padding:'11px 14px', fontSize:12, color:'var(--muted)' }}>{e.date}</td>
+                  <td style={{ padding:'11px 14px', fontSize:12 }}>{e.method}</td>
+                  <td style={{ padding:'11px 14px', fontSize:11, color:'var(--muted)', fontFamily:'monospace' }}>{e.ref}</td>
+                  <td style={{ padding:'11px 14px' }}><span className={`tag ${e.status==='paid'?'green':'red'}`}>{e.status}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ padding:'14px 24px', borderTop:'1px solid var(--line)', display:'flex', gap:10, justifyContent:'flex-end' }}>
+          {totalOwed > 0 && (
+            <button className="topbar-btn primary" style={{ fontSize:12 }}>📱 Send reminder</button>
+          )}
+          <button className="topbar-btn ghost" style={{ fontSize:12 }}>🖨 Print ledger</button>
+          <button className="topbar-btn ghost" style={{ fontSize:12 }} onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Shared components ─────────────────────────────────────────────
 const Tag = ({ type, children }) => <span className={`tag ${type}`}>{children}</span>;
@@ -702,8 +795,10 @@ function FeeDashboard() {
 }
 
 function CollectionScreen() {
+  const [ledgerStudent, setLedgerStudent] = useState(null);
   return (
     <div className="content">
+      {ledgerStudent && <StudentLedgerModal studentName={ledgerStudent} onClose={()=>setLedgerStudent(null)}/>}
       <div className="card">
         <div className="card-header">
           <div className="card-title">Full Collection Register</div>
@@ -712,12 +807,21 @@ function CollectionScreen() {
             <button className="topbar-btn primary" style={{ fontSize:11 }}>+ Record payment</button>
           </div>
         </div>
+        <div style={{ fontSize:11, color:'var(--muted)', padding:'8px 16px', background:'var(--cream)', borderBottom:'1px solid var(--line)' }}>
+          Click a student name to view their full fee ledger
+        </div>
         <table className="tbl">
           <thead><tr><th>Student</th><th>Class</th><th>Amount</th><th>Date</th><th>Method</th><th>Ref #</th></tr></thead>
           <tbody>
             {FEES_COLLECTED.map((f,i)=>(
               <tr key={i}>
-                <td style={{ fontWeight:600 }}>{f.student}</td>
+                <td>
+                  <button onClick={()=>setLedgerStudent(f.student)} style={{ background:'none', border:'none', padding:0, fontWeight:600, fontSize:13, color:'var(--maroon-mid)', cursor:'pointer', textDecoration:'underline', textDecorationColor:'transparent', transition:'text-decoration-color .15s' }}
+                    onMouseEnter={e=>e.target.style.textDecorationColor='var(--maroon-mid)'}
+                    onMouseLeave={e=>e.target.style.textDecorationColor='transparent'}>
+                    {f.student}
+                  </button>
+                </td>
                 <td><Tag type="muted">{f.grade}</Tag></td>
                 <td style={{ fontWeight:600, color:'var(--green)' }}>{f.amount}</td>
                 <td style={{ fontSize:12, color:'var(--muted)' }}>{f.date}</td>
@@ -759,8 +863,10 @@ function FeeStructureScreen() {
 }
 
 function DefaultersScreen() {
+  const [ledgerStudent, setLedgerStudent] = useState(null);
   return (
     <div className="content">
+      {ledgerStudent && <StudentLedgerModal studentName={ledgerStudent} onClose={()=>setLedgerStudent(null)}/>}
       {DEFAULTERS.length === 0
         ? <EmptyState icon="🎉" title="No defaulters!" sub="All families are up to date with their fee payments." />
         : (
@@ -769,7 +875,7 @@ function DefaultersScreen() {
               <span style={{ fontSize:20 }}>⚠️</span>
               <div>
                 <div style={{ fontSize:13, fontWeight:600, color:'var(--red)', marginBottom:2 }}>{DEFAULTERS.length} students with overdue fees</div>
-                <div style={{ fontSize:12, color:'var(--muted)' }}>Total outstanding: PKR 59,500 — WhatsApp reminders sent to all parents.</div>
+                <div style={{ fontSize:12, color:'var(--muted)' }}>Total outstanding: PKR 59,500 — Click any name to view their full ledger.</div>
               </div>
             </div>
             <div className="card">
@@ -779,7 +885,11 @@ function DefaultersScreen() {
                 <tbody>
                   {DEFAULTERS.map((d,i)=>(
                     <tr key={i}>
-                      <td style={{ fontWeight:600 }}>{d.student}</td>
+                      <td>
+                        <button onClick={()=>setLedgerStudent(d.student)} style={{ background:'none', border:'none', padding:0, fontWeight:600, fontSize:13, color:'var(--red)', cursor:'pointer', textDecoration:'underline', textDecorationStyle:'dotted' }}>
+                          {d.student}
+                        </button>
+                      </td>
                       <td><Tag type="muted">{d.grade}</Tag></td>
                       <td style={{ fontWeight:700, color:'var(--red)' }}>{d.amount}</td>
                       <td style={{ fontSize:12, color:'var(--muted)' }}>{d.since}</td>

@@ -59,6 +59,75 @@ const PhoneShell = ({ children, title }) => (
   </div>
 );
 
+/* ── SCREEN 0: Driver login ── */
+const ROUTES = [
+  { id:'R4', label:'Route 4 — Satellite Town / Chaklala / Cantt', stops:6, students:14 },
+  { id:'R2', label:'Route 2 — Dhoke Syedan / Committee Chowk', stops:5, students:11 },
+  { id:'R7', label:'Route 7 — Saddar / Waris Khan', stops:4, students:9 },
+];
+
+const LoginScreen = ({ onLogin }) => {
+  const [name, setName] = useState('Muhammad Saleem');
+  const [route, setRoute] = useState('R4');
+  const [run, setRun] = useState('morning');
+  const [plate, setPlate] = useState('RWP-2341');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = () => {
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onLogin(); }, 800);
+  };
+
+  const selected = ROUTES.find(r => r.id === route);
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:'#4A1313' }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'32px 28px' }}>
+        <img src="../../assets/logo-photo.png" alt="Good Day School" style={{ width:80, height:80, objectFit:'contain', marginBottom:16, filter:'drop-shadow(0 4px 12px rgba(0,0,0,.3))' }}/>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600, color:'#FAF6EE', marginBottom:4 }}>Good Day School</div>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.2em', textTransform:'uppercase', color:'#C9A961' }}>Driver Portal</div>
+      </div>
+      <div style={{ background:'#FAF6EE', borderRadius:'20px 20px 0 0', padding:'24px 24px 32px' }}>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600, color:'#4A1313', marginBottom:18 }}>Sign in for today</div>
+        <div style={{ marginBottom:12 }}>
+          <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Driver name</label>
+          <input value={name} onChange={e=>setName(e.target.value)} style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #D9CDB5', borderRadius:8, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE', outline:'none' }}/>
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Bus plate number</label>
+          <input value={plate} onChange={e=>setPlate(e.target.value)} style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #D9CDB5', borderRadius:8, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE', outline:'none' }}/>
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'#5A4A4A', display:'block', marginBottom:5 }}>Route</label>
+          <select value={route} onChange={e=>setRoute(e.target.value)} style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #D9CDB5', borderRadius:8, fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A', background:'#FAF6EE', outline:'none', appearance:'none' }}>
+            {ROUTES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+          </select>
+        </div>
+        {selected && (
+          <div style={{ display:'flex', gap:12, marginBottom:14 }}>
+            <div style={{ flex:1, background:'#E8F5EC', borderRadius:8, padding:'10px 14px', textAlign:'center' }}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:700, color:'#3A6B45' }}>{selected.stops}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, color:'#5A7A5A', textTransform:'uppercase', letterSpacing:'.1em' }}>Stops</div>
+            </div>
+            <div style={{ flex:1, background:'#E8F0FA', borderRadius:8, padding:'10px 14px', textAlign:'center' }}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:700, color:'#1A4A8B' }}>{selected.students}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, color:'#3A5A8A', textTransform:'uppercase', letterSpacing:'.1em' }}>Students</div>
+            </div>
+          </div>
+        )}
+        <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+          {[['morning','☀ Morning run'],['afternoon','🌤 Afternoon run']].map(([k,l])=>(
+            <button key={k} onClick={()=>setRun(k)} style={{ flex:1, padding:'9px', border:`1.5px solid ${run===k?'#6B1F1F':'#D9CDB5'}`, borderRadius:8, background:run===k?'#FEF0EC':'white', color:run===k?'#6B1F1F':'#5A4A4A', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:run===k?600:400, cursor:'pointer' }}>{l}</button>
+          ))}
+        </div>
+        <button onClick={handleLogin} style={{ width:'100%', background:loading?'#8B3333':'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:8, padding:'15px', fontFamily:"'DM Sans',sans-serif", fontSize:14, fontWeight:600, cursor:'pointer', letterSpacing:'.04em', transition:'background .2s' }}>
+          {loading ? 'Signing in…' : 'Start shift →'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 /* ── SCREEN 1: Pre-trip checklist ── */
 const ChecklistScreen = ({ onStart }) => {
   const [checked, setChecked] = useState({});
@@ -256,6 +325,9 @@ const App = () => {
   const [screen, setScreen] = useState('checklist');
   return (
     <div style={{ display:'flex', gap:32, flexWrap:'wrap', alignItems:'flex-start', justifyContent:'center' }}>
+      <PhoneShell title="Driver sign-in">
+        <LoginScreen onLogin={()=>{}}/>
+      </PhoneShell>
       <PhoneShell title="Pre-trip checklist">
         <ChecklistScreen onStart={()=>{}}/>
       </PhoneShell>
