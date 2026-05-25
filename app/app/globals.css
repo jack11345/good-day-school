@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Good Day School brand tokens */
+  --color-maroon:       #4A1313;
+  --color-maroon-mid:   #6B1F1F;
+  --color-maroon-soft:  #8B3333;
+  --color-gold:         #C9A961;
+  --color-gold-soft:    #E8D9B5;
+  --color-gold-pale:    #F5EDD5;
+  --color-cream:        #FAF6EE;
+  --color-cream-dark:   #F0E8D8;
+  --color-ink:          #1A1008;
+  --color-ink-soft:     #5A4A4A;
+  --color-muted:        #7A6A5A;
+  --color-line:         #D9CDB5;
+  --color-sage:         #3A6B45;
+  --color-sage-soft:    #E8F5EC;
+  --color-amber:        #D4851A;
+  --color-danger:       #C0392B;
+  --color-danger-soft:  #FAEAEA;
+
+  --font-serif:   'Cormorant Garamond', Georgia, serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+  --font-urdu:    'Noto Nastaliq Urdu', serif;
+
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-full:  9999px;
+
+  --shadow-card:  0 2px 10px rgba(74,19,19,.09);
+  --shadow-lift:  0 4px 20px rgba(74,19,19,.14);
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { font-family: var(--font-sans); }
+  body { background: var(--color-cream-dark); color: var(--color-ink); }
+}
+
+@layer utilities {
+  .font-serif { font-family: var(--font-serif); }
+  .font-urdu  { font-family: var(--font-urdu); direction: rtl; }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-lift { box-shadow: var(--shadow-lift); }
+}
