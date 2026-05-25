@@ -1,5 +1,8 @@
-// Shared atoms: medallion, lockup, eyebrow, photo, contact strip.
+// Shared atoms: school logo, lockup, eyebrow, photo, contact strip.
 // Used across all marketing & mother training pieces.
+
+// Path relative to the marketing HTML file (marketing/ directory)
+const SCHOOL_LOGO = '../assets/logo-photo.png';
 
 const PHOTOS = {
   motherChild: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=80',
@@ -26,11 +29,14 @@ function GMedal({ size = 80, variant = 'maroon', showStar = true, showTicks = tr
   );
 }
 
-// Horizontal wordmark lockup
+// Horizontal wordmark lockup — uses the actual school logo photo (with children iconography)
 function Lockup({ size = 1, onDark = false, showEst = true, style }) {
+  const logoSize = 64 * size;
   return (
     <div className={'gds-lockup' + (onDark ? ' on-dark' : '')} style={style}>
-      <GMedal size={56 * size} variant={onDark ? 'gold' : 'maroon'} />
+      <img src={SCHOOL_LOGO} alt="Good Day School"
+        style={{ width: logoSize, height: logoSize, objectFit: 'contain', flexShrink: 0,
+          filter: onDark ? 'drop-shadow(0 2px 6px rgba(0,0,0,.45))' : 'none' }} />
       <div className="gds-words">
         <div className="gds-name" style={{ fontSize: 22 * size }}>GOOD DAY</div>
         <div className="gds-div" style={{ width: 70 * size }}></div>
@@ -41,11 +47,14 @@ function Lockup({ size = 1, onDark = false, showEst = true, style }) {
   );
 }
 
-// Stacked vertical wordmark (for narrow places)
+// Stacked vertical wordmark (for narrow places) — uses the actual school logo photo
 function LockupStacked({ size = 1, onDark = false }) {
+  const logoSize = 80 * size;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', color: onDark ? 'var(--cream)' : 'var(--maroon-deep)' }}>
-      <GMedal size={72 * size} variant={onDark ? 'gold' : 'maroon'} />
+      <img src={SCHOOL_LOGO} alt="Good Day School"
+        style={{ width: logoSize, height: logoSize, objectFit: 'contain',
+          filter: onDark ? 'drop-shadow(0 2px 8px rgba(0,0,0,.5))' : 'none' }} />
       <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 24 * size, fontWeight: 600, letterSpacing: '.04em', marginTop: 14 * size, lineHeight: 1 }}>GOOD DAY</div>
       <div style={{ height: 1, background: 'var(--gold)', width: 60 * size, margin: `${6 * size}px 0` }}></div>
       <div style={{ fontFamily: 'DM Sans', fontSize: 10 * size, letterSpacing: '.4em', color: onDark ? 'var(--gold-soft)' : 'var(--ink-soft)' }}>SCHOOL</div>

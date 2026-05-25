@@ -13,6 +13,33 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
 body { font-family: 'DM Sans', sans-serif; background: #FAF6EE; color: #2A1A1A; overflow: hidden; }
+
+/* ── Responsive overrides ── */
+@media (max-width: 900px) {
+  /* Sidebar collapses to icons-only at 72px */
+  body { overflow: auto; }
+  #root { overflow: auto; }
+}
+@media (max-width: 680px) {
+  /* Full-screen layout: sidebar hidden, top bar nav */
+  body { overflow: auto; }
+}
+
+/* Touch-friendly sidebar nav items */
+@media (max-width: 900px) {
+  .lms-sidebar-item { min-height: 44px !important; padding: 10px 8px !important; }
+  .lms-main { padding: 16px !important; }
+  .lms-dash-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .lms-att-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .lms-layout { flex-direction: column !important; }
+  .lms-sidebar { width: 100% !important; height: auto !important; flex-direction: row !important; overflow-x: auto !important; border-right: none !important; border-bottom: 1px solid rgba(201,169,97,.2) !important; }
+  .lms-sidebar-item { flex-direction: column !important; gap: 4px !important; font-size: 9px !important; min-width: 64px !important; text-align: center !important; }
+  .lms-main { min-height: 0 !important; overflow-y: auto !important; }
+  .lms-dash-grid { grid-template-columns: 1fr 1fr !important; }
+  .lms-att-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
 </style>
 </head>
 <body>

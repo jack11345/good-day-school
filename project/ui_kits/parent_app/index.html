@@ -69,6 +69,8 @@ body[data-form="pillow"] [style*="borderRadius:20"]{ border-radius:28px !importa
 body[data-voice="urdu"]    .__en-only { display:none !important; }
 body[data-voice="english"] .__ur-only { display:none !important; }
 body[data-voice="urdu"]    [style*="Cormorant Garamond"]{ font-family:'Noto Nastaliq Urdu',serif !important; }
+
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.4);} }
 </style>
 </head>
 <body>
@@ -203,7 +205,7 @@ const HomeScreen = ({ onNav, lang }) => {
               <button onClick={()=>{}} style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color: !ur?'#4A1313':'#C9A961', background: !ur?'#C9A961':'transparent', border:'none', borderRadius:999, padding:'2px 8px', cursor:'pointer', fontWeight:!ur?700:400 }}>EN</button>
               <button onClick={()=>{}} style={{ fontFamily:"'Noto Nastaliq Urdu',serif", fontSize:12, color: ur?'#4A1313':'#C9A961', background: ur?'#C9A961':'transparent', border:'none', borderRadius:999, padding:'2px 8px', cursor:'pointer', fontWeight:ur?700:400 }}>اردو</button>
             </div>
-            <div style={{ position:'relative' }}>
+            <div style={{ position:'relative', cursor:'pointer' }} onClick={()=>onNav('notifications')}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#C9A961" strokeWidth="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9 M13.73 21a2 2 0 01-3.46 0"/></svg>
               <span style={{ position:'absolute', top:-4, right:-4, background:'#8B1F1F', color:'white', width:13, height:13, borderRadius:'50%', fontSize:8, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center' }}>2</span>
             </div>
@@ -276,10 +278,14 @@ const HomeScreen = ({ onNav, lang }) => {
           {[
             ['Pay fees', '#6B1F1F', '#FAF6EE', ()=>onNav('fees')],
             ['Message teacher', '#FAF6EE', '#4A1313', ()=>onNav('messages')],
-            ['View report card', '#FAF6EE', '#4A1313', ()=>{}],
-            ['Bus live track', '#FAF6EE', '#4A1313', ()=>{}],
+            ['View report card', '#FAF6EE', '#4A1313', ()=>onNav('reportcard')],
+            ['Bus live track', '#FAF6EE', '#4A1313', ()=>onNav('bustrack')],
+            ['Apply for leave', '#FAF6EE', '#4A1313', ()=>onNav('leave')],
+            ['Permission slips', '#FEF6E0', '#4A1313', ()=>onNav('permissions')],
+            ['School calendar', '#FAF6EE', '#4A1313', ()=>onNav('calendar')],
+            ['Notifications', '#FAF6EE', '#4A1313', ()=>onNav('notifications')],
           ].map(([label,bg,color,fn])=>(
-            <button key={label} onClick={fn} style={{ background:bg, border:`1px solid ${bg==='#FAF6EE'?'#D9CDB5':bg}`, borderRadius:8, padding:'14px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, color, cursor:'pointer', textAlign:'left' }}>{label} →</button>
+            <button key={label} onClick={fn} style={{ background:bg, border:`1px solid ${bg==='#FAF6EE'||bg==='#FEF6E0'?'#D9CDB5':bg}`, borderRadius:8, padding:'14px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, color, cursor:'pointer', textAlign:'left' }}>{label} →</button>
           ))}
         </div>
       </div>
@@ -572,6 +578,484 @@ const MessagesScreen = ({ onNav }) => {
   );
 };
 
+/* ── BUS TRACKING SCREEN ── */
+const BusTrackScreen = ({ onNav }) => {
+  const [eta, setEta] = useState(8);
+  React.useEffect(() => {
+    const t = setInterval(() => setEta(e => Math.max(1, e - 1)), 15000);
+    return () => clearInterval(t);
+  }, []);
+  const stops = [
+    { name:'Defence Housing Phase 2', done:true, time:'7:52 AM' },
+    { name:'Bahria Town Gate 4', done:true, time:'8:04 AM' },
+    { name:'Adyala Road Roundabout', done:false, time:'8:{eta} AM (next)', active:true },
+    { name:'Good Day School Campus', done:false, time:'~8:22 AM' },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ background:'#4A1313', padding:'14px 20px 16px' }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer', marginBottom:10, display:'flex', alignItems:'center', gap:4 }}>← Home</button>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+          <div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600, color:'#FAF6EE' }}>Bus Route 4</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', marginTop:2 }}>Driver: Asif Mehmood</div>
+          </div>
+          <div style={{ background:'#E8F5EC', borderRadius:20, padding:'5px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#2D6A4F', fontWeight:600, display:'flex', alignItems:'center', gap:5 }}>
+            <div style={{ width:6, height:6, borderRadius:'50%', background:'#3A6B45', animation:'pulse 1.5s infinite' }}></div>
+            Live
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex:1, overflowY:'auto', background:'#F2EBDB' }}>
+        {/* Map placeholder */}
+        <div style={{ background:'#E8E0D0', height:180, position:'relative', overflow:'hidden', borderBottom:'3px solid #C9A961' }}>
+          {/* Road */}
+          <div style={{ position:'absolute', top:'50%', left:0, right:0, height:28, background:'#B8A898', transform:'translateY(-50%)', borderTop:'2px dashed rgba(255,255,255,.4)', borderBottom:'2px dashed rgba(255,255,255,.4)' }}></div>
+          {/* Route path */}
+          <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} viewBox="0 0 360 180">
+            <path d="M0 90 Q90 70 180 90 Q270 110 360 90" fill="none" stroke="#6B1F1F" strokeWidth="3" strokeDasharray="8 4" opacity=".6"/>
+            {/* Done stops */}
+            <circle cx="60" cy="82" r="8" fill="#3A6B45"/>
+            <text x="60" y="86" textAnchor="middle" fill="white" fontSize="10" fontFamily="DM Sans">✓</text>
+            <circle cx="150" cy="86" r="8" fill="#3A6B45"/>
+            <text x="150" y="90" textAnchor="middle" fill="white" fontSize="10" fontFamily="DM Sans">✓</text>
+            {/* Bus (animated) */}
+            <g>
+              <rect x="206" y="76" width="32" height="20" rx="4" fill="#6B1F1F"/>
+              <rect x="208" y="78" width="9" height="8" rx="1" fill="rgba(255,255,255,.7)"/>
+              <rect x="220" y="78" width="9" height="8" rx="1" fill="rgba(255,255,255,.7)"/>
+              <circle cx="212" cy="97" r="3" fill="#2A1A1A"/>
+              <circle cx="228" cy="97" r="3" fill="#2A1A1A"/>
+              <text x="222" y="70" textAnchor="middle" fill="#6B1F1F" fontSize="9" fontFamily="DM Sans" fontWeight="600">Rte 4</text>
+            </g>
+            {/* Next stop */}
+            <circle cx="255" cy="89" r="8" fill="#C9A961"/>
+            <text x="255" y="93" textAnchor="middle" fill="#4A1313" fontSize="10" fontFamily="DM Sans" fontWeight="700">4</text>
+            {/* School */}
+            <circle cx="320" cy="85" r="10" fill="#FAF6EE" stroke="#6B1F1F" strokeWidth="2"/>
+            <text x="320" y="89" textAnchor="middle" fill="#6B1F1F" fontSize="9" fontFamily="DM Sans" fontWeight="700">GDS</text>
+          </svg>
+          {/* ETA badge */}
+          <div style={{ position:'absolute', top:12, right:12, background:'#4A1313', color:'#C9A961', padding:'6px 12px', borderRadius:20, fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:600 }}>
+            ETA: {eta} min
+          </div>
+        </div>
+
+        {/* Child on bus */}
+        <div style={{ background:'white', margin:12, borderRadius:12, padding:'14px 16px', border:'1px solid #D9CDB5', display:'flex', gap:12, alignItems:'center' }}>
+          <Avatar initials="ZF" size={44} bg='#E8D9B5' color='#4A1313'/>
+          <div style={{ flex:1 }}>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:600, color:'#2A1A1A' }}>Zainab Fatima</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#3A6B45', marginTop:2 }}>✓ Boarded at Bahria Town Gate 4</div>
+          </div>
+          <Badge label="On bus" bg="#E8F5EC" color="#2D6A4F"/>
+        </div>
+
+        {/* Route stops */}
+        <div style={{ background:'white', margin:'0 12px 12px', borderRadius:12, overflow:'hidden', border:'1px solid #D9CDB5' }}>
+          <div style={{ padding:'12px 16px 8px', fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A', borderBottom:'1px solid #F2EBDB' }}>Route stops</div>
+          {stops.map((s,i) => (
+            <div key={i} style={{ padding:'12px 16px', borderBottom: i<stops.length-1?'1px solid #F2EBDB':'none', display:'flex', gap:12, alignItems:'center' }}>
+              <div style={{ width:24, height:24, borderRadius:'50%', background: s.done?'#E8F5EC': s.active?'#C9A961':'#F2EBDB', border:`2px solid ${s.done?'#3A6B45':s.active?'#B89651':'#D9CDB5'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontFamily:"'DM Sans',sans-serif", fontSize:10, color: s.done?'#3A6B45':s.active?'#4A1313':'#8A7A6A', fontWeight:700 }}>
+                {s.done ? '✓' : i+1}
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color: s.active?'#4A1313':'#5A4A4A', fontWeight: s.active?600:400 }}>{s.name}</div>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color: s.done?'#3A6B45': s.active?'#B89651':'#8A7A6A', marginTop:2 }}>{s.active ? `ETA ${eta} min` : s.time}</div>
+              </div>
+              {s.active && <div style={{ width:8, height:8, borderRadius:'50%', background:'#C9A961' }}></div>}
+            </div>
+          ))}
+        </div>
+
+        {/* Call driver */}
+        <div style={{ margin:'0 12px 12px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+          <button style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:10, padding:'13px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.12 1.18 2 2 0 012.1.0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call driver
+          </button>
+          <button style={{ background:'#25D366', color:'white', border:'none', borderRadius:10, padding:'13px 12px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12.05 2C6.495 2 1.16 7.335 1.157 13.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.82 11.82 0 0020.457 5.5 11.82 11.82 0 0012.05 2z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={2}/>
+    </div>
+  );
+};
+
+/* ── REPORT CARD VIEWER SCREEN ── */
+const ReportCardScreen = ({ onNav }) => {
+  const [term, setTerm] = useState('Q2');
+  const terms = [['Q1','Term 1 · Sep–Nov'],['Q2','Term 2 · Jan–Mar'],['Q3','Term 3 · Apr–Jun']];
+  const grades = [
+    { sub:'English Language', marks:87, max:100, grade:'A', teacher:'Ms. Nadia' },
+    { sub:'Urdu', marks:92, max:100, grade:'A+', teacher:'Ms. Ayesha' },
+    { sub:'Mathematics', marks:78, max:100, grade:'B+', teacher:'Mr. Bilal' },
+    { sub:'General Science', marks:83, max:100, grade:'A', teacher:'Ms. Nadia' },
+    { sub:'Social Studies', marks:90, max:100, grade:'A+', teacher:'Ms. Rabia' },
+    { sub:'Islamiyat', marks:95, max:100, grade:'A+', teacher:'Mr. Qasim' },
+    { sub:'Quran Hifz', marks:88, max:100, grade:'A', teacher:'Mr. Qasim' },
+    { sub:'Art & Drawing', marks:96, max:100, grade:'A+', teacher:'Ms. Sara' },
+  ];
+  const avg = Math.round(grades.reduce((s,g)=>s+g.marks,0)/grades.length);
+  const getColor = (m) => m>=90?'#3A6B45':m>=75?'#8B6A1F':'#8B1F1F';
+  const getBg = (m) => m>=90?'#E8F5EC':m>=75?'#FEF6E0':'#FAEAEA';
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ background:'#4A1313', padding:'14px 20px 16px' }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer', marginBottom:10, display:'flex', alignItems:'center', gap:4 }}>← Home</button>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600, color:'#FAF6EE' }}>Progress Report</div>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', marginTop:2 }}>Zainab Fatima · Grade 3-A</div>
+      </div>
+
+      <div style={{ flex:1, overflowY:'auto', background:'#F2EBDB', padding:12 }}>
+        {/* Term selector */}
+        <div style={{ display:'flex', gap:8, marginBottom:14 }}>
+          {terms.map(([k,l]) => (
+            <button key={k} onClick={()=>setTerm(k)} style={{ flex:1, padding:'9px 6px', borderRadius:8, border:`2px solid ${term===k?'#6B1F1F':'#D9CDB5'}`, background: term===k?'#6B1F1F':'white', color: term===k?'#FAF6EE':'#5A4A4A', fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight: term===k?600:400, cursor:'pointer', textAlign:'center', letterSpacing:'.04em' }}>
+              <div style={{ fontWeight:700 }}>{k}</div>
+              <div style={{ fontSize:8, opacity:.8, marginTop:2 }}>{l.split('·')[1]}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Overall score */}
+        <div style={{ background:'#4A1313', borderRadius:12, padding:'16px 18px', marginBottom:14, display:'flex', alignItems:'center', gap:16, position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:-30, right:-30, width:100, height:100, borderRadius:'50%', background:'rgba(201,169,97,.15)' }}></div>
+          <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(201,169,97,.2)', border:'3px solid #C9A961', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:24, fontWeight:700, color:'#C9A961', lineHeight:1 }}>{avg}</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:8, color:'#C9A961', opacity:.8 }}>avg</div>
+          </div>
+          <div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#FAF6EE' }}>Class Rank: 3rd of 22</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', marginTop:4 }}>Attendance: 18/20 days ✓</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961', marginTop:2 }}>Behaviour: Excellent</div>
+          </div>
+        </div>
+
+        {/* Grade rows */}
+        <div style={{ background:'white', borderRadius:12, overflow:'hidden', border:'1px solid #D9CDB5', marginBottom:14 }}>
+          <div style={{ padding:'10px 14px', background:'#F2EBDB', fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A' }}>Subject grades</div>
+          {grades.map((g,i) => (
+            <div key={i} style={{ padding:'11px 14px', borderBottom: i<grades.length-1?'1px solid #F2EBDB':'none', display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ flex:1 }}>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#2A1A1A', fontWeight:500 }}>{g.sub}</div>
+                <div style={{ height:4, background:'#F2EBDB', borderRadius:2, marginTop:5, overflow:'hidden' }}>
+                  <div style={{ height:'100%', width:`${g.marks}%`, background:getColor(g.marks), borderRadius:2 }}></div>
+                </div>
+              </div>
+              <div style={{ textAlign:'right', flexShrink:0 }}>
+                <div style={{ background:getBg(g.marks), color:getColor(g.marks), padding:'3px 8px', borderRadius:6, fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:700 }}>{g.grade}</div>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, color:'#8A7A6A', marginTop:3 }}>{g.marks}/{g.max}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Teacher comment */}
+        <div style={{ background:'white', borderRadius:12, padding:'14px 16px', border:'1px solid #D9CDB5', marginBottom:12 }}>
+          <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:'.16em', textTransform:'uppercase', color:'#8A7A6A', marginBottom:10 }}>Class teacher's note</div>
+          <div style={{ display:'flex', gap:10, alignItems:'flex-start' }}>
+            <Avatar initials="NA" size={36} bg='#E8D9B5' color='#4A1313'/>
+            <div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, color:'#2A1A1A' }}>Ms. Nadia Habib</div>
+              <p style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#5A4A4A', lineHeight:1.6, marginTop:6, fontStyle:'italic' }}>
+                "Zainab has shown remarkable growth this term. Her reading fluency is exceptional for Grade 3. She participates with confidence and helps her classmates. Very proud."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Download */}
+        <button style={{ width:'100%', background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:10, padding:'14px', fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download PDF report card
+        </button>
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={2}/>
+    </div>
+  );
+};
+
+/* ── NOTIFICATIONS SCREEN ── */
+const NotificationsScreen = ({ onNav }) => {
+  const notifs = [
+    { id:1, type:'attendance', icon:'📍', title:'Zainab marked present', time:'Today 8:02 AM', desc:'Zainab arrived safely at school today.', unread:true, color:'#E8F5EC', dot:'#3A6B45' },
+    { id:2, type:'homework', icon:'📚', title:'Homework due tomorrow', time:'Today 3:15 PM', desc:'Math worksheet — fractions practice (pg 47–48). Due Monday.', unread:true, color:'#FEF6E0', dot:'#8B6A1F' },
+    { id:3, type:'fee', icon:'💳', title:'May fee invoice ready', time:'Yesterday', desc:'PKR 8,500 due by 10 May 2026. Pay via JazzCash or school office.', unread:false, color:'#FAEAEA', dot:'#8B1F1F' },
+    { id:4, type:'message', icon:'💬', title:'Message from Ms. Nadia', time:'Mon 5 May', desc:'"Zainab led the morning dua today — very proud!"', unread:false, color:'#EEF0FA', dot:'#3A3A8B' },
+    { id:5, type:'holiday', icon:'📅', title:'School holiday — 12 May', time:'Sat 3 May', desc:'Pakistan Independence Day — school closed. Classes resume Tuesday.', unread:false, color:'#F5EEF8', dot:'#7D3C98' },
+    { id:6, type:'health', icon:'🏥', title:'Health check reminder', time:'Fri 2 May', desc:'Zainab\'s annual vaccination check-in next Wednesday in the nurse\'s office.', unread:false, color:'#E8F5EC', dot:'#3A6B45' },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:'#FAF6EE' }}>
+      <div style={{ background:'#4A1313', padding:'16px 20px 12px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', cursor:'pointer', padding:4 }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600, color:'#FAF6EE' }}>Notifications</div>
+        <div style={{ marginLeft:'auto', background:'#C9A961', color:'#4A1313', fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:999 }}>2 new</div>
+      </div>
+      <div style={{ flex:1, overflowY:'auto', padding:'12px 0' }}>
+        {notifs.map(n => (
+          <div key={n.id} style={{
+            display:'flex', gap:12, padding:'14px 20px',
+            borderBottom:'1px solid #F0E8D8',
+            background: n.unread ? '#FFF9F0' : 'transparent',
+          }}>
+            <div style={{ fontSize:22, flexShrink:0, marginTop:2 }}>{n.icon}</div>
+            <div style={{ flex:1 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:600, color:'#2A1A1A' }}>{n.title}</div>
+                {n.unread && <div style={{ width:7, height:7, borderRadius:'50%', background:n.dot, flexShrink:0 }}/>}
+              </div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:'#8A7A6A', marginBottom:4 }}>{n.time}</div>
+              <div style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#5A4A4A', lineHeight:1.5 }}>{n.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={0}/>
+    </div>
+  );
+};
+
+/* ── CALENDAR SCREEN ── */
+const CalendarScreen = ({ onNav }) => {
+  const days = ['S','M','T','W','T','F','S'];
+  const events = [
+    { date:5,  label:'Fee due', color:'#FAEAEA', dot:'#8B1F1F' },
+    { date:8,  label:'PTM', color:'#E8F0FA', dot:'#1F4A8B' },
+    { date:12, label:'Holiday', color:'#F5EEF8', dot:'#7D3C98' },
+    { date:19, label:'Sports day', color:'#E8F5EC', dot:'#3A6B45' },
+    { date:26, label:'Exam week', color:'#FEF6E0', dot:'#8B6A1F' },
+  ];
+  const markedDays = new Set(events.map(e => e.date));
+  const upcomingEvents = [
+    { date:'Mon 5 May', title:'Fee Payment Due', sub:'PKR 8,500 — Zainab (Grade 3)', color:'#FAEAEA', dot:'#8B1F1F' },
+    { date:'Thu 8 May', title:'Parent-Teacher Meeting', sub:'3:00–5:00 PM · Grade 3 classrooms', color:'#E8F0FA', dot:'#1F4A8B' },
+    { date:'Mon 12 May', title:'School Holiday', sub:'Pakistan Independence Day', color:'#F5EEF8', dot:'#7D3C98' },
+    { date:'Mon 19 May', title:'Annual Sports Day', sub:'8:00 AM sharp — bring water bottle', color:'#E8F5EC', dot:'#3A6B45' },
+    { date:'Mon 26 May', title:'End-of-Term Exams', sub:'Grade 3 starts with English paper', color:'#FEF6E0', dot:'#8B6A1F' },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:'#FAF6EE' }}>
+      <div style={{ background:'#4A1313', padding:'16px 20px 12px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', cursor:'pointer', padding:4 }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600, color:'#FAF6EE' }}>School Calendar</div>
+        <div style={{ marginLeft:'auto', fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#C9A961' }}>May 2026</div>
+      </div>
+      {/* Mini calendar */}
+      <div style={{ background:'#4A1313', padding:'0 20px 20px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2, marginBottom:8 }}>
+          {days.map((d,i)=>(
+            <div key={i} style={{ textAlign:'center', fontFamily:"'DM Sans',sans-serif", fontSize:10, color:'rgba(201,169,97,.7)', fontWeight:600, padding:'4px 0' }}>{d}</div>
+          ))}
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2 }}>
+          {/* May 2026 starts on Friday (offset 5) */}
+          {[...Array(5)].map((_,i)=><div key={`e${i}`}/>)}
+          {[...Array(31)].map((_,i)=>{
+            const d = i+1;
+            const marked = markedDays.has(d);
+            const isToday = d === 25;
+            return (
+              <div key={d} style={{ textAlign:'center', padding:'5px 0', cursor:'pointer' }}>
+                <div style={{
+                  width:26, height:26, borderRadius:'50%', margin:'0 auto',
+                  background: isToday ? '#C9A961' : marked ? 'rgba(201,169,97,.25)' : 'transparent',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontFamily:"'DM Sans',sans-serif", fontSize:11,
+                  color: isToday ? '#4A1313' : '#FAF6EE',
+                  fontWeight: isToday || marked ? 700 : 400,
+                }}>{d}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Upcoming events */}
+      <div style={{ flex:1, overflowY:'auto', padding:'16px 20px' }}>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'.14em', color:'#8A7A6A', marginBottom:12 }}>Upcoming Events</div>
+        {upcomingEvents.map((e,i)=>(
+          <div key={i} style={{ display:'flex', gap:12, marginBottom:12 }}>
+            <div style={{ width:4, borderRadius:4, background:e.dot, flexShrink:0 }}/>
+            <div style={{ flex:1, background:e.color, borderRadius:10, padding:'10px 14px' }}>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A', marginBottom:2 }}>{e.date}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:600, color:'#2A1A1A', marginBottom:2 }}>{e.title}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#5A4A4A' }}>{e.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={0}/>
+    </div>
+  );
+};
+
+/* ── LEAVE REQUEST SCREEN ── */
+const LeaveScreen = ({ onNav }) => {
+  const [step, setStep] = useState('form'); // form | submitted
+  const [child, setChild] = useState('Zainab');
+  const [reason, setReason] = useState('');
+  const [dates, setDates] = useState('');
+  const [type, setType] = useState('sick');
+  const recentLeaves = [
+    { date:'14 Apr 2026', days:1, reason:'Sick leave — fever', status:'approved', statusColor:'#3A6B45' },
+    { date:'2 Mar 2026', days:2, reason:'Family event', status:'approved', statusColor:'#3A6B45' },
+    { date:'15 Jan 2026', days:1, reason:'Medical appointment', status:'approved', statusColor:'#3A6B45' },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:'#FAF6EE' }}>
+      <div style={{ background:'#4A1313', padding:'16px 20px 12px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', cursor:'pointer', padding:4 }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600, color:'#FAF6EE' }}>Leave Request</div>
+      </div>
+      <div style={{ flex:1, overflowY:'auto', padding:'20px' }}>
+        {step === 'submitted' ? (
+          <div style={{ textAlign:'center', padding:'40px 20px' }}>
+            <div style={{ fontSize:56, marginBottom:16 }}>✅</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:24, fontWeight:600, color:'#4A1313', marginBottom:8 }}>Request Submitted</div>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#5A4A4A', lineHeight:1.6, marginBottom:24 }}>Your leave request for {child} has been sent to the school. You will receive a notification once it is reviewed.</div>
+            <button onClick={()=>setStep('form')} style={{ background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:8, padding:'12px 28px', fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:500, cursor:'pointer' }}>Submit Another</button>
+          </div>
+        ) : (
+          <>
+            <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'.14em', color:'#8A7A6A', marginBottom:14 }}>New Leave Application</div>
+            {/* Child selector */}
+            <div style={{ marginBottom:14 }}>
+              <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, color:'#5A4A4A', display:'block', marginBottom:6 }}>Child</label>
+              {CHILDREN.map(c => (
+                <button key={c.id} onClick={()=>setChild(c.name)} style={{
+                  marginRight:8, padding:'8px 16px', borderRadius:999, border:`1.5px solid ${child===c.name?'#6B1F1F':'#D9CDB5'}`,
+                  background: child===c.name ? '#6B1F1F' : 'white', color: child===c.name ? '#FAF6EE' : '#2A1A1A',
+                  fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer',
+                }}>{c.name} · {c.grade}</button>
+              ))}
+            </div>
+            {/* Leave type */}
+            <div style={{ marginBottom:14 }}>
+              <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, color:'#5A4A4A', display:'block', marginBottom:6 }}>Reason type</label>
+              {[['sick','🤒 Sick leave'],['family','👨‍👩‍👧 Family event'],['medical','🏥 Medical'],['other','📝 Other']].map(([k,l])=>(
+                <button key={k} onClick={()=>setType(k)} style={{
+                  marginRight:8, marginBottom:8, padding:'7px 14px', borderRadius:999, border:`1.5px solid ${type===k?'#6B1F1F':'#D9CDB5'}`,
+                  background: type===k ? '#FEF0EC' : 'white', color: type===k ? '#6B1F1F' : '#5A4A4A',
+                  fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer',
+                }}>{l}</button>
+              ))}
+            </div>
+            {/* Dates */}
+            <div style={{ marginBottom:14 }}>
+              <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, color:'#5A4A4A', display:'block', marginBottom:6 }}>Date(s) of absence</label>
+              <input
+                value={dates} onChange={e=>setDates(e.target.value)}
+                placeholder="e.g. 15 May 2026 or 15–16 May 2026"
+                style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #D9CDB5', borderRadius:8, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE', outline:'none' }}
+              />
+            </div>
+            {/* Reason */}
+            <div style={{ marginBottom:20 }}>
+              <label style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, fontWeight:600, color:'#5A4A4A', display:'block', marginBottom:6 }}>Reason / details (optional)</label>
+              <textarea
+                value={reason} onChange={e=>setReason(e.target.value)}
+                placeholder="Brief description for the class teacher…"
+                rows={3}
+                style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #D9CDB5', borderRadius:8, fontFamily:"'Lora',serif", fontSize:13, color:'#2A1A1A', background:'#FAF6EE', outline:'none', resize:'none' }}
+              />
+            </div>
+            <button onClick={()=>setStep('submitted')} style={{ width:'100%', background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:8, padding:'15px', fontFamily:"'DM Sans',sans-serif", fontSize:13, fontWeight:500, cursor:'pointer' }}>
+              Submit Leave Request →
+            </button>
+            {/* History */}
+            <div style={{ marginTop:24 }}>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'.14em', color:'#8A7A6A', marginBottom:12 }}>Past Requests</div>
+              {recentLeaves.map((l,i)=>(
+                <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:'1px solid #F0E8D8' }}>
+                  <div>
+                    <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:600, color:'#2A1A1A' }}>{l.reason}</div>
+                    <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A' }}>{l.date} · {l.days} day{l.days>1?'s':''}</div>
+                  </div>
+                  <span style={{ background:'#E8F5EC', color:l.statusColor, padding:'3px 10px', borderRadius:999, fontSize:10, fontWeight:600 }}>{l.status}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={0}/>
+    </div>
+  );
+};
+
+/* ── PERMISSION SLIP SCREEN ── */
+const PermissionScreen = ({ onNav }) => {
+  const [signed, setSigned] = useState({});
+  const slips = [
+    { id:'trip1', title:'Science Museum Trip', date:'Wed 14 May 2026', desc:'Grade 3 visit to Rawalpindi Science Museum. Departure 8:30 AM, return by 2:00 PM. Transport provided.', fee:'PKR 350', urgent:true },
+    { id:'sports1', title:'Inter-School Sports Day', date:'Mon 19 May 2026', desc:'Zainab has been selected for the 100m race. Full day event. Please pack extra water and sun protection.', fee:'No charge', urgent:false },
+    { id:'photo1', title:'Class Photo Permission', date:'Fri 9 May 2026', desc:'Annual class photograph. Students are requested to wear full uniform with tie.', fee:'PKR 200 (optional copy)', urgent:false },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:'#FAF6EE' }}>
+      <div style={{ background:'#4A1313', padding:'16px 20px 12px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={()=>onNav('home')} style={{ background:'none', border:'none', color:'#C9A961', cursor:'pointer', padding:4 }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:600, color:'#FAF6EE' }}>Permission Slips</div>
+        {Object.keys(signed).length < slips.length && (
+          <div style={{ marginLeft:'auto', background:'#C9A961', color:'#4A1313', fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:999 }}>
+            {slips.length - Object.keys(signed).length} pending
+          </div>
+        )}
+      </div>
+      <div style={{ flex:1, overflowY:'auto', padding:'16px 20px' }}>
+        {slips.map(slip => (
+          <div key={slip.id} style={{ background:'white', borderRadius:12, marginBottom:14, overflow:'hidden', boxShadow:'0 2px 8px rgba(74,19,19,.07)' }}>
+            {slip.urgent && (
+              <div style={{ background:'#C9A961', padding:'5px 16px', fontFamily:"'DM Sans',sans-serif", fontSize:10, fontWeight:700, color:'#4A1313', letterSpacing:'.08em' }}>
+                ⚠ ACTION REQUIRED
+              </div>
+            )}
+            <div style={{ padding:'16px' }}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, fontWeight:600, color:'#4A1313', marginBottom:4 }}>{slip.title}</div>
+              <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:'#8A7A6A', marginBottom:8 }}>📅 {slip.date}</div>
+              <div style={{ fontFamily:"'Lora',serif", fontSize:12, color:'#5A4A4A', lineHeight:1.6, marginBottom:10 }}>{slip.desc}</div>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+                <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:600, color:'#2A1A1A' }}>Cost: {slip.fee}</div>
+              </div>
+              {signed[slip.id] ? (
+                <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 14px', background:'#E8F5EC', borderRadius:8 }}>
+                  <span style={{ fontSize:16 }}>✅</span>
+                  <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:600, color:'#3A6B45' }}>
+                    {signed[slip.id] === 'yes' ? 'Permission granted · Signed digitally' : 'Permission declined'}
+                  </span>
+                </div>
+              ) : (
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={()=>setSigned(s=>({...s,[slip.id]:'yes'}))} style={{ flex:1, background:'#6B1F1F', color:'#FAF6EE', border:'none', borderRadius:8, padding:'11px', fontFamily:"'DM Sans',sans-serif", fontSize:12, fontWeight:500, cursor:'pointer' }}>
+                    ✓ Grant permission
+                  </button>
+                  <button onClick={()=>setSigned(s=>({...s,[slip.id]:'no'}))} style={{ flex:1, background:'white', color:'#5A4A4A', border:'1.5px solid #D9CDB5', borderRadius:8, padding:'11px', fontFamily:"'DM Sans',sans-serif", fontSize:12, cursor:'pointer' }}>
+                    ✗ Decline
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <BottomNav active="home" onNav={onNav} unread={0}/>
+    </div>
+  );
+};
+
 /* ── APP ── */
 const App = () => {
   const [screen, setScreen] = useState('home');
@@ -618,6 +1102,24 @@ const App = () => {
       </PhoneShell>
       <PhoneShell title="Messages">
         <MessagesScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="Bus live tracking">
+        <BusTrackScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="Progress report">
+        <ReportCardScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="Notifications">
+        <NotificationsScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="School calendar">
+        <CalendarScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="Leave request">
+        <LeaveScreen onNav={setScreen}/>
+      </PhoneShell>
+      <PhoneShell title="Permission slips">
+        <PermissionScreen onNav={setScreen}/>
       </PhoneShell>
     </>
   );

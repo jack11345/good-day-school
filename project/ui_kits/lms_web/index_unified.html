@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Day School — LMS (Unified)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&family=Lora:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style>
+:root {
+  --maroon: #4A1313; --maroon-mid: #6B1F1F; --maroon-soft: #8B3333;
+  --gold: #C9A961; --gold-light: #E8D9B5; --gold-pale: #F5EDD5;
+  --cream: #FAF6EE; --cream-dark: #F0E8D8; --ink: #1A1008;
+  --muted: #7A6A5A; --line: #D9CDB5; --white: #FFFFFF;
+  --green: #2D7A4F; --red: #C0392B; --amber: #D4851A; --blue: #1A4A8B;
+  --r: 10px; --shadow: 0 2px 10px rgba(74,19,19,.09);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--cream-dark); color: var(--ink); }
+#root { height: 100%; }
+
+/* Layout */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--maroon);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-brand img { width: 36px; height: 36px; object-fit: contain; }
+.sidebar-brand .name { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--cream); line-height: 1.2; }
+.sidebar-brand .sub { font-size: 10px; color: var(--gold); letter-spacing: .08em; }
+
+/* Role switcher */
+.role-switcher { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.role-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+.role-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 12px; font-weight: 500; color: rgba(255,255,255,.65);
+  border: none; background: transparent; width: 100%; text-align: left;
+  transition: all .15s;
+}
+.role-chip:hover { background: rgba(255,255,255,.08); }
+.role-chip.active { background: rgba(201,169,97,.18); color: var(--gold); }
+.role-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Nav items */
+.nav-section { padding: 10px 14px 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: rgba(255,255,255,.3); margin-top: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 14px;
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,.65);
+  cursor: pointer; border-radius: 8px; margin: 1px 8px;
+  transition: all .15s; border: none; background: transparent; width: calc(100% - 16px); text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,.08); color: white; }
+.nav-item.active { background: rgba(201,169,97,.22); color: var(--gold); font-weight: 600; }
+.nav-item .icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.badge-pill { background: var(--gold); color: var(--maroon); font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-left: auto; }
+
+/* Main content */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.topbar {
+  background: var(--white); border-bottom: 1px solid var(--line);
+  padding: 0 28px; height: 56px;
+  display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+}
+.topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--maroon); }
+.topbar-sub { font-size: 12px; color: var(--muted); }
+.topbar-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.topbar-btn {
+  padding: 7px 16px; border-radius: var(--r); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.topbar-btn.primary { background: var(--maroon-mid); color: var(--cream); border: none; }
+.topbar-btn.primary:hover { background: var(--maroon); }
+.topbar-btn.ghost { background: none; border: 1.5px solid var(--line); color: var(--ink); }
+.topbar-btn.ghost:hover { border-color: var(--maroon-mid); color: var(--maroon-mid); }
+.content { padding: 24px 28px; flex: 1; }
+
+/* Cards & grids */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--white); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); }
+.stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--maroon); line-height: 1; }
+.stat-delta { font-size: 11px; color: var(--green); margin-top: 4px; }
+.stat-delta.neg { color: var(--red); }
+
+.card { background: var(--white); border-radius: var(--r); box-shadow: var(--shadow); }
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--cream-dark); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.card-body { padding: 0; }
+
+/* Tables */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); background: var(--cream); border-bottom: 1px solid var(--line); }
+.tbl td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--cream-dark); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: #FAFAF8; }
+
+/* Badges */
+.tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.tag.green { background: #E8F5EC; color: var(--green); }
+.tag.red { background: #FAEAEA; color: var(--red); }
+.tag.amber { background: #FEF6E0; color: var(--amber); }
+.tag.blue { background: #E8F0FA; color: var(--blue); }
+.tag.muted { background: var(--cream-dark); color: var(--muted); }
+
+/* Kanban */
+.kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.kanban-col { min-width: 200px; flex-shrink: 0; }
+.kanban-col-head { padding: 10px 14px; border-radius: var(--r) var(--r) 0 0; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.kanban-card { background: var(--white); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow); cursor: pointer; border-left: 3px solid transparent; }
+.kanban-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(74,19,19,.13); }
+.kanban-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.kanban-meta { font-size: 11px; color: var(--muted); }
+
+/* Attendance grid */
+.att-grid { display: grid; grid-template-columns: 2fr repeat(5, 1fr); gap: 0; }
+.att-grid-head { padding: 8px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); background: var(--cream); border-bottom: 1px solid var(--line); }
+.att-cell { padding: 10px 12px; border-bottom: 1px solid var(--cream-dark); font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.att-cell.name { justify-content: flex-start; font-weight: 500; color: var(--ink); }
+.att-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+.att-dot.P { background: #E8F5EC; color: var(--green); }
+.att-dot.A { background: #FAEAEA; color: var(--red); }
+.att-dot.L { background: #FEF6E0; color: var(--amber); }
+
+/* Progress bars */
+.progress-bar { background: var(--cream-dark); border-radius: 999px; height: 6px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 999px; background: var(--gold); }
+.progress-fill.red { background: var(--red); }
+.progress-fill.green { background: var(--green); }
+
+/* Empty/Error states */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--maroon); margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.error-banner { background: #FEF0F0; border: 1px solid #F5C6C6; border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
+.offline-banner { background: #FEF6E0; border: 1px solid #F0D9A0; border-radius: var(--r); padding: 12px 18px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--amber); }
+
+/* Responsive */
+@media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) {
+  .shell { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; }
+  .sidebar-brand { padding: 12px; flex-shrink: 0; }
+  .role-switcher { display: flex; gap: 4px; padding: 8px; }
+  .nav-section { display: none; }
+  .nav-item { padding: 8px 12px; margin: 2px; flex-shrink: 0; }
+  .main { flex: 1; }
+}
+@media (max-width: 600px) {
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .content { padding: 16px; }
+  .topbar { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const LOGO = '../../assets/logo-photo.png';
+
+// ─── Role definitions ──────────────────────────────────────────────
+const ROLES = {
+  teacher: {
+    label: 'Teacher', color: '#3A6B45', dot: '#3A6B45',
+    nav: [
+      { section: 'Teaching' },
+      { key: 'dashboard', icon: '🏠', label: 'Dashboard' },
+      { key: 'attendance', icon: '✅', label: 'Attendance' },
+      { key: 'gradebook', icon: '📊', label: 'Grade Book' },
+      { key: 'assignments', icon: '📚', label: 'Assignments' },
+      { key: 'announcements', icon: '📢', label: 'Announcements' },
+    ],
+  },
+  admin: {
+    label: 'Admin', color: '#1A4A8B', dot: '#2563EB',
+    nav: [
+      { section: 'School Admin' },
+      { key: 'admin_dash', icon: '🏠', label: 'Dashboard' },
+      { key: 'enrolment', icon: '🎓', label: 'Enrolment', badge: '4' },
+      { key: 'staff', icon: '👨‍🏫', label: 'Staff Directory' },
+      { key: 'classes', icon: '🏫', label: 'Classes & Sections' },
+      { key: 'announcements', icon: '📢', label: 'Announcements' },
+    ],
+  },
+  accountant: {
+    label: 'Accountant', color: '#8B6A1F', dot: '#D4851A',
+    nav: [
+      { section: 'Finance' },
+      { key: 'fee_dash', icon: '🏠', label: 'Dashboard' },
+      { key: 'collection', icon: '💳', label: 'Collection Register' },
+      { key: 'fee_structure', icon: '📋', label: 'Fee Structure' },
+      { key: 'defaulters', icon: '⚠️', label: 'Defaulters', badge: '12' },
+      { key: 'expenses', icon: '📤', label: 'Expenses' },
+      { key: 'payroll', icon: '💰', label: 'Payroll' },
+    ],
+  },
+};
+
+// ─── Sample data ───────────────────────────────────────────────────
+const STUDENTS = [
+  { id:1, name:'Zainab Fatima', roll:'07', grade:'3A', attendance:92, fees:'Clear', feeColor:'green' },
+  { id:2, name:'Ahmed Raza',    roll:'02', grade:'3A', attendance:85, fees:'Clear', feeColor:'green' },
+  { id:3, name:'Sara Malik',    roll:'11', grade:'3A', attendance:78, fees:'PKR 8,500', feeColor:'red' },
+  { id:4, name:'Hassan Ali',    roll:'05', grade:'3A', attendance:96, fees:'Clear', feeColor:'green' },
+  { id:5, name:'Ayesha Noor',   roll:'01', grade:'3A', attendance:89, fees:'PKR 4,250', feeColor:'amber' },
+  { id:6, name:'Bilal Ahmad',   roll:'03', grade:'3A', attendance:60, fees:'PKR 8,500', feeColor:'red' },
+];
+const DAYS = ['Mon 19', 'Tue 20', 'Wed 21', 'Thu 22', 'Fri 23'];
+const ATT_DATA = {
+  1: ['P','P','P','P','P'], 2: ['P','A','P','P','P'],
+  3: ['P','P','L','P','P'], 4: ['P','P','P','P','P'],
+  5: ['P','P','P','A','P'], 6: ['A','A','P','P','A'],
+};
+const STAFF = [
+  { name:'Ms. Nadia Habib',   role:'Class Teacher 3A', subject:'English & Urdu', phone:'+92 333 111 0001', status:'active' },
+  { name:'Mr. Tariq Shah',    role:'Math Teacher',     subject:'Math & Science',  phone:'+92 333 111 0002', status:'active' },
+  { name:'Ms. Fatima Malik',  role:'Islamiyat',        subject:'Islamiyat & Quran',phone:'+92 333 111 0003', status:'active' },
+  { name:'Mr. Asif Khan',     role:'PE Teacher',       subject:'Physical Education',phone:'+92 333 111 0004', status:'leave' },
+  { name:'Ms. Razia Begum',   role:'KG Teacher',       subject:'Early Years',     phone:'+92 333 111 0005', status:'active' },
+];
+const CLASSES = [
+  { name:'KG-A', teacher:'Ms. Razia', strength:22, room:'101' },
+  { name:'KG-B', teacher:'Ms. Amna',  strength:20, room:'102' },
+  { name:'Grade 1A', teacher:'Mr. Salman', strength:28, room:'201' },
+  { name:'Grade 1B', teacher:'Ms. Hina',   strength:26, room:'202' },
+  { name:'Grade 2A', teacher:'Ms. Sana',   strength:30, room:'301' },
+  { name:'Grade 3A', teacher:'Ms. Nadia',  strength:30, room:'302' },
+  { name:'Grade 4A', teacher:'Mr. Tariq',  strength:28, room:'401' },
+  { name:'Grade 5A', teacher:'Mr. Asif',   strength:25, room:'402' },
+];
+const ENROLMENTS = {
+  inquiry:   [{ name:'Aisha Siddiqui', grade:'Grade 2', date:'22 May', contact:'+92 312 0001' }, { name:'Umar Farooq', grade:'KG', date:'21 May', contact:'+92 312 0002' }],
+  interview: [{ name:'Hina Khalid', grade:'Grade 1', date:'18 May', contact:'+92 312 0003' }],
+  testing:   [{ name:'Saad Mehmood', grade:'Grade 3', date:'15 May', contact:'+92 312 0004' }, { name:'Maryam Ali', grade:'Grade 4', date:'14 May', contact:'+92 312 0005' }],
+  enrolled:  [{ name:'Fatima Zaheer', grade:'Grade 1', date:'10 May', contact:'+92 312 0006' }],
+};
+const FEES_COLLECTED = [
+  { student:'Zainab Fatima', grade:'3A', amount:'PKR 8,500', date:'2 May', method:'JazzCash', ref:'JC-20240502-001' },
+  { student:'Ahmed Raza',    grade:'3A', amount:'PKR 8,500', date:'1 May', method:'Cash',     ref:'CASH-0423' },
+  { student:'Hassan Ali',    grade:'3A', amount:'PKR 8,500', date:'30 Apr', method:'Bank transfer', ref:'TF-20240430-77' },
+  { student:'Ayesha Noor',   grade:'3A', amount:'PKR 4,250', date:'29 Apr', method:'JazzCash', ref:'JC-20240429-032' },
+];
+const DEFAULTERS = [
+  { student:'Sara Malik',  grade:'3A', amount:'PKR 8,500', since:'Apr 2026', months:2 },
+  { student:'Bilal Ahmad', grade:'3A', amount:'PKR 17,000', since:'Mar 2026', months:3 },
+  { student:'Hira Khan',   grade:'2B', amount:'PKR 8,500', since:'Apr 2026', months:2 },
+  { student:'Ali Hassan',  grade:'1A', amount:'PKR 25,500', since:'Feb 2026', months:4 },
+];
+const FEE_STRUCTURE = [
+  { class:'KG',      tuition:'PKR 6,500', transport:'PKR 1,500', total:'PKR 8,000' },
+  { class:'Grade 1', tuition:'PKR 7,000', transport:'PKR 1,500', total:'PKR 8,500' },
+  { class:'Grade 2', tuition:'PKR 7,000', transport:'PKR 1,500', total:'PKR 8,500' },
+  { class:'Grade 3', tuition:'PKR 7,000', transport:'PKR 1,500', total:'PKR 8,500' },
+  { class:'Grade 4', tuition:'PKR 7,500', transport:'PKR 1,500', total:'PKR 9,000' },
+  { class:'Grade 5', tuition:'PKR 7,500', transport:'PKR 1,500', total:'PKR 9,000' },
+];
+const EXPENSES = [
+  { desc:'Electricity bill — April', category:'Utilities', amount:'PKR 12,400', date:'2 May', status:'paid' },
+  { desc:'Teacher salaries — April', category:'Payroll',   amount:'PKR 240,000', date:'30 Apr', status:'paid' },
+  { desc:'Stationery purchase',      category:'Supplies',  amount:'PKR 8,200', date:'25 Apr', status:'paid' },
+  { desc:'Generator maintenance',    category:'Maintenance',amount:'PKR 5,500', date:'20 Apr', status:'pending' },
+  { desc:'Sports equipment',         category:'Equipment', amount:'PKR 15,000', date:'15 Apr', status:'pending' },
+];
+const PAYROLL = [
+  { name:'Ms. Nadia Habib',  role:'Class Teacher', salary:'PKR 35,000', advance:0,       net:'PKR 35,000', status:'paid' },
+  { name:'Mr. Tariq Shah',   role:'Math Teacher',  salary:'PKR 32,000', advance:5000,    net:'PKR 27,000', status:'paid' },
+  { name:'Ms. Fatima Malik', role:'Islamiyat',     salary:'PKR 30,000', advance:0,       net:'PKR 30,000', status:'paid' },
+  { name:'Mr. Asif Khan',    role:'PE Teacher',    salary:'PKR 28,000', advance:0,       net:'PKR 28,000', status:'pending' },
+  { name:'Ms. Razia Begum',  role:'KG Teacher',    salary:'PKR 30,000', advance:3000,    net:'PKR 27,000', status:'pending' },
+];
+const GRADES = [
+  { subject:'English',   q1:82, q2:87, q3:null, final:null },
+  { subject:'Urdu',      q1:75, q2:79, q3:null, final:null },
+  { subject:'Math',      q1:90, q2:92, q3:null, final:null },
+  { subject:'Science',   q1:85, q2:88, q3:null, final:null },
+  { subject:'Islamiyat', q1:95, q2:95, q3:null, final:null },
+];
+const ASSIGNMENTS = [
+  { title:'Math Fractions Worksheet', class:'Grade 3A', due:'Mon 5 May', submitted:22, total:30, status:'active' },
+  { title:'English Essay — My Family', class:'Grade 3A', due:'Wed 7 May', submitted:15, total:30, status:'active' },
+  { title:'Science Chapter 4 Questions', class:'Grade 3A', due:'Fri 9 May', submitted:0, total:30, status:'upcoming' },
+  { title:'Urdu Reading Comprehension', class:'Grade 3A', due:'Fri 2 May', submitted:30, total:30, status:'closed' },
+];
+
+// ─── Shared components ─────────────────────────────────────────────
+const Tag = ({ type, children }) => <span className={`tag ${type}`}>{children}</span>;
+
+const EmptyState = ({ icon, title, sub, action }) => (
+  <div className="empty-state">
+    <div className="empty-icon">{icon}</div>
+    <div className="empty-title">{title}</div>
+    <div className="empty-sub">{sub}</div>
+    {action && (
+      <button className="topbar-btn primary" style={{ marginTop: 20 }} onClick={action.fn}>{action.label}</button>
+    )}
+  </div>
+);
+
+// ─── Teacher screens ───────────────────────────────────────────────
+function TeacherDashboard() {
+  return (
+    <div className="content">
+      <div className="stat-grid">
+        <div className="stat-card"><div className="stat-label">Students today</div><div className="stat-value">26</div><div className="stat-delta">↑ 2 more than yesterday</div></div>
+        <div className="stat-card"><div className="stat-label">Absent today</div><div className="stat-value" style={{color:'var(--red)'}}>4</div><div className="stat-delta neg">↑ higher than avg</div></div>
+        <div className="stat-card"><div className="stat-label">Assignments due</div><div className="stat-value">2</div><div className="stat-delta">This week</div></div>
+        <div className="stat-card"><div className="stat-label">Class avg score</div><div className="stat-value">84%</div><div className="stat-delta">↑ up from last term</div></div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Today's schedule</div></div>
+          <div className="card-body">
+            {[
+              { time:'8:00', subject:'English', grade:'Grade 3A', room:'302' },
+              { time:'9:00', subject:'Math',    grade:'Grade 3A', room:'302' },
+              { time:'10:00', subject:'Urdu',   grade:'Grade 3A', room:'302' },
+              { time:'11:30', subject:'Science', grade:'Grade 3A', room:'Lab 1' },
+            ].map((s,i) => (
+              <div key={i} style={{ display:'flex', gap:14, padding:'12px 20px', borderBottom:'1px solid var(--cream-dark)', alignItems:'center' }}>
+                <div style={{ width:50, fontSize:12, fontWeight:700, color:'var(--maroon)', flexShrink:0 }}>{s.time}</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:600 }}>{s.subject}</div>
+                  <div style={{ fontSize:11, color:'var(--muted)' }}>{s.grade} · Room {s.room}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Pending tasks</div></div>
+          <div className="card-body">
+            {[
+              { label:'Mark attendance', type:'amber', done:false },
+              { label:'Grade Math worksheets (22 pending)', type:'red', done:false },
+              { label:'English essays submitted', type:'green', done:true },
+              { label:'Parent meeting notes', type:'amber', done:false },
+            ].map((t,i) => (
+              <div key={i} style={{ display:'flex', gap:12, padding:'12px 20px', borderBottom:'1px solid var(--cream-dark)', alignItems:'center' }}>
+                <div style={{ width:8, height:8, borderRadius:'50%', background:`var(--${t.done?'green':t.type})`, flexShrink:0 }}/>
+                <div style={{ fontSize:13, color: t.done?'var(--muted)':'var(--ink)', textDecoration: t.done?'line-through':'none' }}>{t.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AttendanceScreen() {
+  const [att, setAtt] = useState(() => {
+    const d = {};
+    STUDENTS.forEach(s => { d[s.id] = {...(ATT_DATA[s.id]||['P','P','P','P','P'])}; });
+    return d;
+  });
+  const today = DAYS[4];
+  const cycleStatus = (id) => {
+    const cur = att[id][4];
+    const next = { P:'A', A:'L', L:'P' }[cur];
+    setAtt(prev => { const n={...prev}; n[id]={...n[id]}; n[id][4]=next; return n; });
+  };
+  return (
+    <div className="content">
+      <div style={{ background:'var(--white)', borderRadius:'var(--r)', boxShadow:'var(--shadow)', overflow:'hidden' }}>
+        <div className="att-grid">
+          <div className="att-grid-head">Student</div>
+          {DAYS.map(d => <div key={d} className="att-grid-head" style={{ textAlign:'center', background: d===today?'var(--gold-pale)':'' }}>{d}</div>)}
+          {STUDENTS.map(s => (
+            <>
+              <div key={`n${s.id}`} className="att-cell name">{s.name}</div>
+              {DAYS.map((d,di) => (
+                <div key={`${s.id}-${di}`} className="att-cell">
+                  <div
+                    className={`att-dot ${att[s.id]?.[di]||'P'}`}
+                    style={{ cursor: di===4?'pointer':'default' }}
+                    onClick={() => di===4 && cycleStatus(s.id)}
+                    title={di===4?'Click to toggle':''}
+                  >{att[s.id]?.[di]||'P'}</div>
+                </div>
+              ))}
+            </>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginTop:12, fontSize:11, color:'var(--muted)' }}>P = Present · A = Absent · L = Late · Click today's column to toggle</div>
+    </div>
+  );
+}
+
+function GradeBookScreen() {
+  return (
+    <div className="content">
+      <div style={{ marginBottom:16, display:'flex', gap:10 }}>
+        <select style={{ padding:'8px 12px', border:'1.5px solid var(--line)', borderRadius:'var(--r)', fontFamily:'DM Sans,sans-serif', fontSize:13, background:'var(--white)' }}>
+          <option>Grade 3A</option><option>Grade 3B</option>
+        </select>
+        <select style={{ padding:'8px 12px', border:'1.5px solid var(--line)', borderRadius:'var(--r)', fontFamily:'DM Sans,sans-serif', fontSize:13, background:'var(--white)' }}>
+          <option>Term 1 (Jan–May 2026)</option>
+        </select>
+      </div>
+      <div className="card">
+        <div className="card-header"><div className="card-title">Grade 3A · Term 1 Scores</div></div>
+        <table className="tbl">
+          <thead><tr>
+            <th>Subject</th><th>Quiz 1</th><th>Quiz 2</th><th>Quiz 3</th><th>Final</th><th>Average</th>
+          </tr></thead>
+          <tbody>
+            {GRADES.map((g,i) => {
+              const scores = [g.q1,g.q2,g.q3,g.final].filter(Boolean);
+              const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+              return (
+                <tr key={i}>
+                  <td style={{ fontWeight:600 }}>{g.subject}</td>
+                  <td>{g.q1 ?? '—'}</td>
+                  <td>{g.q2 ?? '—'}</td>
+                  <td style={{ color:'var(--muted)' }}>{g.q3 ?? '—'}</td>
+                  <td style={{ color:'var(--muted)' }}>{g.final ?? '—'}</td>
+                  <td>
+                    {avg && (
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div className="progress-bar" style={{ width:60 }}>
+                          <div className="progress-fill" style={{ width:`${avg}%`, background: avg>=90?'var(--green)':avg>=70?'var(--gold)':'var(--red)' }}/>
+                        </div>
+                        <span style={{ fontSize:12, fontWeight:600 }}>{avg}%</span>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function AssignmentsScreen() {
+  return (
+    <div className="content">
+      {ASSIGNMENTS.length === 0
+        ? <EmptyState icon="📭" title="No assignments yet" sub="Create your first assignment to track student submissions." action={{ label:'+ New assignment', fn:()=>{} }}/>
+        : (
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Assignments · Grade 3A</div>
+              <button className="topbar-btn primary" style={{ fontSize:11 }}>+ New</button>
+            </div>
+            <table className="tbl">
+              <thead><tr><th>Title</th><th>Due</th><th>Submitted</th><th>Status</th></tr></thead>
+              <tbody>
+                {ASSIGNMENTS.map((a,i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight:600 }}>{a.title}</td>
+                    <td style={{ fontSize:12, color:'var(--muted)' }}>{a.due}</td>
+                    <td>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div className="progress-bar" style={{ width:60 }}>
+                          <div className="progress-fill" style={{ width:`${(a.submitted/a.total)*100}%` }}/>
+                        </div>
+                        <span style={{ fontSize:12 }}>{a.submitted}/{a.total}</span>
+                      </div>
+                    </td>
+                    <td><Tag type={a.status==='active'?'amber':a.status==='closed'?'green':'blue'}>{a.status}</Tag></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    </div>
+  );
+}
+
+// ─── Admin screens ─────────────────────────────────────────────────
+function AdminDashboard() {
+  return (
+    <div className="content">
+      <div className="stat-grid">
+        <div className="stat-card"><div className="stat-label">Total students</div><div className="stat-value">234</div><div className="stat-delta">↑ 12 from last term</div></div>
+        <div className="stat-card"><div className="stat-label">Staff members</div><div className="stat-value">18</div><div className="stat-delta">2 on leave today</div></div>
+        <div className="stat-card"><div className="stat-label">Classes</div><div className="stat-value">8</div><div className="stat-delta">KG → Grade 5</div></div>
+        <div className="stat-card"><div className="stat-label">Pending enrolments</div><div className="stat-value" style={{color:'var(--blue)'}}>4</div><div className="stat-delta">↑ 3 new this week</div></div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Today's attendance summary</div></div>
+          <div className="card-body" style={{ padding:'16px 20px' }}>
+            {[
+              { label:'Present', value:210, total:234, color:'var(--green)' },
+              { label:'Absent', value:18, total:234, color:'var(--red)' },
+              { label:'Late', value:6, total:234, color:'var(--amber)' },
+            ].map((r,i) => (
+              <div key={i} style={{ display:'flex', gap:12, alignItems:'center', marginBottom:12 }}>
+                <div style={{ width:60, fontSize:13, fontWeight:600, color:r.color }}>{r.label}</div>
+                <div className="progress-bar" style={{ flex:1 }}>
+                  <div className="progress-fill" style={{ width:`${(r.value/r.total)*100}%`, background:r.color }}/>
+                </div>
+                <div style={{ width:30, fontSize:12, fontWeight:700, color:r.color }}>{r.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Recent announcements</div></div>
+          <div className="card-body">
+            {[
+              { title:'Annual Sports Day — 19 May', audience:'All school', date:'Today' },
+              { title:'Fee deadline reminder', audience:'Parents', date:'Yesterday' },
+              { title:'PTM scheduled for 8 May', audience:'Grade 3–5', date:'Mon 5 May' },
+            ].map((a,i) => (
+              <div key={i} style={{ padding:'12px 20px', borderBottom:'1px solid var(--cream-dark)' }}>
+                <div style={{ fontSize:13, fontWeight:600 }}>{a.title}</div>
+                <div style={{ fontSize:11, color:'var(--muted)' }}>{a.audience} · {a.date}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EnrolmentScreen() {
+  const cols = [
+    { key:'inquiry',   label:'Inquiry',   color:'#E8F0FA', border:'#1A4A8B' },
+    { key:'interview', label:'Interview',  color:'#FEF6E0', border:'#D4851A' },
+    { key:'testing',   label:'Assessment', color:'#F5EEF8', border:'#7D3C98' },
+    { key:'enrolled',  label:'Enrolled',   color:'#E8F5EC', border:'#2D7A4F' },
+  ];
+  return (
+    <div className="content">
+      <div className="kanban">
+        {cols.map(col => (
+          <div key={col.key} className="kanban-col">
+            <div className="kanban-col-head" style={{ background:col.color, color:col.border }}>
+              {col.label} · {ENROLMENTS[col.key].length}
+            </div>
+            {ENROLMENTS[col.key].length === 0 ? (
+              <div style={{ background:'var(--white)', borderRadius:8, padding:'20px', textAlign:'center', color:'var(--muted)', fontSize:12, borderLeft:`3px solid ${col.border}` }}>
+                No applications
+              </div>
+            ) : (
+              ENROLMENTS[col.key].map((e,i) => (
+                <div key={i} className="kanban-card" style={{ borderLeftColor:col.border }}>
+                  <div className="kanban-name">{e.name}</div>
+                  <div className="kanban-meta">{e.grade} · {e.date}</div>
+                  <div className="kanban-meta" style={{ marginTop:4 }}>{e.contact}</div>
+                </div>
+              ))
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StaffScreen() {
+  return (
+    <div className="content">
+      {STAFF.length === 0
+        ? <EmptyState icon="👤" title="No staff records" sub="Add your first staff member to get started." action={{ label:'+ Add staff', fn:()=>{} }}/>
+        : (
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Staff Directory · {STAFF.length} members</div>
+              <button className="topbar-btn primary" style={{ fontSize:11 }}>+ Add staff</button>
+            </div>
+            <table className="tbl">
+              <thead><tr><th>Name</th><th>Role</th><th>Subject(s)</th><th>Contact</th><th>Status</th></tr></thead>
+              <tbody>
+                {STAFF.map((s,i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight:600 }}>{s.name}</td>
+                    <td style={{ fontSize:12, color:'var(--muted)' }}>{s.role}</td>
+                    <td style={{ fontSize:12 }}>{s.subject}</td>
+                    <td style={{ fontSize:12, color:'var(--muted)' }}>{s.phone}</td>
+                    <td><Tag type={s.status==='active'?'green':'amber'}>{s.status}</Tag></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    </div>
+  );
+}
+
+function ClassesScreen() {
+  return (
+    <div className="content">
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:16 }}>
+        {CLASSES.map((c,i) => (
+          <div key={i} className="card" style={{ padding:0 }}>
+            <div style={{ background:'var(--maroon)', padding:'14px 16px', borderRadius:'var(--r) var(--r) 0 0' }}>
+              <div style={{ fontFamily:'Cormorant Garamond,serif', fontSize:20, fontWeight:700, color:'var(--cream)' }}>{c.name}</div>
+              <div style={{ fontSize:11, color:'var(--gold)' }}>Room {c.room}</div>
+            </div>
+            <div style={{ padding:'14px 16px' }}>
+              <div style={{ fontSize:12, marginBottom:6 }}>👩‍🏫 {c.teacher}</div>
+              <div style={{ fontSize:12, color:'var(--muted)' }}>🎒 {c.strength} students</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementsScreen() {
+  return (
+    <div className="content">
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Announcements</div>
+          <button className="topbar-btn primary" style={{ fontSize:11 }}>+ New</button>
+        </div>
+        {[
+          { title:'Annual Sports Day — 19 May 2026', body:'All students must assemble in the ground by 8:00 AM sharp. Please pack water bottles and sun protection.', audience:'All school', date:'Today 9:00 AM', priority:'high' },
+          { title:'Fee payment deadline — 10 May', body:'Parents are reminded that May fees are due by 10th. Pay via JazzCash, bank transfer, or office.', audience:'Parents', date:'Yesterday 2:00 PM', priority:'medium' },
+          { title:'Parent-Teacher Meeting — 8 May', body:'PTM for Grade 3, 4 and 5 parents will be held from 3:00–5:00 PM. Please arrive on time.', audience:'Grade 3–5 parents', date:'Mon 5 May', priority:'low' },
+        ].map((a,i) => (
+          <div key={i} style={{ padding:'18px 20px', borderBottom:'1px solid var(--cream-dark)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+              <div style={{ fontSize:14, fontWeight:600 }}>{a.title}</div>
+              <Tag type={a.priority==='high'?'red':a.priority==='medium'?'amber':'muted'}>{a.priority}</Tag>
+            </div>
+            <div style={{ fontSize:12, color:'var(--muted)', marginBottom:8 }}>👥 {a.audience} · 🕐 {a.date}</div>
+            <div style={{ fontSize:13, color:'var(--ink)', lineHeight:1.6 }}>{a.body}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Accountant screens ────────────────────────────────────────────
+function FeeDashboard() {
+  return (
+    <div className="content">
+      <div className="stat-grid">
+        <div className="stat-card"><div className="stat-label">Collected this month</div><div className="stat-value">PKR 1.6M</div><div className="stat-delta">↑ 94% of target</div></div>
+        <div className="stat-card"><div className="stat-label">Outstanding</div><div className="stat-value" style={{color:'var(--red)'}}>PKR 119k</div><div className="stat-delta neg">12 defaulters</div></div>
+        <div className="stat-card"><div className="stat-label">Expenses — April</div><div className="stat-value">PKR 281k</div><div className="stat-delta">Within budget</div></div>
+        <div className="stat-card"><div className="stat-label">Net surplus</div><div className="stat-value" style={{color:'var(--green)'}}>PKR 1.3M</div><div className="stat-delta">After all expenses</div></div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }}>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Collection Register — May 2026</div></div>
+          <table className="tbl">
+            <thead><tr><th>Student</th><th>Class</th><th>Amount</th><th>Date</th><th>Method</th></tr></thead>
+            <tbody>
+              {FEES_COLLECTED.map((f,i)=>(
+                <tr key={i}>
+                  <td style={{ fontWeight:600 }}>{f.student}</td>
+                  <td><Tag type="muted">{f.grade}</Tag></td>
+                  <td style={{ fontWeight:600, color:'var(--green)' }}>{f.amount}</td>
+                  <td style={{ fontSize:12, color:'var(--muted)' }}>{f.date}</td>
+                  <td style={{ fontSize:12 }}>{f.method}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="card">
+          <div className="card-header"><div className="card-title">Quick stats</div></div>
+          <div className="card-body" style={{ padding:'16px 20px' }}>
+            {[
+              { label:'Cash', value:'PKR 8,500', color:'var(--ink)' },
+              { label:'JazzCash', value:'PKR 12,750', color:'var(--ink)' },
+              { label:'Bank transfer', value:'PKR 8,500', color:'var(--ink)' },
+            ].map((m,i) => (
+              <div key={i} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid var(--cream-dark)', fontSize:13 }}>
+                <span style={{ color:'var(--muted)' }}>{m.label}</span>
+                <span style={{ fontWeight:600 }}>{m.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CollectionScreen() {
+  return (
+    <div className="content">
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Full Collection Register</div>
+          <div style={{ display:'flex', gap:8 }}>
+            <button className="topbar-btn ghost" style={{ fontSize:11 }}>Export CSV</button>
+            <button className="topbar-btn primary" style={{ fontSize:11 }}>+ Record payment</button>
+          </div>
+        </div>
+        <table className="tbl">
+          <thead><tr><th>Student</th><th>Class</th><th>Amount</th><th>Date</th><th>Method</th><th>Ref #</th></tr></thead>
+          <tbody>
+            {FEES_COLLECTED.map((f,i)=>(
+              <tr key={i}>
+                <td style={{ fontWeight:600 }}>{f.student}</td>
+                <td><Tag type="muted">{f.grade}</Tag></td>
+                <td style={{ fontWeight:600, color:'var(--green)' }}>{f.amount}</td>
+                <td style={{ fontSize:12, color:'var(--muted)' }}>{f.date}</td>
+                <td>{f.method}</td>
+                <td style={{ fontSize:11, color:'var(--muted)', fontFamily:'monospace' }}>{f.ref}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function FeeStructureScreen() {
+  return (
+    <div className="content">
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Fee Structure · Academic Year 2025–26</div>
+          <button className="topbar-btn ghost" style={{ fontSize:11 }}>Edit structure</button>
+        </div>
+        <table className="tbl">
+          <thead><tr><th>Class</th><th>Tuition</th><th>Transport</th><th>Total/month</th></tr></thead>
+          <tbody>
+            {FEE_STRUCTURE.map((f,i)=>(
+              <tr key={i}>
+                <td style={{ fontWeight:600 }}>{f.class}</td>
+                <td>{f.tuition}</td>
+                <td style={{ color:'var(--muted)' }}>{f.transport}</td>
+                <td style={{ fontWeight:700, color:'var(--maroon)' }}>{f.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function DefaultersScreen() {
+  return (
+    <div className="content">
+      {DEFAULTERS.length === 0
+        ? <EmptyState icon="🎉" title="No defaulters!" sub="All families are up to date with their fee payments." />
+        : (
+          <>
+            <div className="error-banner">
+              <span style={{ fontSize:20 }}>⚠️</span>
+              <div>
+                <div style={{ fontSize:13, fontWeight:600, color:'var(--red)', marginBottom:2 }}>{DEFAULTERS.length} students with overdue fees</div>
+                <div style={{ fontSize:12, color:'var(--muted)' }}>Total outstanding: PKR 59,500 — WhatsApp reminders sent to all parents.</div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header"><div className="card-title">Defaulters List</div></div>
+              <table className="tbl">
+                <thead><tr><th>Student</th><th>Class</th><th>Amount due</th><th>Since</th><th>Months</th><th>Action</th></tr></thead>
+                <tbody>
+                  {DEFAULTERS.map((d,i)=>(
+                    <tr key={i}>
+                      <td style={{ fontWeight:600 }}>{d.student}</td>
+                      <td><Tag type="muted">{d.grade}</Tag></td>
+                      <td style={{ fontWeight:700, color:'var(--red)' }}>{d.amount}</td>
+                      <td style={{ fontSize:12, color:'var(--muted)' }}>{d.since}</td>
+                      <td><Tag type={d.months>=3?'red':'amber'}>{d.months}mo</Tag></td>
+                      <td><button className="topbar-btn ghost" style={{ fontSize:11, padding:'5px 12px' }}>📱 Remind</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      }
+    </div>
+  );
+}
+
+function ExpensesScreen() {
+  const total = EXPENSES.reduce((sum,e) => sum + parseInt(e.amount.replace(/\D/g,'')), 0);
+  return (
+    <div className="content">
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Expenses — April 2026</div>
+          <div style={{ display:'flex', gap:8 }}>
+            <span style={{ fontSize:13, color:'var(--muted)', lineHeight:'32px' }}>Total: <strong style={{ color:'var(--maroon)' }}>PKR {total.toLocaleString()}</strong></span>
+            <button className="topbar-btn primary" style={{ fontSize:11 }}>+ Add expense</button>
+          </div>
+        </div>
+        <table className="tbl">
+          <thead><tr><th>Description</th><th>Category</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            {EXPENSES.map((e,i)=>(
+              <tr key={i}>
+                <td style={{ fontWeight:600 }}>{e.desc}</td>
+                <td><Tag type="muted">{e.category}</Tag></td>
+                <td style={{ fontWeight:600 }}>{e.amount}</td>
+                <td style={{ fontSize:12, color:'var(--muted)' }}>{e.date}</td>
+                <td><Tag type={e.status==='paid'?'green':'amber'}>{e.status}</Tag></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function PayrollScreen() {
+  const paid = PAYROLL.filter(p=>p.status==='paid').length;
+  return (
+    <div className="content">
+      <div style={{ marginBottom:16 }}>
+        <div className="offline-banner">
+          ✅ {paid} of {PAYROLL.length} salaries disbursed for April 2026. {PAYROLL.length-paid} pending.
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Payroll — April 2026</div>
+          <button className="topbar-btn primary" style={{ fontSize:11 }}>Disburse all pending</button>
+        </div>
+        <table className="tbl">
+          <thead><tr><th>Staff</th><th>Role</th><th>Gross</th><th>Advance</th><th>Net</th><th>Status</th></tr></thead>
+          <tbody>
+            {PAYROLL.map((p,i)=>(
+              <tr key={i}>
+                <td style={{ fontWeight:600 }}>{p.name}</td>
+                <td style={{ fontSize:12, color:'var(--muted)' }}>{p.role}</td>
+                <td>{p.salary}</td>
+                <td style={{ color: p.advance>0 ? 'var(--amber)' : 'var(--muted)', fontSize:12 }}>
+                  {p.advance > 0 ? `− PKR ${p.advance.toLocaleString()}` : '—'}
+                </td>
+                <td style={{ fontWeight:700, color:'var(--maroon)' }}>{p.net}</td>
+                <td><Tag type={p.status==='paid'?'green':'amber'}>{p.status}</Tag></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen registry ───────────────────────────────────────────────
+const SCREENS = {
+  dashboard: { title:'Dashboard', component: TeacherDashboard },
+  attendance: { title:'Attendance', component: AttendanceScreen },
+  gradebook: { title:'Grade Book', component: GradeBookScreen },
+  assignments: { title:'Assignments', component: AssignmentsScreen },
+  admin_dash: { title:'Admin Dashboard', component: AdminDashboard },
+  enrolment: { title:'Enrolment Pipeline', component: EnrolmentScreen },
+  staff: { title:'Staff Directory', component: StaffScreen },
+  classes: { title:'Classes & Sections', component: ClassesScreen },
+  announcements: { title:'Announcements', component: AnnouncementsScreen },
+  fee_dash: { title:'Finance Dashboard', component: FeeDashboard },
+  collection: { title:'Collection Register', component: CollectionScreen },
+  fee_structure: { title:'Fee Structure', component: FeeStructureScreen },
+  defaulters: { title:'Defaulters', component: DefaultersScreen },
+  expenses: { title:'Expenses', component: ExpensesScreen },
+  payroll: { title:'Payroll', component: PayrollScreen },
+};
+
+// ─── App ───────────────────────────────────────────────────────────
+function App() {
+  const [role, setRole] = useState('teacher');
+  const [screen, setScreen] = useState('dashboard');
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // Login screen
+  if (!loggedIn) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'var(--maroon)' }}>
+      <div style={{ background:'var(--cream)', borderRadius:16, padding:'40px 36px', width:360, boxShadow:'0 20px 60px rgba(0,0,0,.4)' }}>
+        <div style={{ textAlign:'center', marginBottom:28 }}>
+          <img src={LOGO} alt="Good Day School" style={{ width:72, height:72, objectFit:'contain', marginBottom:14 }}/>
+          <div style={{ fontFamily:'Cormorant Garamond,serif', fontSize:26, fontWeight:700, color:'var(--maroon)' }}>Good Day School</div>
+          <div style={{ fontSize:12, color:'var(--muted)', letterSpacing:'.1em', textTransform:'uppercase' }}>Staff Portal</div>
+        </div>
+        <div style={{ marginBottom:14 }}>
+          <label style={{ fontSize:11, fontWeight:600, color:'var(--muted)', display:'block', marginBottom:6 }}>Login as</label>
+          {Object.entries(ROLES).map(([k,v]) => (
+            <button key={k} onClick={()=>setRole(k)} style={{
+              display:'flex', alignItems:'center', gap:10,
+              width:'100%', padding:'10px 14px', marginBottom:6,
+              border:`1.5px solid ${role===k?'var(--maroon-mid)':'var(--line)'}`,
+              borderRadius:8, background: role===k?'var(--gold-pale)':'white',
+              cursor:'pointer', fontFamily:'DM Sans,sans-serif', fontSize:13, fontWeight:500,
+            }}>
+              <div style={{ width:10, height:10, borderRadius:'50%', background:v.dot }}/>
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ marginBottom:14 }}>
+          <label style={{ fontSize:11, fontWeight:600, color:'var(--muted)', display:'block', marginBottom:6 }}>Password</label>
+          <input defaultValue="••••••••" type="password" style={{ width:'100%', padding:'11px 14px', border:'1.5px solid var(--line)', borderRadius:8, fontFamily:'DM Sans,sans-serif', fontSize:13, background:'var(--cream)', outline:'none' }}/>
+        </div>
+        <button onClick={()=>{ setScreen(role==='teacher'?'dashboard':role==='admin'?'admin_dash':'fee_dash'); setLoggedIn(true); }} style={{ width:'100%', background:'var(--maroon)', color:'var(--cream)', border:'none', borderRadius:8, padding:'14px', fontFamily:'DM Sans,sans-serif', fontSize:14, fontWeight:600, cursor:'pointer' }}>
+          Sign in →
+        </button>
+      </div>
+    </div>
+  );
+
+  const roleData = ROLES[role];
+  const screenData = SCREENS[screen] || SCREENS['dashboard'];
+  const Comp = screenData.component;
+
+  return (
+    <div className="shell">
+      {/* Sidebar */}
+      <div className="sidebar">
+        <div className="sidebar-brand">
+          <img src={LOGO} alt="Good Day School"/>
+          <div>
+            <div className="name">Good Day</div>
+            <div className="sub">School LMS</div>
+          </div>
+        </div>
+        <div className="role-switcher">
+          <div className="role-label">Switch role</div>
+          {Object.entries(ROLES).map(([k,v]) => (
+            <button key={k} className={`role-chip ${role===k?'active':''}`} onClick={()=>{setRole(k); setScreen(k==='teacher'?'dashboard':k==='admin'?'admin_dash':'fee_dash');}}>
+              <div className="role-dot" style={{ background:v.dot }}/>
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ flex:1, overflow:'auto' }}>
+          {roleData.nav.map((item,i) => {
+            if (item.section) return <div key={i} className="nav-section">{item.section}</div>;
+            return (
+              <button key={item.key} className={`nav-item ${screen===item.key?'active':''}`} onClick={()=>setScreen(item.key)}>
+                <span className="icon">{item.icon}</span>
+                {item.label}
+                {item.badge && <span className="badge-pill">{item.badge}</span>}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ padding:'16px', borderTop:'1px solid rgba(255,255,255,.1)' }}>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,.4)', marginBottom:4 }}>Logged in as</div>
+          <div style={{ fontSize:12, color:'var(--gold)', fontWeight:600 }}>{roleData.label} · Ms. Nadia</div>
+          <button onClick={()=>setLoggedIn(false)} style={{ marginTop:8, fontSize:11, color:'rgba(255,255,255,.4)', background:'none', border:'none', cursor:'pointer', padding:0 }}>Sign out</button>
+        </div>
+      </div>
+
+      {/* Main */}
+      <div className="main">
+        <div className="topbar">
+          <div>
+            <div className="topbar-title">{screenData.title}</div>
+          </div>
+          <div className="topbar-right">
+            <span style={{ fontSize:12, color:'var(--muted)' }}>Sunday, 25 May 2026</span>
+            <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--maroon)', color:'var(--gold)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700 }}>N</div>
+          </div>
+        </div>
+        <Comp />
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

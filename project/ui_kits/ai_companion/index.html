@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ustaz — AI Learning Companion · Good Day School</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: #F2EBDB; }
+
+:root {
+  --maroon-deep: #4A1313;
+  --maroon-mid: #6B1F1F;
+  --maroon-soft: #8B3434;
+  --gold: #C9A961;
+  --gold-soft: #E8D9B5;
+  --cream: #FAF6EE;
+  --cream-deep: #F2EBDB;
+  --line: #D9CDB5;
+  --ink: #2A1A1A;
+  --ink-soft: #5A4A4A;
+  --muted: #8A7A6A;
+  --green: #3A6B45;
+  --green-soft: #E8F5EC;
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: .4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+@keyframes starSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.12); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .6; transform: scale(1.3); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.msg-enter { animation: fadeInUp .28s ease forwards; }
+.drawer-open { animation: slideInRight .3s cubic-bezier(.22,1,.36,1) forwards; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+
+/* Mobile breakpoint */
+@media (max-width: 700px) {
+  .split-layout { flex-direction: column !important; }
+  .teacher-pane { display: none !important; }
+  .teacher-pane.mobile-show { display: flex !important; position: fixed !important; inset: 0 !important; z-index: 200 !important; }
+  .settings-drawer { width: 100% !important; }
+  .app-container { max-width: 100% !important; height: 100dvh !important; border-radius: 0 !important; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ════════════════════════════════════════════════
+   CURRICULUM DATA
+   ════════════════════════════════════════════════ */
+const CURRICULUM = {
+  '1': {
+    english: ['Unit 1: My Family', 'Unit 2: My School', 'Unit 3: Animals Around Us', 'Unit 4: The Weather'],
+    math: ['Numbers 1–100', 'Addition within 20', 'Subtraction within 20', 'Basic shapes', 'Patterns'],
+    science: ['Living and non-living things', 'My body', 'Plants around us', 'Water and air'],
+    islamiyat: ['Surah Al-Fatiha', 'Kalima Tayyaba', 'Manners in Islam', 'Allah is our Creator'],
+    urdu: ['الف ب ت (Alphabet)', 'میرا گھر (My Home)', 'میرے دوست (My Friends)', 'جانور (Animals)'],
+    quran: ['Noorani Qaida basics', 'Letter recognition', 'Harakat (short vowels)', 'Joining letters'],
+    general: ['Good habits', 'My classroom', 'Colors and shapes', 'Days of the week'],
+  },
+  '2': {
+    english: ['Unit 1: My Neighbourhood', 'Unit 2: Foods We Eat', 'Unit 3: Transport', 'Unit 4: Festivals'],
+    math: ['Numbers 1–500', 'Addition within 100', 'Subtraction within 100', 'Multiplication by 2 and 3', 'Time: hours and minutes'],
+    science: ['The human body systems', 'Animals and their habitats', 'Plants: roots and leaves', 'Simple machines'],
+    islamiyat: ['Surah Al-Ikhlas', 'Surah Al-Falaq', 'Five pillars of Islam', 'Story of Prophet Ibrahim AS'],
+    urdu: ['مختصر جملے (Short sentences)', 'میرا گاؤں (My Village)', 'موسم (Seasons)', 'پھل اور سبزیاں (Fruits and Vegetables)'],
+    quran: ['Surah Al-Fatiha revision', 'Surah Al-Ikhlas', 'Surah Al-Falaq', 'Surah An-Nas'],
+    general: ['Pakistan: our country', 'National symbols', 'Healthy eating', 'Saving water and energy'],
+  },
+  '3': {
+    english: ['Unit 1: Community Helpers', 'Unit 2: Weather & Seasons', 'Unit 3: Space', 'Unit 4: Health & Hygiene'],
+    math: ['Addition/subtraction to 1000', 'Multiplication tables 2–5', 'Measurement: length & weight', 'Fractions: half and quarter', 'Data and graphs'],
+    science: ['States of matter', 'The solar system', 'Food chains', 'Rocks and soil', 'Light and shadows'],
+    islamiyat: ['Five pillars in depth', 'Surah Al-Mulk (first 10 ayahs)', 'Stories of the Prophets', 'Importance of Salah'],
+    urdu: ['مضمون نویسی (Essay writing)', 'افسانہ (Short stories)', 'ضرب المثل (Proverbs)', 'گرامر (Grammar basics)'],
+    quran: ['Surah Al-Mulk', 'Tajweed: Ikhfa and Idgham', 'Memorisation revision: Juz Amma'],
+    general: ['Environment and conservation', 'Civic sense', 'First aid basics', 'Technology around us'],
+  },
+  '4': {
+    english: ['Unit 1: Inventions', 'Unit 2: Rainforests', 'Unit 3: Ancient civilizations', 'Unit 4: Human rights'],
+    math: ['Long division', 'Multiplication to 12×12', 'Decimals', 'Perimeter and area', 'Fractions: addition and subtraction'],
+    science: ['Electricity and circuits', 'Human digestive system', 'Ecosystems', 'Forces and motion', 'The water cycle'],
+    islamiyat: ['Seerah: Hijra and Madinah period', 'Islamic manners and character', 'Zakat and its importance', 'Surah Al-Mulk complete'],
+    urdu: ['ناول کا تعارف (Introduction to novels)', 'تنقید (Critical writing)', 'خط نویسی (Letter writing)', 'اسم و فعل (Nouns and verbs)'],
+    quran: ['Surah Al-Kahf (first 10 and last 10 ayahs)', 'Tajweed: Qalqalah', 'Memorisation: Juz 29'],
+    general: ['Global issues: climate change', 'Digital citizenship', 'Financial literacy basics', 'Career exploration'],
+  },
+  '5': {
+    english: ['Unit 1: Literature & Poetry', 'Unit 2: Journalism', 'Unit 3: Science fiction', 'Unit 4: Debates'],
+    math: ['Percentages', 'Ratio and proportion', 'Algebra introduction', 'Volume and surface area', 'Statistics: mean and median'],
+    science: ['Cells and microorganisms', 'Photosynthesis', 'Adaptation and evolution', 'Earth and geology', 'Chemical reactions basics'],
+    islamiyat: ['Khilafah Rashidah', 'Islamic economics', 'Surah Al-Baqarah (selected passages)', 'Ethics in Islam'],
+    urdu: ['ادبی تنقید (Literary criticism)', 'شاعری (Poetry)', 'رپورٹ نویسی (Report writing)', 'بحث و مباحثہ (Debate)'],
+    quran: ['Memorisation: Juz 28–30 review', 'Tajweed rules complete', 'Tafseer: Surah Al-Mulk', 'Arabic vocabulary building'],
+    general: ['Pakistan history: independence', 'Human geography', 'Entrepreneurship', 'Critical thinking skills'],
+  },
+};
+
+const SUBJECTS = ['english', 'urdu', 'math', 'science', 'islamiyat', 'quran', 'general'];
+const SUBJECT_LABELS = { english:'English', urdu:'Urdu', math:'Mathematics', science:'Science', islamiyat:'Islamiyat', quran:'Quran', general:'General' };
+const SUBJECT_COLORS = { english:'#1F4E8B', urdu:'#5A2D82', math:'#1A6B45', science:'#8B4513', islamiyat:'#1A5276', quran:'#6B3A1F', general:'#4A4A6B' };
+
+const STUDENTS = ['Zainab', 'Bilal', 'Fatima', 'Ahmed', 'Ayesha', 'Omar', 'Maryam', 'Hamza', 'Sara', 'Ali'];
+
+const OLLAMA_MODELS = [
+  { id:'llama3.2:1b', label:'Llama 3.2 · 1B (fastest)' },
+  { id:'phi3:mini', label:'Phi-3 Mini (smart & fast)' },
+  { id:'gemma2:2b', label:'Gemma 2 · 2B (balanced)' },
+  { id:'mistral:7b', label:'Mistral 7B (most capable)' },
+];
+
+/* ════════════════════════════════════════════════
+   SYSTEM PROMPT BUILDER
+   ════════════════════════════════════════════════ */
+function buildSystemPrompt(grade, subject, hintMode) {
+  const topics = CURRICULUM[grade]?.[subject] || ['General learning'];
+  return `You are Ustaz (meaning "teacher" in Urdu/Arabic), an AI learning assistant at Good Day School, Rawalpindi, Pakistan.
+You help students in Grade ${grade} with ${SUBJECT_LABELS[subject]}.
+
+CURRICULUM TOPICS FOR THIS SESSION:
+${topics.map((t, i) => `${i+1}. ${t}`).join('\n')}
+
+STRICT RULES — NEVER BREAK THESE:
+1. ONLY discuss these curriculum topics: ${topics.join(', ')}
+2. If asked ANYTHING outside these topics, say EXACTLY: "That is not in our lesson today! Let's stay focused — can you ask me something about ${topics[0]}?"
+3. Use simple, friendly language suitable for a ${parseInt(grade) + 5}-year-old child. Short sentences. No difficult words.
+4. ${hintMode ? 'HINT MODE IS ON: For all homework or exercise questions, give HINTS only — NEVER the direct answer. Say things like "Try thinking about..." or "Remember when we learned..." or "What happens if you...?" This is very important!' : 'You may give clear, helpful answers to questions.'}
+5. Sprinkle in simple Urdu encouragement naturally: "Shabash! (Well done!)", "Bahut acha! (Very good!)", "Koshish karo! (Keep trying!)", "Masha'Allah!", "Wah wah!"
+6. NEVER discuss: news, current events, politics, violence, other schools, social media, video games, celebrities, or anything outside the school curriculum.
+7. Keep responses SHORT and friendly: maximum 3 sentences for a child. Do not write long paragraphs.
+8. If you are not sure about something: say "Let's ask your teacher about that — they will know best, insha'Allah!"
+9. Always end your response with a friendly follow-up question to keep the student thinking and engaged.
+10. You are warm, encouraging, and patient like a kind teacher.`;
+}
+
+/* ════════════════════════════════════════════════
+   AI CALL FUNCTION (Ollama → Anthropic → Offline)
+   ════════════════════════════════════════════════ */
+async function callAI(messages, grade, subject, hintMode, apiKey, ollamaModel, ollamaUrl) {
+  const system = buildSystemPrompt(grade, subject, hintMode);
+  const recentMessages = messages.slice(-6);
+
+  // Try Ollama first
+  try {
+    const r = await fetch(`${ollamaUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: ollamaModel || 'llama3.2:1b',
+        stream: false,
+        messages: [{ role: 'system', content: system }, ...recentMessages],
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (r.ok) {
+      const d = await r.json();
+      return { text: d.message?.content || 'I did not understand that. Can you try again?', mode: 'ollama' };
+    }
+  } catch (e) { /* Ollama unavailable */ }
+
+  // Fallback: Anthropic Haiku
+  if (apiKey && apiKey.trim().startsWith('sk-ant')) {
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey.trim(),
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 300,
+          system,
+          messages: recentMessages,
+        }),
+        signal: AbortSignal.timeout(20000),
+      });
+      const d = await r.json();
+      if (d.content && d.content[0]) {
+        return { text: d.content[0].text, mode: 'anthropic' };
+      }
+    } catch (e) { /* Anthropic unavailable */ }
+  }
+
+  // Offline fallback
+  const offline = [
+    'That is a great question! I am not connected right now — please ask your teacher when you see them.',
+    'I cannot answer just now. Write your question down and ask Ms. Nadia tomorrow — she will know!',
+    'My connection is off today. Try again later, or ask a classmate to help you think about it!',
+    'Oops! I cannot reach my brain right now. Koshish karo! (Keep trying!) — talk to your teacher.',
+  ];
+  return { text: offline[Math.floor(Math.random() * offline.length)], mode: 'offline' };
+}
+
+/* ════════════════════════════════════════════════
+   ICONS
+   ════════════════════════════════════════════════ */
+const Icon = ({ name, size = 18, color = 'currentColor', strokeWidth = 1.8 }) => {
+  const paths = {
+    send: <><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></>,
+    x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    wifi: <><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></>,
+    'wifi-off': <><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/><path d="M5 12.55a10.94 10.94 0 015.17-2.39"/><path d="M10.71 5.05A16 16 0 0122.56 9"/><path d="M1.42 9a15.91 15.91 0 014.7-2.88"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></>,
+    download: <><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+    users: <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></>,
+    book: <><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></>,
+    flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></>,
+    lightbulb: <><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></>,
+    chevron_down: <polyline points="6 9 12 15 18 9"/>,
+    chevron_right: <polyline points="9 18 15 12 9 6"/>,
+    alert: <><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      {paths[name]}
+    </svg>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   STAR AVATAR (Ustaz AI)
+   ════════════════════════════════════════════════ */
+const StarAvatar = ({ size = 36, spinning = false }) => (
+  <div style={{
+    width: size, height: size, borderRadius: '50%',
+    background: 'linear-gradient(135deg, #C9A961 0%, #8B6A2F 100%)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+    boxShadow: '0 2px 8px rgba(201,169,97,.4)',
+    animation: spinning ? 'starSpin 2s linear infinite' : 'none',
+  }}>
+    <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="white">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  </div>
+);
+
+/* ════════════════════════════════════════════════
+   STUDENT AVATAR
+   ════════════════════════════════════════════════ */
+const StudentAvatar = ({ name, size = 36 }) => {
+  const initials = name.slice(0, 2).toUpperCase();
+  const hue = (name.charCodeAt(0) * 37) % 360;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0,
+      background: `hsl(${hue}, 40%, 75%)`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: size * 0.38,
+      color: `hsl(${hue}, 40%, 25%)`,
+    }}>{initials}</div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   TYPING INDICATOR
+   ════════════════════════════════════════════════ */
+const TypingIndicator = () => (
+  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 12 }}>
+    <StarAvatar size={32}/>
+    <div style={{
+      background: 'white', border: '1.5px solid var(--line)',
+      borderRadius: '4px 16px 16px 16px', padding: '12px 16px',
+      display: 'flex', gap: 5, alignItems: 'center',
+      boxShadow: '0 2px 8px rgba(74,19,19,.06)',
+    }}>
+      {[0, 1, 2].map(i => (
+        <div key={i} style={{
+          width: 7, height: 7, borderRadius: '50%', background: 'var(--gold)',
+          animation: `dotBounce 1.2s ease-in-out ${i * 0.15}s infinite`,
+        }}/>
+      ))}
+    </div>
+  </div>
+);
+
+/* ════════════════════════════════════════════════
+   CONNECTION BADGE
+   ════════════════════════════════════════════════ */
+const ConnectionBadge = ({ mode }) => {
+  const config = {
+    ollama: { color: '#3A6B45', bg: '#E8F5EC', dot: '#3A6B45', label: 'Local · Ollama' },
+    anthropic: { color: '#1A4A8B', bg: '#E8F0FB', dot: '#2563EB', label: 'Cloud · Haiku' },
+    offline: { color: '#8A7A6A', bg: '#F0EDE8', dot: '#8A7A6A', label: 'Offline mode' },
+    unknown: { color: '#8A7A6A', bg: '#F0EDE8', dot: '#8A7A6A', label: 'No AI connected' },
+  }[mode] || { color: '#8A7A6A', bg: '#F0EDE8', dot: '#8A7A6A', label: 'No AI connected' };
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 5,
+      background: config.bg, borderRadius: 999, padding: '4px 10px',
+    }}>
+      <div style={{
+        width: 7, height: 7, borderRadius: '50%', background: config.dot,
+        animation: mode === 'ollama' || mode === 'anthropic' ? 'pulse 2s infinite' : 'none',
+        flexShrink: 0,
+      }}/>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: config.color, fontWeight: 500, whiteSpace: 'nowrap' }}>
+        {config.label}
+      </span>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   SETTINGS DRAWER
+   ════════════════════════════════════════════════ */
+const SettingsDrawer = ({ open, onClose, settings, onSave }) => {
+  const [local, setLocal] = useState(settings);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+
+  useEffect(() => { setLocal(settings); }, [settings]);
+
+  const set = (k, v) => setLocal(p => ({ ...p, [k]: v }));
+
+  const testConnection = async () => {
+    setTesting(true); setTestResult(null);
+    try {
+      const r = await fetch(`${local.ollamaUrl}/api/tags`, { signal: AbortSignal.timeout(4000) });
+      if (r.ok) {
+        const d = await r.json();
+        const models = d.models?.map(m => m.name) || [];
+        setTestResult({ ok: true, msg: `Ollama connected! ${models.length} model(s) found.` });
+      } else { setTestResult({ ok: false, msg: 'Ollama responded with an error.' }); }
+    } catch {
+      if (local.apiKey?.trim().startsWith('sk-ant')) {
+        setTestResult({ ok: true, msg: 'Ollama not found — will use Anthropic Haiku.' });
+      } else {
+        setTestResult({ ok: false, msg: 'Cannot connect. Check Ollama is running or add an API key.' });
+      }
+    }
+    setTesting(false);
+  };
+
+  if (!open) return null;
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 500, display: 'flex' }}>
+      <div onClick={onClose} style={{ flex: 1, background: 'rgba(42,26,26,.4)', backdropFilter: 'blur(4px)' }}/>
+      <div className="settings-drawer drawer-open" style={{
+        width: 380, background: 'var(--cream)', height: '100%', overflowY: 'auto',
+        boxShadow: '-8px 0 32px rgba(74,19,19,.2)', display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Header */}
+        <div style={{ background: 'var(--maroon-deep)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 600, color: 'var(--cream)' }}>Settings</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--gold)', marginTop: 2 }}>AI Companion configuration</div>
+          </div>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,.1)', border: 'none', borderRadius: 8, padding: 8, cursor: 'pointer', color: 'var(--gold)' }}>
+            <Icon name="x" size={18} color="var(--gold)"/>
+          </button>
+        </div>
+
+        <div style={{ flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Section: AI Mode */}
+          <div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10 }}>AI Mode</div>
+            {[['local','Local (Ollama)','Free, runs on your laptop. No internet needed in class.'],['cloud','Cloud (Anthropic Haiku)','Requires API key. Uses internet. Fast & smart.'],['demo','Demo (offline)','No AI connection. Uses offline fallback messages.']].map(([v,l,desc])=>(
+              <button key={v} onClick={()=>set('mode',v)} style={{
+                width: '100%', textAlign: 'left', border: `2px solid ${local.mode===v?'var(--maroon-mid)':'var(--line)'}`,
+                background: local.mode===v?'rgba(107,31,31,.06)':'white', borderRadius: 10, padding: '12px 14px',
+                marginBottom: 8, cursor: 'pointer', display: 'flex', gap: 10, alignItems: 'flex-start',
+              }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${local.mode===v?'var(--maroon-mid)':'var(--line)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                  {local.mode===v && <div style={{ width: 9, height: 9, borderRadius: '50%', background: 'var(--maroon-mid)' }}/>}
+                </div>
+                <div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{l}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--muted)', marginTop: 3, lineHeight: 1.4 }}>{desc}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Section: Ollama */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--line)', padding: 16 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>Ollama Configuration</div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)', display: 'block', marginBottom: 5 }}>Ollama URL</label>
+              <input value={local.ollamaUrl} onChange={e=>set('ollamaUrl',e.target.value)}
+                style={{ width: '100%', border: '1.5px solid var(--line)', borderRadius: 8, padding: '10px 12px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: 'none', background: 'var(--cream)' }}/>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)', display: 'block', marginBottom: 5 }}>Model</label>
+              <select value={local.ollamaModel} onChange={e=>set('ollamaModel',e.target.value)}
+                style={{ width: '100%', border: '1.5px solid var(--line)', borderRadius: 8, padding: '10px 12px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: 'none', background: 'var(--cream)', cursor: 'pointer' }}>
+                {OLLAMA_MODELS.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}
+              </select>
+            </div>
+            <div style={{ background: 'rgba(201,169,97,.1)', borderRadius: 8, padding: '10px 12px', fontSize: 11, color: 'var(--ink-soft)', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}>
+              Ollama is free and runs on your laptop. Download from <strong>ollama.com</strong> — no internet needed during class. Then run: <code style={{ background: 'rgba(0,0,0,.06)', padding: '1px 5px', borderRadius: 3 }}>ollama pull llama3.2:1b</code>
+            </div>
+          </div>
+
+          {/* Section: Anthropic */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--line)', padding: 16 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>Anthropic API Key</div>
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)', display: 'block', marginBottom: 5 }}>API Key (sk-ant-...)</label>
+              <input type="password" value={local.apiKey} onChange={e=>set('apiKey',e.target.value)} placeholder="Paste your key here"
+                style={{ width: '100%', border: '1.5px solid var(--line)', borderRadius: 8, padding: '10px 12px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: 'none', background: 'var(--cream)' }}/>
+            </div>
+          </div>
+
+          {/* Test connection */}
+          <div>
+            <button onClick={testConnection} disabled={testing} style={{
+              width: '100%', background: testing?'var(--muted)':'var(--maroon-mid)', color: 'white', border: 'none',
+              borderRadius: 10, padding: '13px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+              cursor: testing?'not-allowed':'pointer', transition: 'background .2s',
+            }}>
+              {testing ? 'Testing...' : 'Test connection'}
+            </button>
+            {testResult && (
+              <div style={{
+                marginTop: 8, padding: '10px 12px', borderRadius: 8,
+                background: testResult.ok ? '#E8F5EC' : '#FAEAEA',
+                color: testResult.ok ? '#3A6B45' : '#8B1F1F',
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <Icon name={testResult.ok ? 'check' : 'alert'} size={14} color={testResult.ok ? '#3A6B45' : '#8B1F1F'} strokeWidth={2.5}/>
+                {testResult.msg}
+              </div>
+            )}
+          </div>
+
+          {/* Section: Classroom */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--line)', padding: 16 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>Classroom Settings</div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)', display: 'block', marginBottom: 5 }}>Class Section</label>
+              <select value={local.section} onChange={e=>set('section',e.target.value)}
+                style={{ width: '100%', border: '1.5px solid var(--line)', borderRadius: 8, padding: '10px 12px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: 'none', background: 'var(--cream)' }}>
+                {['3A','3B','4A','4B','5A','5B','1A','2A'].map(s=><option key={s} value={s}>Section {s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)', display: 'block', marginBottom: 5 }}>Date</label>
+              <input type="date" value={local.date} onChange={e=>set('date',e.target.value)}
+                style={{ width: '100%', border: '1.5px solid var(--line)', borderRadius: 8, padding: '10px 12px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, outline: 'none', background: 'var(--cream)' }}/>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Save */}
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--line)' }}>
+          <button onClick={() => { onSave(local); onClose(); }} style={{
+            width: '100%', background: 'linear-gradient(135deg, var(--maroon-deep) 0%, var(--maroon-mid) 100%)',
+            color: 'var(--cream)', border: 'none', borderRadius: 10, padding: '14px',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}>Save Settings</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   TOPIC CHIP (curriculum topic display)
+   ════════════════════════════════════════════════ */
+const TopicBanner = ({ grade, subject }) => {
+  const topics = CURRICULUM[grade]?.[subject] || [];
+  const color = SUBJECT_COLORS[subject] || 'var(--maroon-mid)';
+  return (
+    <div style={{
+      background: `${color}12`, borderBottom: `2px solid ${color}30`,
+      padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto',
+    }}>
+      <Icon name="book" size={13} color={color} strokeWidth={2}/>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+        Grade {grade} · {SUBJECT_LABELS[subject]}
+      </span>
+      <span style={{ color: '#D9CDB5' }}>·</span>
+      {topics.slice(0, 3).map((t, i) => (
+        <span key={i} style={{
+          background: `${color}18`, color, padding: '2px 8px', borderRadius: 999,
+          fontSize: 10, fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap', fontWeight: 500,
+        }}>{t}</span>
+      ))}
+      {topics.length > 3 && <span style={{ fontSize: 10, color, fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}>+{topics.length - 3} more</span>}
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   STUDENT CHAT PANE
+   ════════════════════════════════════════════════ */
+const StudentPane = ({ studentName, grade, subject, setGrade, setSubject, messages, onSend, isTyping, hintMode, setHintMode, aiMode }) => {
+  const [input, setInput] = useState('');
+  const bottomRef = useRef(null);
+  const MAX_CHARS = 200;
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const handleSend = () => {
+    const text = input.trim();
+    if (!text) return;
+    onSend(text);
+    setInput('');
+  };
+
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Assalamualaikum';
+    if (h < 17) return 'Assalamualaikum';
+    return 'Assalamualaikum';
+  })();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cream)' }}>
+      {/* Greeting banner */}
+      <div style={{ background: 'linear-gradient(135deg, var(--maroon-deep) 0%, var(--maroon-mid) 100%)', padding: '16px 20px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+          <StarAvatar size={40}/>
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 600, color: 'var(--cream)', lineHeight: 1.1 }}>
+              {greeting}, {studentName}!
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--gold)', marginTop: 2 }}>
+              I am Ustaz — your learning helper
+            </div>
+          </div>
+          {/* Hint mode toggle */}
+          <button onClick={() => setHintMode(h => !h)} style={{
+            marginLeft: 'auto', background: hintMode ? 'rgba(201,169,97,.25)' : 'rgba(255,255,255,.1)',
+            border: `1.5px solid ${hintMode ? 'var(--gold)' : 'rgba(255,255,255,.2)'}`,
+            borderRadius: 20, padding: '5px 10px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+          }}>
+            <Icon name="lightbulb" size={13} color={hintMode ? 'var(--gold)' : 'rgba(255,255,255,.6)'}/>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: hintMode ? 'var(--gold)' : 'rgba(255,255,255,.6)', fontWeight: 600 }}>
+              {hintMode ? 'Hint mode ON' : 'Hint mode'}
+            </span>
+          </button>
+        </div>
+
+        {/* Grade + Subject selectors */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,.1)', borderRadius: 8, padding: 2, gap: 1 }}>
+            {['1','2','3','4','5'].map(g => (
+              <button key={g} onClick={() => setGrade(g)} style={{
+                padding: '5px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                background: grade === g ? 'var(--gold)' : 'transparent',
+                color: grade === g ? 'var(--maroon-deep)' : 'rgba(255,255,255,.7)',
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: grade === g ? 700 : 400,
+                transition: 'all .15s',
+              }}>G{g}</button>
+            ))}
+          </div>
+          <select value={subject} onChange={e => setSubject(e.target.value)} style={{
+            flex: 1, background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.2)',
+            borderRadius: 8, padding: '6px 10px', color: 'var(--cream)',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 12, outline: 'none', cursor: 'pointer',
+          }}>
+            {SUBJECTS.map(s => <option key={s} value={s} style={{ color: 'var(--ink)', background: 'white' }}>{SUBJECT_LABELS[s]}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {/* Topic banner */}
+      <TopicBanner grade={grade} subject={subject}/>
+
+      {/* Chat messages */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column' }}>
+        {messages.length === 0 && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 20 }}>
+            <StarAvatar size={56}/>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: 'var(--maroon-mid)', marginTop: 14, marginBottom: 6 }}>
+              Ready to learn!
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: 'var(--muted)', lineHeight: 1.6, maxWidth: 260 }}>
+              Ask me anything about <strong>{SUBJECT_LABELS[subject]}</strong> for Grade {grade}. I am here to help!
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 6, width: '100%', maxWidth: 260 }}>
+              {(CURRICULUM[grade]?.[subject] || []).slice(0, 3).map((t, i) => (
+                <button key={i} onClick={() => onSend(`Tell me about ${t}`)} style={{
+                  background: 'white', border: '1.5px solid var(--line)', borderRadius: 20,
+                  padding: '8px 14px', fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: 'var(--ink-soft)',
+                  cursor: 'pointer', textAlign: 'left', transition: 'all .15s',
+                }}>
+                  Ask about: {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} className="msg-enter" style={{
+            display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 12,
+            flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+          }}>
+            {msg.role === 'assistant' ? <StarAvatar size={32}/> : <StudentAvatar name={studentName} size={32}/>}
+            <div style={{
+              maxWidth: '75%',
+              background: msg.role === 'user'
+                ? 'linear-gradient(135deg, var(--maroon-mid) 0%, var(--maroon-deep) 100%)'
+                : 'white',
+              color: msg.role === 'user' ? 'var(--cream)' : 'var(--ink)',
+              borderRadius: msg.role === 'user' ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
+              padding: '10px 14px',
+              border: msg.role === 'assistant' ? '1.5px solid var(--line)' : 'none',
+              boxShadow: '0 2px 8px rgba(74,19,19,.08)',
+              position: 'relative',
+            }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, lineHeight: 1.55 }}>{msg.content}</p>
+              {msg.mode && msg.role === 'assistant' && (
+                <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {msg.mode === 'offline' && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#8A7A6A' }}>
+                      <Icon name="alert" size={9} color="#C9A961" strokeWidth={2.5}/>
+                      offline
+                    </span>
+                  )}
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#B0A898', marginLeft: 'auto' }}>
+                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {isTyping && <TypingIndicator/>}
+        <div ref={bottomRef}/>
+      </div>
+
+      {/* Input area */}
+      <div style={{ borderTop: '1.5px solid var(--line)', padding: '12px 16px', background: 'white' }}>
+        {hintMode && (
+          <div style={{ background: 'rgba(201,169,97,.12)', borderRadius: 6, padding: '5px 10px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <Icon name="lightbulb" size={11} color="var(--gold)" strokeWidth={2.5}/>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: '#8B6A1F' }}>Hint mode — I will guide you, not give answers!</span>
+          </div>
+        )}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <textarea
+              value={input}
+              onChange={e => setInput(e.target.value.slice(0, MAX_CHARS))}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder={`Ask about ${SUBJECT_LABELS[subject]}...`}
+              rows={1}
+              style={{
+                width: '100%', border: '1.5px solid var(--line)', borderRadius: 12,
+                padding: '11px 14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14,
+                outline: 'none', resize: 'none', background: 'var(--cream)', lineHeight: 1.4,
+                minHeight: 44, maxHeight: 100, overflow: 'auto',
+              }}
+            />
+            <div style={{ position: 'absolute', bottom: 6, right: 10, fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: input.length > 160 ? '#8B1F1F' : 'var(--muted)' }}>
+              {input.length}/{MAX_CHARS}
+            </div>
+          </div>
+          <button
+            onClick={handleSend}
+            disabled={!input.trim()}
+            style={{
+              width: 44, height: 44, borderRadius: 12, border: 'none',
+              background: input.trim() ? 'linear-gradient(135deg, var(--maroon-mid) 0%, var(--maroon-deep) 100%)' : 'var(--line)',
+              color: 'white', cursor: input.trim() ? 'pointer' : 'not-allowed',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              transition: 'all .2s', boxShadow: input.trim() ? '0 2px 8px rgba(107,31,31,.3)' : 'none',
+            }}
+          >
+            <Icon name="send" size={17} color="white" strokeWidth={2.5}/>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   TEACHER VIEW PANE
+   ════════════════════════════════════════════════ */
+const TeacherPane = ({ sessions, grade, subject }) => {
+  const [expandedId, setExpandedId] = useState(null);
+  const [filterSubject, setFilterSubject] = useState('all');
+
+  const filtered = filterSubject === 'all' ? sessions : sessions.filter(s => s.subject === filterSubject);
+
+  // Coverage: count unique topics covered per subject
+  const coverage = {};
+  sessions.forEach(s => {
+    const key = s.subject;
+    if (!coverage[key]) coverage[key] = new Set();
+    s.messages.filter(m => m.role === 'user').forEach(m => {
+      (CURRICULUM[s.grade]?.[s.subject] || []).forEach(t => {
+        if (m.content.toLowerCase().includes(t.toLowerCase().split(' ')[0])) {
+          coverage[key].add(t);
+        }
+      });
+    });
+  });
+
+  const downloadCSV = () => {
+    alert('CSV download ready!\n\n(In production this would generate a CSV file with all conversation logs, student names, subjects, and timestamps for the teacher\'s records.)');
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cream-deep)' }}>
+      {/* Header */}
+      <div style={{ background: 'var(--maroon-deep)', padding: '16px 20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 600, color: 'var(--cream)' }}>Teacher View</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--gold)', marginTop: 1 }}>
+              {sessions.length} session{sessions.length !== 1 ? 's' : ''} today
+            </div>
+          </div>
+          <button onClick={downloadCSV} style={{
+            background: 'rgba(201,169,97,.2)', border: '1px solid rgba(201,169,97,.4)',
+            borderRadius: 8, padding: '7px 12px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 5, color: 'var(--gold)',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
+          }}>
+            <Icon name="download" size={13} color="var(--gold)" strokeWidth={2.5}/>
+            CSV
+          </button>
+        </div>
+
+        {/* Subject filter */}
+        <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 2 }}>
+          <button onClick={() => setFilterSubject('all')} style={{ padding: '4px 10px', borderRadius: 999, border: 'none', cursor: 'pointer', background: filterSubject==='all'?'var(--gold)':'rgba(255,255,255,.1)', color: filterSubject==='all'?'var(--maroon-deep)':'rgba(255,255,255,.7)', fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>All</button>
+          {SUBJECTS.map(s => (
+            <button key={s} onClick={() => setFilterSubject(s)} style={{ padding: '4px 10px', borderRadius: 999, border: 'none', cursor: 'pointer', background: filterSubject===s?'var(--gold)':'rgba(255,255,255,.1)', color: filterSubject===s?'var(--maroon-deep)':'rgba(255,255,255,.7)', fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>{SUBJECT_LABELS[s]}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+
+        {/* Curriculum coverage chart */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--line)', padding: 16, marginBottom: 16 }}>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>
+            Curriculum Coverage Today
+          </div>
+          {SUBJECTS.map(s => {
+            const total = (CURRICULUM[grade]?.[s] || []).length;
+            const covered = coverage[s]?.size || 0;
+            const pct = total > 0 ? Math.round((covered / total) * 100) : 0;
+            const color = SUBJECT_COLORS[s] || 'var(--maroon-mid)';
+            return (
+              <div key={s} style={{ marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'var(--ink-soft)' }}>{SUBJECT_LABELS[s]}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: 'var(--muted)' }}>{covered}/{total} topics</span>
+                </div>
+                <div style={{ height: 6, background: '#F2EBDB', borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 99, transition: 'width .4s ease' }}/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Sessions list */}
+        {sessions.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 32, color: 'var(--muted)' }}>
+            <Icon name="users" size={32} color="var(--line)" strokeWidth={1.5}/>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, marginTop: 10 }}>No sessions yet today.</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, marginTop: 4 }}>Students will appear here when they start chatting.</div>
+          </div>
+        ) : filtered.map(session => {
+          const hasOffline = session.messages.some(m => m.mode === 'offline');
+          const isExpanded = expandedId === session.id;
+          return (
+            <div key={session.id} style={{
+              background: 'white', borderRadius: 12, border: `1.5px solid ${hasOffline ? '#F0C060' : 'var(--line)'}`,
+              marginBottom: 10, overflow: 'hidden',
+              boxShadow: '0 2px 8px rgba(74,19,19,.05)',
+            }}>
+              <button onClick={() => setExpandedId(isExpanded ? null : session.id)} style={{
+                width: '100%', background: 'none', border: 'none', padding: '12px 14px',
+                display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', textAlign: 'left',
+              }}>
+                <StudentAvatar name={session.studentName} size={36}/>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{session.studentName}</span>
+                    {hasOffline && (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 3, background: '#FEF6E0', border: '1px solid #F0C060', borderRadius: 999, padding: '1px 7px' }}>
+                        <Icon name="flag" size={9} color="#B8861F" strokeWidth={2.5}/>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#8B6A1F', fontWeight: 600 }}>FLAGGED</span>
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>
+                    Grade {session.grade} · {SUBJECT_LABELS[session.subject]} · {session.messages.length} messages
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: 'var(--muted)' }}>
+                    {session.lastActive}
+                  </span>
+                  <Icon name="chevron_right" size={14} color="var(--muted)" strokeWidth={2}/>
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div style={{ borderTop: '1px solid var(--line)', padding: '12px 14px', background: 'var(--cream)' }}>
+                  {session.messages.map((m, i) => (
+                    <div key={i} style={{ marginBottom: 8, display: 'flex', gap: 8, flexDirection: m.role === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-start' }}>
+                      {m.role === 'assistant' ? <StarAvatar size={22}/> : <StudentAvatar name={session.studentName} size={22}/>}
+                      <div style={{
+                        maxWidth: '80%',
+                        background: m.role === 'user' ? 'var(--maroon-mid)' : 'white',
+                        color: m.role === 'user' ? 'white' : 'var(--ink)',
+                        border: m.role === 'assistant' ? '1px solid var(--line)' : 'none',
+                        borderRadius: m.role === 'user' ? '10px 2px 10px 10px' : '2px 10px 10px 10px',
+                        padding: '7px 10px',
+                      }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, lineHeight: 1.4 }}>{m.content}</p>
+                        {m.mode === 'offline' && (
+                          <span style={{ fontSize: 9, color: '#C9A961', display: 'block', marginTop: 3 }}>⚠ offline response</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   MAIN APP
+   ════════════════════════════════════════════════ */
+const App = () => {
+  const [activeTab, setActiveTab] = useState('student'); // 'student' | 'teacher'
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [grade, setGrade] = useState('3');
+  const [subject, setSubject] = useState('english');
+  const [studentName, setStudentName] = useState('Zainab');
+  const [hintMode, setHintMode] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [aiMode, setAiMode] = useState('unknown');
+  const [showMobileTeacher, setShowMobileTeacher] = useState(false);
+
+  const [settings, setSettings] = useState({
+    mode: 'local',
+    ollamaUrl: 'http://localhost:11434',
+    ollamaModel: 'llama3.2:1b',
+    apiKey: '',
+    section: '3A',
+    date: new Date().toISOString().split('T')[0],
+  });
+
+  // Demo sessions for teacher view
+  const [sessions, setSessions] = useState([
+    {
+      id: 1, studentName: 'Ahmed', grade: '3', subject: 'math',
+      lastActive: '9:14 AM',
+      messages: [
+        { role: 'user', content: 'What is multiplication?' },
+        { role: 'assistant', content: 'Shabash! Great question! Multiplication is like adding the same number many times. For example, 3 × 4 means adding 3 four times: 3 + 3 + 3 + 3 = 12. Can you try 2 × 5 for me?', mode: 'ollama' },
+        { role: 'user', content: '2 times 5 is 10!' },
+        { role: 'assistant', content: 'Bahut acha! You got it! 2 × 5 = 10, masha\'Allah! Now can you try 3 × 3?', mode: 'ollama' },
+      ],
+    },
+    {
+      id: 2, studentName: 'Fatima', grade: '3', subject: 'science',
+      lastActive: '9:31 AM',
+      messages: [
+        { role: 'user', content: 'What are states of matter?' },
+        { role: 'assistant', content: 'I am not connected right now — please ask your teacher when you see them.', mode: 'offline' },
+      ],
+    },
+    {
+      id: 3, studentName: 'Omar', grade: '3', subject: 'english',
+      lastActive: '9:45 AM',
+      messages: [
+        { role: 'user', content: 'Tell me about community helpers' },
+        { role: 'assistant', content: 'Community helpers are people who help us every day! Doctors keep us healthy, teachers help us learn, and police officers keep us safe. Who is your favourite community helper?', mode: 'anthropic' },
+        { role: 'user', content: 'I like doctors' },
+        { role: 'assistant', content: 'Wah wah! Doctors are so important! They went to school for many years to learn how to help sick people. Would you like to learn what doctors use to check your heartbeat?', mode: 'anthropic' },
+      ],
+    },
+  ]);
+
+  const handleSend = useCallback(async (text) => {
+    const newMsg = { role: 'user', content: text };
+    setMessages(prev => [...prev, newMsg]);
+    setIsTyping(true);
+
+    const allMessages = [...messages, newMsg];
+    const result = await callAI(
+      allMessages.map(m => ({ role: m.role, content: m.content })),
+      grade, subject, hintMode, settings.apiKey, settings.ollamaModel, settings.ollamaUrl
+    );
+
+    setAiMode(result.mode);
+    const aiMsg = { role: 'assistant', content: result.text, mode: result.mode };
+    setMessages(prev => [...prev, aiMsg]);
+    setIsTyping(false);
+
+    // Record session for teacher view
+    setSessions(prev => {
+      const sessionId = `live-${studentName}`;
+      const existing = prev.find(s => s.id === sessionId);
+      if (existing) {
+        return prev.map(s => s.id === sessionId ? {
+          ...s, subject, grade,
+          messages: [...allMessages, aiMsg].map(m => ({ ...m })),
+          lastActive: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        } : s);
+      }
+      return [{
+        id: sessionId, studentName, grade, subject,
+        lastActive: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        messages: [...allMessages, aiMsg].map(m => ({ ...m })),
+      }, ...prev];
+    });
+  }, [messages, grade, subject, hintMode, settings, studentName]);
+
+  // Reset messages when grade/subject changes
+  useEffect(() => { setMessages([]); }, [grade, subject]);
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--cream-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0' }}>
+      <div className="app-container" style={{
+        width: '100%', maxWidth: 1100, height: '100vh', maxHeight: 800,
+        background: 'var(--cream)', borderRadius: 20,
+        boxShadow: '0 32px 64px rgba(74,19,19,.18), 0 0 0 1px rgba(74,19,19,.08)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
+
+        {/* ── HEADER ── */}
+        <div style={{
+          background: 'linear-gradient(135deg, var(--maroon-deep) 0%, #3A0F0F 100%)',
+          padding: '0 20px', display: 'flex', alignItems: 'center', gap: 12,
+          height: 60, flexShrink: 0, borderBottom: '2px solid rgba(201,169,97,.2)',
+        }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 4 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(201,169,97,.15)', border: '1px solid rgba(201,169,97,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.8">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, fontWeight: 600, color: 'var(--cream)', lineHeight: 1 }}>Good Day School</div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase' }}>Ustaz AI · Rawalpindi</div>
+            </div>
+          </div>
+
+          {/* Tab toggle */}
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: 2, gap: 1, marginLeft: 8 }}>
+            {[['student','Student'],['teacher','Teacher']].map(([t,l]) => (
+              <button key={t} onClick={() => setActiveTab(t)} style={{
+                padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                background: activeTab===t ? 'var(--gold)' : 'transparent',
+                color: activeTab===t ? 'var(--maroon-deep)' : 'rgba(255,255,255,.65)',
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: activeTab===t ? 700 : 500,
+                transition: 'all .2s',
+              }}>{l}</button>
+            ))}
+          </div>
+
+          {/* Student name selector */}
+          <select value={studentName} onChange={e => setStudentName(e.target.value)} style={{
+            background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.2)',
+            borderRadius: 8, padding: '6px 10px', color: 'var(--cream)',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 12, outline: 'none', cursor: 'pointer',
+          }}>
+            {STUDENTS.map(s => <option key={s} value={s} style={{ color: 'var(--ink)', background: 'white' }}>{s}</option>)}
+          </select>
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }}/>
+
+          {/* Connection badge */}
+          <ConnectionBadge mode={aiMode}/>
+
+          {/* Mobile teacher toggle */}
+          <button onClick={() => setShowMobileTeacher(true)} style={{
+            display: 'none', background: 'rgba(201,169,97,.15)', border: '1px solid rgba(201,169,97,.3)',
+            borderRadius: 8, padding: '6px 10px', cursor: 'pointer', color: 'var(--gold)',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 11,
+          }} className="mobile-teacher-btn">
+            Teacher
+          </button>
+
+          {/* Settings */}
+          <button onClick={() => setSettingsOpen(true)} style={{
+            background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.15)',
+            borderRadius: 8, padding: '7px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'background .2s',
+          }}>
+            <Icon name="settings" size={17} color="var(--gold)"/>
+          </button>
+        </div>
+
+        {/* ── SPLIT BODY ── */}
+        <div className="split-layout" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+          {/* Student pane */}
+          <div style={{
+            flex: activeTab === 'student' ? 1 : '0 0 0',
+            minWidth: activeTab === 'student' ? 0 : 0,
+            overflow: 'hidden', transition: 'flex .3s ease',
+            display: 'flex', flexDirection: 'column',
+          }}>
+            <StudentPane
+              studentName={studentName}
+              grade={grade} subject={subject}
+              setGrade={g => { setGrade(g); }}
+              setSubject={s => { setSubject(s); }}
+              messages={messages}
+              onSend={handleSend}
+              isTyping={isTyping}
+              hintMode={hintMode}
+              setHintMode={setHintMode}
+              aiMode={aiMode}
+            />
+          </div>
+
+          {/* Divider */}
+          <div style={{
+            width: activeTab === 'teacher' ? 0 : 1, background: 'var(--line)', flexShrink: 0,
+            transition: 'width .3s',
+          }}/>
+
+          {/* Teacher pane (always rendered, toggled via tabs on mobile, shown as right column on desktop) */}
+          <div style={{
+            width: activeTab === 'teacher' ? '100%' : 340, flexShrink: 0,
+            overflow: 'hidden', display: 'flex', flexDirection: 'column',
+            transition: 'width .3s ease',
+          }}>
+            <TeacherPane sessions={sessions} grade={grade} subject={subject}/>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Settings drawer */}
+      <SettingsDrawer
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        settings={settings}
+        onSave={s => { setSettings(s); setAiMode('unknown'); }}
+      />
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════
+   ADDITIONAL RESPONSIVE CSS
+   ════════════════════════════════════════════════ */
+const responsiveStyle = document.createElement('style');
+responsiveStyle.textContent = `
+  @media (max-width: 900px) {
+    .split-layout > div:last-child { width: 0 !important; overflow: hidden; }
+    .app-container { max-width: 100% !important; border-radius: 0 !important; max-height: 100dvh !important; }
+  }
+  @media (min-width: 901px) {
+    .split-layout > div:first-child { flex: 1 !important; }
+    .split-layout > div:last-child { width: 340px !important; }
+  }
+`;
+document.head.appendChild(responsiveStyle);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

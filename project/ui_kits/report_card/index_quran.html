@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Good Day School — Quran Progress Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:wght@400;500&family=DM+Sans:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #E8DFD0; min-height: 100vh; padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+@media print {
+  body { background: white; padding: 0; }
+  .screen-only { display: none !important; }
+  .quran-page { box-shadow: none !important; margin: 0 !important; }
+  @page { size: A4; margin: 12mm; }
+  .no-print { display: none !important; }
+}
+
+/* Toolbar */
+.toolbar { background: #4A1313; color: #E8D9B5; padding: 12px 24px; border-radius: 8px; display: flex; align-items: center; gap: 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; flex-wrap: wrap; }
+.toolbar button { background: #C9A961; color: #4A1313; border: none; border-radius: 6px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* Page */
+.quran-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #FDFAF4;
+  box-shadow: 0 20px 60px rgba(74,19,19,.25);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Top stripe */
+.top-stripe { height: 6px; background: linear-gradient(90deg, #4A1313 0%, #C9A961 40%, #4A1313 100%); }
+
+/* Header */
+.header { background: #4A1313; padding: 22px 30px 20px; position: relative; overflow: hidden; }
+.header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: rgba(201,169,97,.08); }
+.header::after  { content: ''; position: absolute; bottom: -60px; left: 60px; width: 160px; height: 160px; border-radius: 50%; background: rgba(201,169,97,.05); }
+.header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 1; }
+.school-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #FAF6EE; }
+.school-tag { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: #C9A961; margin-top: 4px; opacity: .8; }
+.doc-title { margin-left: auto; text-align: right; position: relative; z-index: 1; }
+.doc-title h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #C9A961; }
+.doc-title .arabic-title { font-family: 'Noto Nastaliq Urdu', serif; font-size: 18px; color: #E8D9B5; direction: rtl; margin-top: 4px; }
+.doc-title .sub { font-family: 'DM Sans', sans-serif; font-size: 10px; color: #E8D9B5; opacity: .7; margin-top: 2px; }
+
+/* Student meta grid */
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0; border-top: 1px solid rgba(201,169,97,.2); padding-top: 14px; position: relative; z-index: 1; }
+.meta-field .label { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: #C9A961; opacity: .75; margin-bottom: 3px; }
+.meta-field .value { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: #FAF6EE; }
+.meta-field .value-ur { font-family: 'Noto Nastaliq Urdu', serif; font-size: 14px; color: #E8D9B5; direction: rtl; margin-top: 2px; }
+
+/* Body */
+.body { padding: 20px 30px 24px; }
+
+/* Section heading */
+.sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; margin-top: 20px; }
+.sec-head:first-child { margin-top: 0; }
+.sec-title-en { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: #4A1313; white-space: nowrap; }
+.sec-title-ur { font-family: 'Noto Nastaliq Urdu', serif; font-size: 14px; color: #6B1F1F; direction: rtl; }
+.sec-line { flex: 1; height: 1.5px; background: linear-gradient(90deg, #C9A961 0%, #D9CDB5 100%); }
+
+/* Hifz checklist */
+.hifz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+.hifz-item { display: flex; align-items: center; gap: 10px; background: white; border-radius: 8px; border: 1px solid #D9CDB5; padding: 9px 12px; }
+.hifz-item.done { border-color: #C9A961; background: #FDFAF4; }
+.hifz-check { width: 20px; height: 20px; border-radius: 4px; border: 2px solid #D9CDB5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hifz-check.checked { background: #4A1313; border-color: #4A1313; }
+.hifz-check.checked svg { display: block; }
+.hifz-check svg { display: none; }
+.hifz-label { flex: 1; }
+.hifz-en { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #2A1A1A; font-weight: 500; }
+.hifz-ar { font-family: 'Noto Nastaliq Urdu', serif; font-size: 12px; color: #6B1F1F; direction: rtl; margin-top: 1px; }
+.hifz-ayahs { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; margin-left: auto; flex-shrink: 0; }
+
+/* Tajweed checklist */
+.tajweed-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.tajweed-item { background: white; border-radius: 8px; border: 1px solid #D9CDB5; padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+.tajweed-item.mastered { border-color: #3A6B45; background: #F0FAF4; }
+.taj-check { width: 18px; height: 18px; border-radius: 3px; border: 2px solid #D9CDB5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.tajweed-item.mastered .taj-check { background: #3A6B45; border-color: #3A6B45; }
+.taj-label { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #2A1A1A; font-weight: 500; }
+.taj-label-ur { font-family: 'Noto Nastaliq Urdu', serif; font-size: 11px; color: #5A4A4A; direction: rtl; display: block; margin-top: 2px; }
+
+/* Weekly tracker grid */
+.tracker-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 16px; }
+.tracker-table th { background: #4A1313; color: #C9A961; padding: 8px 10px; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; text-align: center; font-weight: 500; }
+.tracker-table th:first-child { text-align: left; }
+.tracker-table td { padding: 9px 10px; border-bottom: 1px solid #F2EBDB; font-family: 'DM Sans', sans-serif; color: #2A1A1A; text-align: center; font-size: 11px; }
+.tracker-table td:first-child { text-align: left; font-weight: 500; font-size: 11px; color: #4A1313; }
+.tracker-table tr:last-child td { border-bottom: none; }
+.tracker-table tr:nth-child(even) td { background: #FAFAF6; }
+.week-cell { background: #E8F5EC; border-radius: 4px; padding: 2px 6px; color: #3A6B45; font-weight: 600; font-size: 10px; display: inline-block; min-width: 28px; }
+.week-cell.zero { background: #F2EBDB; color: #8A7A6A; }
+.week-cell.partial { background: #FEF6E0; color: #8B6A1F; }
+
+/* Teacher note */
+.note-box { background: white; border: 1px solid #D9CDB5; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.note-box .who { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #8A7A6A; margin-bottom: 8px; }
+.note-text { font-family: 'Lora', serif; font-size: 13px; color: #2A1A1A; line-height: 1.7; border: 1px solid #F2EBDB; border-radius: 6px; padding: 12px; background: #FDFAF4; }
+.note-text-ur { font-family: 'Noto Nastaliq Urdu', serif; font-size: 14px; color: #2A1A1A; line-height: 2; direction: rtl; text-align: right; border: 1px solid #F2EBDB; border-radius: 6px; padding: 12px; background: #FDFAF4; margin-top: 8px; }
+.sig-line { margin-top: 12px; border-top: 1px solid #D9CDB5; padding-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; }
+.sig { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: #4A1313; }
+.sig-label { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; }
+
+/* Parent acknowledgment + stamp */
+.bottom-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-bottom: 4px; }
+.ack-box { border: 1.5px dashed #C9A961; border-radius: 10px; padding: 16px; background: #FDFAF4; }
+.ack-label { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: #8A7A6A; margin-bottom: 10px; }
+.sig-field { border-bottom: 1px solid #D9CDB5; padding-bottom: 4px; }
+.sig-field-label { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #8A7A6A; margin-top: 4px; }
+
+/* Stamp area */
+.stamp-area { width: 110px; border: 2px dashed #D9CDB5; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; text-align: center; }
+.stamp-circle { width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #C9A961; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.stamp-circle span { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: #C9A961; text-align: center; line-height: 1.4; }
+.stamp-label { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: #8A7A6A; }
+
+/* Footer */
+.footer { background: #4A1313; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; }
+.footer .seal { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #C9A961; }
+.footer .receipt { font-family: 'DM Sans', sans-serif; font-size: 9px; color: #E8D9B5; opacity: .7; }
+
+/* Checkmark SVG */
+.check-svg { width: 10px; height: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar screen-only">
+  <span>Good Day School · Quran Progress Report</span>
+  <button onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<!-- THE PAGE -->
+<div class="quran-page">
+  <div class="top-stripe"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-row">
+      <img src="../../assets/logo-photo.png" alt="Good Day School" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;">
+      <div>
+        <div class="school-name">Good Day School</div>
+        <div class="school-tag">Established 2001 · Rawalpindi, Pakistan</div>
+      </div>
+      <div class="doc-title">
+        <h2>Quran Progress Report</h2>
+        <div class="arabic-title">رپورٹ قرآن کریم</div>
+        <div class="sub">Academic Year 2025 – 2026</div>
+      </div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-field">
+        <div class="label">Student name</div>
+        <div class="value">Zainab Fatima</div>
+        <div class="value-ur">زینب فاطمہ</div>
+      </div>
+      <div class="meta-field">
+        <div class="label">Grade &amp; section</div>
+        <div class="value">Grade 3 · Section A</div>
+      </div>
+      <div class="meta-field">
+        <div class="label">Quran teacher</div>
+        <div class="value">Ustadha Kiran</div>
+        <div class="value-ur">استاذہ کرن</div>
+      </div>
+      <div class="meta-field">
+        <div class="label">Term</div>
+        <div class="value">Q3 · Jan–Mar 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- ═══ HIFZ SECTION ═══ -->
+    <div class="sec-head">
+      <span class="sec-title-en">Hifz — Surahs Memorised This Term</span>
+      <div class="sec-line"></div>
+      <span class="sec-title-ur">حفظ · اس ٹرم میں یاد کی گئی سورتیں</span>
+    </div>
+    <div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#8A7A6A;margin-bottom:10px;">Juz Amma — in order of revelation · ترتیب کے مطابق</div>
+    <div class="hifz-grid">
+
+      <!-- 1 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Fatihah (1)</div>
+          <div class="hifz-ar">سورۃ الفاتحہ</div>
+        </div>
+        <div class="hifz-ayahs">7 ayahs</div>
+      </div>
+
+      <!-- 2 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">An-Nas (114)</div>
+          <div class="hifz-ar">سورۃ الناس</div>
+        </div>
+        <div class="hifz-ayahs">6 ayahs</div>
+      </div>
+
+      <!-- 3 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Falaq (113)</div>
+          <div class="hifz-ar">سورۃ الفلق</div>
+        </div>
+        <div class="hifz-ayahs">5 ayahs</div>
+      </div>
+
+      <!-- 4 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Ikhlas (112)</div>
+          <div class="hifz-ar">سورۃ الاخلاص</div>
+        </div>
+        <div class="hifz-ayahs">4 ayahs</div>
+      </div>
+
+      <!-- 5 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Masad (111)</div>
+          <div class="hifz-ar">سورۃ المسد</div>
+        </div>
+        <div class="hifz-ayahs">5 ayahs</div>
+      </div>
+
+      <!-- 6 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">An-Nasr (110)</div>
+          <div class="hifz-ar">سورۃ النصر</div>
+        </div>
+        <div class="hifz-ayahs">3 ayahs</div>
+      </div>
+
+      <!-- 7 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Kafirun (109)</div>
+          <div class="hifz-ar">سورۃ الکافرون</div>
+        </div>
+        <div class="hifz-ayahs">6 ayahs</div>
+      </div>
+
+      <!-- 8 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Kawthar (108)</div>
+          <div class="hifz-ar">سورۃ الکوثر</div>
+        </div>
+        <div class="hifz-ayahs">3 ayahs</div>
+      </div>
+
+      <!-- 9 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Ma'un (107)</div>
+          <div class="hifz-ar">سورۃ الماعون</div>
+        </div>
+        <div class="hifz-ayahs">7 ayahs</div>
+      </div>
+
+      <!-- 10 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Quraysh (106)</div>
+          <div class="hifz-ar">سورۃ قریش</div>
+        </div>
+        <div class="hifz-ayahs">4 ayahs</div>
+      </div>
+
+      <!-- 11 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Fil (105)</div>
+          <div class="hifz-ar">سورۃ الفیل</div>
+        </div>
+        <div class="hifz-ayahs">5 ayahs</div>
+      </div>
+
+      <!-- 12 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Humazah (104)</div>
+          <div class="hifz-ar">سورۃ الہمزہ</div>
+        </div>
+        <div class="hifz-ayahs">9 ayahs</div>
+      </div>
+
+      <!-- 13 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Asr (103)</div>
+          <div class="hifz-ar">سورۃ العصر</div>
+        </div>
+        <div class="hifz-ayahs">3 ayahs</div>
+      </div>
+
+      <!-- 14 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">At-Takathur (102)</div>
+          <div class="hifz-ar">سورۃ التکاثر</div>
+        </div>
+        <div class="hifz-ayahs">8 ayahs</div>
+      </div>
+
+      <!-- 15 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Qari'ah (101)</div>
+          <div class="hifz-ar">سورۃ القارعۃ</div>
+        </div>
+        <div class="hifz-ayahs">11 ayahs</div>
+      </div>
+
+      <!-- 16 -->
+      <div class="hifz-item done">
+        <div class="hifz-check checked"><svg class="check-svg" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Adiyat (100)</div>
+          <div class="hifz-ar">سورۃ العادیات</div>
+        </div>
+        <div class="hifz-ayahs">11 ayahs</div>
+      </div>
+
+      <!-- 17 — in progress -->
+      <div class="hifz-item" style="border-color:#C9A961; background:#FFFDF8;">
+        <div class="hifz-check" style="border-color:#C9A961; background:rgba(201,169,97,.2);">
+          <svg class="check-svg" viewBox="0 0 12 12" fill="#C9A961"><circle cx="6" cy="6" r="3"/></svg>
+        </div>
+        <div class="hifz-label">
+          <div class="hifz-en">Az-Zalzalah (99)</div>
+          <div class="hifz-ar">سورۃ الزلزلہ</div>
+        </div>
+        <div class="hifz-ayahs" style="color:#C9A961;">In progress</div>
+      </div>
+
+      <!-- 18 — not yet -->
+      <div class="hifz-item">
+        <div class="hifz-check"></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Bayyinah (98)</div>
+          <div class="hifz-ar">سورۃ البینۃ</div>
+        </div>
+        <div class="hifz-ayahs">8 ayahs</div>
+      </div>
+
+      <!-- 19 — not yet -->
+      <div class="hifz-item">
+        <div class="hifz-check"></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Qadr (97)</div>
+          <div class="hifz-ar">سورۃ القدر</div>
+        </div>
+        <div class="hifz-ayahs">5 ayahs</div>
+      </div>
+
+      <!-- 20 — not yet -->
+      <div class="hifz-item">
+        <div class="hifz-check"></div>
+        <div class="hifz-label">
+          <div class="hifz-en">Al-Alaq (96)</div>
+          <div class="hifz-ar">سورۃ العلق</div>
+        </div>
+        <div class="hifz-ayahs">19 ayahs</div>
+      </div>
+
+    </div><!-- /hifz-grid -->
+
+    <!-- ═══ TAJWEED RULES ═══ -->
+    <div class="sec-head">
+      <span class="sec-title-en">Tajweed Rules Mastered</span>
+      <div class="sec-line"></div>
+      <span class="sec-title-ur">مسلط تجوید قواعد</span>
+    </div>
+    <div class="tajweed-grid">
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Madd</div>
+          <span class="taj-label-ur">مد</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Ghunna</div>
+          <span class="taj-label-ur">غنہ</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Qalqala</div>
+          <span class="taj-label-ur">قلقلہ</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Waqf</div>
+          <span class="taj-label-ur">وقف</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Ikhfa</div>
+          <span class="taj-label-ur">اخفاء</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item mastered">
+        <div class="taj-check"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div>
+          <div class="taj-label">Idghaam</div>
+          <span class="taj-label-ur">ادغام</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item">
+        <div class="taj-check"></div>
+        <div>
+          <div class="taj-label">Iqlab</div>
+          <span class="taj-label-ur">اقلاب</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item">
+        <div class="taj-check"></div>
+        <div>
+          <div class="taj-label">Izhar</div>
+          <span class="taj-label-ur">اظہار</span>
+        </div>
+      </div>
+
+      <div class="tajweed-item">
+        <div class="taj-check"></div>
+        <div>
+          <div class="taj-label">Meem Saakin</div>
+          <span class="taj-label-ur">میم ساکن</span>
+        </div>
+      </div>
+
+    </div><!-- /tajweed-grid -->
+
+    <!-- ═══ SABAQ / SABQI / MANZIL WEEKLY TRACKER ═══ -->
+    <div class="sec-head">
+      <span class="sec-title-en">Weekly Progress — Sabaq · Sabqi · Manzil</span>
+      <div class="sec-line"></div>
+      <span class="sec-title-ur">ہفتہ وار پیشرفت</span>
+    </div>
+    <table class="tracker-table">
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>W1</th><th>W2</th><th>W3</th><th>W4</th>
+          <th>W5</th><th>W6</th><th>W7</th><th>W8</th>
+          <th>W9</th><th>W10</th><th>W11</th><th>W12</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sabaq<br/><span style="font-family:'Noto Nastaliq Urdu',serif;font-size:10px;color:#8A7A6A;direction:rtl;">سبق</span></td>
+          <td><span class="week-cell">12</span></td>
+          <td><span class="week-cell">15</span></td>
+          <td><span class="week-cell">10</span></td>
+          <td><span class="week-cell">18</span></td>
+          <td><span class="week-cell">14</span></td>
+          <td><span class="week-cell partial">7</span></td>
+          <td><span class="week-cell">16</span></td>
+          <td><span class="week-cell">12</span></td>
+          <td><span class="week-cell">20</span></td>
+          <td><span class="week-cell">18</span></td>
+          <td><span class="week-cell">15</span></td>
+          <td><span class="week-cell zero">—</span></td>
+        </tr>
+        <tr>
+          <td>Sabqi<br/><span style="font-family:'Noto Nastaliq Urdu',serif;font-size:10px;color:#8A7A6A;direction:rtl;">سبقی</span></td>
+          <td><span class="week-cell">20</span></td>
+          <td><span class="week-cell">25</span></td>
+          <td><span class="week-cell">22</span></td>
+          <td><span class="week-cell">28</span></td>
+          <td><span class="week-cell partial">10</span></td>
+          <td><span class="week-cell zero">—</span></td>
+          <td><span class="week-cell">24</span></td>
+          <td><span class="week-cell">30</span></td>
+          <td><span class="week-cell">25</span></td>
+          <td><span class="week-cell">28</span></td>
+          <td><span class="week-cell">20</span></td>
+          <td><span class="week-cell zero">—</span></td>
+        </tr>
+        <tr>
+          <td>Manzil<br/><span style="font-family:'Noto Nastaliq Urdu',serif;font-size:10px;color:#8A7A6A;direction:rtl;">منزل</span></td>
+          <td><span class="week-cell">60</span></td>
+          <td><span class="week-cell">65</span></td>
+          <td><span class="week-cell partial">30</span></td>
+          <td><span class="week-cell">70</span></td>
+          <td><span class="week-cell">68</span></td>
+          <td><span class="week-cell zero">—</span></td>
+          <td><span class="week-cell">72</span></td>
+          <td><span class="week-cell">70</span></td>
+          <td><span class="week-cell">75</span></td>
+          <td><span class="week-cell">80</span></td>
+          <td><span class="week-cell">78</span></td>
+          <td><span class="week-cell zero">—</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:14px;margin-bottom:16px;font-family:'DM Sans',sans-serif;font-size:10px;color:#8A7A6A;">
+      <span>Numbers = lines completed per week</span>
+      <span style="color:#3A6B45;font-weight:600;">■ Green = full session</span>
+      <span style="color:#8B6A1F;font-weight:600;">■ Amber = partial</span>
+      <span>— = holiday / absent</span>
+    </div>
+
+    <!-- ═══ TEACHER'S NOTE ═══ -->
+    <div class="sec-head">
+      <span class="sec-title-en">Ustadha's Quranic Note</span>
+      <div class="sec-line"></div>
+      <span class="sec-title-ur">استاذہ کا نوٹ</span>
+    </div>
+    <div class="note-box">
+      <div class="who">Ustadha Kiran · Quran Hifz Teacher</div>
+      <div class="note-text">Zainab has shown exceptional dedication to her Hifz journey this term. Her tajweed has improved markedly — particularly her application of Qalqala and Ghunna, which now flows naturally in her recitation. She has memorised 16 surahs from Juz Amma with strong accuracy and is working steadily through Surah Az-Zalzalah. Her Manzil consistency is impressive; she rarely misses a revision. I encourage the family to continue listening to her daily recitation at home — even 10 minutes each evening makes an enormous difference. May Allah bless Zainab with the blessing of the Quran in her heart and her life. Ameen.</div>
+      <div class="note-text-ur">زینب نے اس ٹرم میں حفظ کے سفر میں غیر معمولی لگن دکھائی ہے۔ اس کی تجوید میں نمایاں بہتری آئی ہے — خاص طور پر قلقلہ اور غنہ، جو اب اس کی تلاوت میں فطری طور پر آتے ہیں۔ اس نے جزء عم سے ۱۶ سورتیں اچھی درستگی سے حفظ کر لی ہیں۔ اللہ تعالیٰ زینب کو قرآن کریم کا نور عطا فرمائے۔ آمین۔</div>
+      <div class="sig-line">
+        <div>
+          <div class="sig">Ustadha Kiran Noor</div>
+          <div class="sig-label">Quran Hifz Teacher · Good Day School</div>
+        </div>
+        <div style="width:100px; height:36px; border-bottom:1px solid #D9CDB5;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PARENT ACK + STAMP ═══ -->
+    <div class="bottom-row">
+      <div class="ack-box">
+        <div class="ack-label">Parent / Guardian Acknowledgment · والدین کی تصدیق</div>
+        <p style="font-family:'Lora',serif;font-size:12px;color:#5A4A4A;line-height:1.65;margin-bottom:14px;">I confirm that I have reviewed this Quran Progress Report and discussed it with my child. I commit to supporting daily Quran practice at home.<br/>
+        <span style="font-family:'Noto Nastaliq Urdu',serif;font-size:13px;direction:rtl;display:block;margin-top:6px;">میں تصدیق کرتا/کرتی ہوں کہ میں نے یہ رپورٹ دیکھی ہے اور گھر پر روزانہ قرآن کی مشق کروانے کا وعدہ کرتا/کرتی ہوں۔</span>
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div class="sig-field"><div style="height:32px;"></div></div>
+            <div class="sig-field-label">Parent signature · دستخط</div>
+          </div>
+          <div>
+            <div class="sig-field"><div style="height:32px;"></div></div>
+            <div class="sig-field-label">Date · تاریخ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stamp area -->
+      <div class="stamp-area">
+        <div class="stamp-circle">
+          <span>School<br/>Official<br/>Stamp</span>
+        </div>
+        <div class="stamp-label">School stamp / مہر</div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="seal">Good Day School · Rawalpindi · Est. 2001</div>
+    <div class="receipt">Quran Progress Report · QPR-2026-Q3-3A-007 · Generated 5 Apr 2026 · Verified</div>
+  </div>
+
+</div><!-- /quran-page -->
+
+</body>
+</html>

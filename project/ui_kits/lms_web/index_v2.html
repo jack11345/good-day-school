@@ -14,6 +14,18 @@
 html, body, #root { height: 100%; }
 body { font-family: 'DM Sans', sans-serif; background: #FAF6EE; color: #2A1A1A; overflow: hidden; }
 ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #D9CDB5; border-radius: 3px; }
+
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  #root { overflow: auto; }
+}
+@media (max-width: 600px) {
+  body { overflow: auto; }
+  /* On small screens: sidebar becomes horizontal scrolling top bar */
+  .lms-layout { flex-direction: column !important; }
+  .lms-sidebar { width: 100% !important; height: auto !important; flex-direction: row !important; overflow-x: auto !important; overflow-y: hidden !important; border-right: none !important; border-bottom: 1px solid rgba(201,169,97,.2) !important; padding: 6px 4px !important; flex-shrink: 0 !important; }
+  .lms-main { min-height: 0 !important; overflow-y: auto !important; flex: 1 !important; }
+}
 </style>
 </head>
 <body>
@@ -143,7 +155,7 @@ const Sidebar = ({ active, onNav }) => {
     <div style={{ width:230, background:'#4A1313', display:'flex', flexDirection:'column', flexShrink:0, height:'100%' }}>
       <div style={{ padding:'20px 18px 16px', borderBottom:'1px solid rgba(201,169,97,.2)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:38, height:38, borderRadius:'50%', background:'rgba(201,169,97,.18)', border:'1.5px solid rgba(201,169,97,.45)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontSize:18, fontWeight:600, color:'#E8D9B5', flexShrink:0 }}>G</div>
+          <img src="../../assets/logo-photo.png" alt="Good Day School" style={{ width:38, height:38, objectFit:'contain', flexShrink:0, filter:'drop-shadow(0 1px 3px rgba(0,0,0,.4))' }}/>
           <div>
             <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, color:'#E8D9B5', lineHeight:1.1 }}>Good Day School</div>
             <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:'.14em', textTransform:'uppercase', color:'#C9A961', opacity:.8, marginTop:2 }}>Teacher Portal</div>
@@ -669,7 +681,7 @@ const LoginScreen = ({ onLogin }) => (
   <div style={{ minHeight:'100vh', background:'#4A1313', display:'flex', alignItems:'center', justifyContent:'center' }}>
     <div style={{ background:'#FAF6EE', borderRadius:12, padding:'48px 44px', width:380, boxShadow:'0 40px 80px -20px rgba(0,0,0,.5)' }}>
       <div style={{ textAlign:'center', marginBottom:32 }}>
-        <div style={{ width:64, height:64, borderRadius:'50%', background:'#6B1F1F', margin:'0 auto 16px', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Cormorant Garamond',serif", fontSize:30, fontWeight:600, color:'#E8D9B5', border:'3px solid #FAF6EE', boxShadow:'0 0 0 1.5px #C9A961' }}>G</div>
+        <img src="../../assets/logo-photo.png" alt="Good Day School" style={{ width:84, height:84, objectFit:'contain', margin:'0 auto 16px', display:'block', filter:'drop-shadow(0 4px 12px rgba(74,19,19,.3))' }}/>
         <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26, fontWeight:600, color:'#4A1313' }}>Good Day School</div>
         <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, letterSpacing:'.18em', textTransform:'uppercase', color:'#8A7A6A', marginTop:4 }}>Teacher Portal · v2</div>
       </div>

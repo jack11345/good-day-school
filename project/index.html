@@ -308,6 +308,19 @@ a{color:inherit;text-decoration:none;}
   .hero-inner,.type-grid{grid-template-columns:1fr;gap:48px;}
   .palette-grid,.logo-row-wide,.app-grid,.dont-row,.semantics-grid,.cmp-grid,.shadow-row,.voice-grid,.foot-inner{grid-template-columns:1fr 1fr;}
   .space-show{grid-template-columns:repeat(4,1fr);}
+  .section{padding:72px 24px;}
+}
+@media(max-width:600px){
+  .hero-inner,.palette-grid,.logo-row-wide,.app-grid,.dont-row,.semantics-grid,.cmp-grid,.shadow-row,.voice-grid,.foot-inner,.scale-row{grid-template-columns:1fr;}
+  .hero{padding:56px 20px 48px;}
+  .section{padding:56px 20px;}
+  .topnav .row{padding:12px 20px;gap:12px;}
+  .topnav nav{display:none;}
+  .hero h1{font-size:clamp(40px,11vw,70px);}
+  .s-head{grid-template-columns:1fr;gap:16px;}
+  .s-num{font-size:48px;}
+  .space-show{grid-template-columns:repeat(2,1fr);}
+  .spec-h1{font-size:52px;}
 }
 </style>
 </head>
@@ -317,7 +330,7 @@ a{color:inherit;text-decoration:none;}
 <div class="topnav">
   <div class="row">
     <div class="brand-tag">
-      <div class="brand-medallion">G</div>
+      <img src="assets/logo-photo.png" alt="Good Day School" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.3));">
       <div>
         <div class="name">Good Day School</div>
         <div class="sub">Design System · v1.0</div>
@@ -371,11 +384,7 @@ a{color:inherit;text-decoration:none;}
           <text class="seal-text" font-size="11" fill="#4A1313"><textPath href="#circle-top" startOffset="50%" text-anchor="middle">GOOD DAY SCHOOL · DESIGN SYSTEM</textPath></text>
           <text class="seal-text" font-size="9" fill="#8A7A6A"><textPath href="#circle-bot" startOffset="50%" text-anchor="middle">RAWALPINDI · ESTABLISHED 2001 · v1.0</textPath></text>
         </svg>
-        <div class="medallion-big">
-          <span class="star">★</span>
-          G
-          <span class="ticks">··</span>
-        </div>
+        <img src="assets/logo-photo.png" alt="Good Day School" style="width:200px;height:200px;object-fit:contain;filter:drop-shadow(0 12px 40px rgba(74,19,19,.3));position:relative;z-index:1;">
       </div>
     </div>
   </div>
@@ -517,40 +526,57 @@ a{color:inherit;text-decoration:none;}
     <div class="s-head">
       <div class="s-num">03</div>
       <div class="s-title-wrap">
-        <div class="eyebrow">Brand · The G in its medallion</div>
-        <h2>The G is the brand. The medallion is its dress. The two are inseparable.</h2>
-        <p>There is no version of our logo without the letter G. Wreath, arc-text, ribbon — these are framings of the same letter. If the G is missing, it is not the Good Day School logo.</p>
+        <div class="eyebrow">Brand · Two marks, one identity</div>
+        <h2>The school emblem with children is the logo. The G medallion is its digital shorthand.</h2>
+        <p>The full logo — children, star, leaves, and the school seal — is the primary mark for print, gates, diplomas, and all large-format uses. The G medallion is the companion mark: used at small sizes in apps, navbars, and screen UI where the full emblem would lose its detail.</p>
       </div>
     </div>
 
     <div class="logo-row-wide">
-      <div class="logo-cell" style="background:var(--cream);">
-        <div class="lc-tag">Full emblem · Diplomas, gates, seal</div>
-        <div style="display:flex;align-items:center;justify-content:center;flex:1;">
-          <div class="med" style="width:200px;height:200px;font-size:120px;background:var(--maroon-deep);"><span class="star">★</span>G<span class="ticks">··</span></div>
+      <div class="logo-cell" style="background:var(--cream-deep);grid-column:span 2;" >
+        <div class="lc-tag">Full school logo · Primary mark · Flyers, gates, diplomas, uniforms, large print</div>
+        <div style="display:flex;align-items:center;justify-content:center;flex:1;padding:20px 0;">
+          <img src="assets/logo-photo.png" alt="Good Day School logo — children and school seal" style="width:220px;height:220px;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(74,19,19,.25));">
         </div>
+        <div style="font-family:var(--ui);font-size:10px;color:var(--ink-soft);text-align:center;letter-spacing:.08em;margin-top:4px;">The actual school emblem · used at all sizes above 64px in print contexts</div>
       </div>
-      <div class="logo-cell" style="background:var(--cream);">
-        <div class="lc-tag">Horizontal lockup · Default</div>
+      <div class="logo-cell dark">
+        <div class="lc-tag">G-mark · Digital companion · App nav, small UI, favicon</div>
+        <div class="lockup" style="flex-direction:column;align-items:center;gap:16px;text-align:center;">
+          <div class="med outline" style="width:80px;height:80px;font-size:46px;"><span class="star">★</span>G<span class="ticks">··</span></div>
+          <div class="text" style="align-items:center;">
+            <div class="name" style="font-size:20px;color:var(--cream);">GOOD DAY</div>
+            <div class="div" style="background:var(--gold);width:100%;"></div>
+            <div class="school" style="font-size:10px;color:var(--gold-soft);">SCHOOL</div>
+            <div class="est" style="color:var(--gold);opacity:.8;">EST · 2001</div>
+          </div>
+        </div>
+        <div style="font-family:var(--ui);font-size:10px;color:var(--gold);opacity:.7;text-align:center;letter-spacing:.06em;margin-top:4px;">Screen UI only · below 64px or where full emblem loses detail</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:48px;">
+      <div class="logo-cell" style="background:var(--cream);min-height:160px;">
+        <div class="lc-tag">Horizontal lockup · Default · App login, email header</div>
         <div class="lockup">
-          <div class="med" style="width:80px;height:80px;font-size:46px;"><span class="star">★</span>G<span class="ticks">··</span></div>
+          <img src="assets/logo-photo.png" alt="Good Day School" style="width:72px;height:72px;object-fit:contain;flex-shrink:0;">
           <div class="text">
-            <div class="name" style="font-size:24px;">GOOD DAY</div>
+            <div class="name" style="font-size:22px;">GOOD DAY</div>
             <div class="div"></div>
             <div class="school" style="font-size:11px;">SCHOOL</div>
-            <div class="est">EST · 2001</div>
+            <div class="est">EST · 2001 · RAWALPINDI</div>
           </div>
         </div>
       </div>
-      <div class="logo-cell dark">
-        <div class="lc-tag">Reversed lockup · Dark</div>
+      <div class="logo-cell dark" style="min-height:160px;">
+        <div class="lc-tag">Reversed lockup · Maroon ground · Banners, dark headers</div>
         <div class="lockup">
-          <div class="med outline" style="width:80px;height:80px;font-size:46px;"><span class="star">★</span>G<span class="ticks">··</span></div>
+          <img src="assets/logo-photo.png" alt="Good Day School" style="width:72px;height:72px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4));">
           <div class="text">
-            <div class="name" style="font-size:24px;">GOOD DAY</div>
+            <div class="name" style="font-size:22px;color:var(--cream);">GOOD DAY</div>
             <div class="div" style="background:var(--gold);"></div>
-            <div class="school" style="font-size:11px;">SCHOOL</div>
-            <div class="est">EST · 2001</div>
+            <div class="school" style="font-size:11px;color:var(--gold-soft);">SCHOOL</div>
+            <div class="est" style="color:var(--gold);opacity:.8;">EST · 2001 · RAWALPINDI</div>
           </div>
         </div>
       </div>
@@ -558,7 +584,7 @@ a{color:inherit;text-decoration:none;}
 
     <div class="rule-strip">
       <div class="big-rule">"Rule of one."</div>
-      <div class="rule-body">The G never appears on its own. It is always inside its medallion: maroon disc, gold inner ring, gold star above, two gold ticks below — <b>a tiny visual handshake that says "school".</b> Below 24px the star and ticks may drop, but the G in its disc remains.</div>
+      <div class="rule-body">The full emblem (children, star, leaves, name) is the primary logo for print and large-format use. The G medallion is the digital shorthand — <b>it never appears without its circular frame.</b> Below 24px the star and ticks may drop, but the G in its disc remains. Two marks, one school.</div>
     </div>
 
     <div class="dont-row">
@@ -823,10 +849,61 @@ a{color:inherit;text-decoration:none;}
         </div>
         <div class="body"><h4>Report card · A4 print</h4><p>Quarterly · grades · Quran track · attendance · daily note highlights · dual signatures.</p><span class="open">Open application →</span></div>
       </a>
+      <a class="app-tile" href="../ui_kits/lms_web/index_unified.html">
+        <div class="preview" style="background:var(--maroon-deep);">
+          <div class="frame" style="inset:16px 24px;background:#FAF6EE;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;gap:0;overflow:hidden;">
+            <div style="width:28%;background:#6B1F1F;padding:6px 4px;display:flex;flex-direction:column;gap:3px;">
+              <div class="skel" style="height:6px;width:80%;background:rgba(201,169,97,.4);"></div>
+              <div class="skel" style="height:4px;width:60%;background:rgba(255,255,255,.2);"></div>
+              <div class="skel" style="height:4px;width:60%;background:rgba(255,255,255,.2);"></div>
+            </div>
+            <div style="flex:1;padding:6px;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;">
+                <div class="skel maroon" style="height:18px;border-radius:3px;"></div>
+                <div class="skel gold" style="height:18px;border-radius:3px;"></div>
+                <div class="skel" style="height:18px;border-radius:3px;background:var(--cream-deep);"></div>
+              </div>
+              <div class="skel" style="height:6px;width:100%;"></div>
+              <div class="skel" style="height:6px;width:80%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="body"><h4>Unified LMS · All roles</h4><p>Teacher · Admin · Accountant · Enrolment pipeline · Payroll · Fee register.</p><span class="open">Open application →</span></div>
+      </a>
+      <a class="app-tile" href="../ui_kits/ai_companion/index.html">
+        <div class="preview" style="background:var(--maroon-deep);">
+          <div class="frame" style="inset:16px 24px;background:#FAF6EE;box-shadow:0 8px 24px rgba(0,0,0,.2);overflow:hidden;">
+            <div style="background:#4A1313;padding:6px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:7px;color:#4A1313;font-weight:700;">✦</div>
+              <div class="skel" style="height:4px;width:50%;background:rgba(255,255,255,.3);"></div>
+            </div>
+            <div style="padding:8px;display:flex;flex-direction:column;gap:4px;">
+              <div style="align-self:flex-start;background:#6B1F1F;border-radius:8px;padding:4px 8px;"><div class="skel" style="height:5px;width:60px;background:rgba(255,255,255,.5);"></div></div>
+              <div style="align-self:flex-end;background:var(--cream-deep);border-radius:8px;padding:4px 8px;"><div class="skel" style="height:5px;width:50px;background:rgba(74,19,19,.2);"></div></div>
+              <div style="align-self:flex-start;background:#6B1F1F;border-radius:8px;padding:4px 8px;"><div class="skel" style="height:5px;width:80px;background:rgba(255,255,255,.5);"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="body"><h4>Noor AI Companion</h4><p>Grade 1–5 AI tutor · Ollama local · Haiku API fallback · curriculum-locked · hint mode.</p><span class="open">Open application →</span></div>
+      </a>
+      <a class="app-tile" href="../ui_kits/report_card/index_kg.html">
+        <div class="preview" style="background:var(--cream);">
+          <div class="frame" style="inset:24px 60px;background:#FDFAF4;box-shadow:0 8px 24px rgba(0,0,0,.15);">
+            <div class="frame-body" style="padding:10px;">
+              <div class="skel maroon" style="height:7px;width:60%;"></div>
+              <div class="skel" style="height:5px;width:40%;"></div>
+              <div class="skel" style="height:8px;width:100%;background:var(--gold-light);border-radius:3px;margin-top:6px;"></div>
+              <div class="skel" style="height:5px;width:90%;margin-top:4px;"></div>
+              <div class="skel" style="height:5px;width:80%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="body"><h4>KG report card</h4><p>Narrative-style · developmental milestones · bilingual · parent signature.</p><span class="open">Open application →</span></div>
+      </a>
       <a class="app-tile" href="brand-logo.html">
         <div class="preview" style="background:var(--cream-deep);">
           <div style="display:flex;align-items:center;justify-content:center;flex:1;">
-            <div class="med" style="width:160px;height:160px;font-size:96px;background:var(--maroon-deep);"><span class="star">★</span>G<span class="ticks">··</span></div>
+            <img src="assets/logo-photo.png" alt="Good Day School" style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(74,19,19,.25));">
           </div>
         </div>
         <div class="body"><h4>Logo variants</h4><p>Full emblem · horizontal · vertical · sizes · colors · do &amp; don't.</p><span class="open">Open card →</span></div>
@@ -840,7 +917,7 @@ a{color:inherit;text-decoration:none;}
   <div class="foot-inner">
     <div>
       <div class="brand-tag" style="margin-bottom:18px;">
-        <div class="brand-medallion" style="width:48px;height:48px;font-size:26px;">G</div>
+        <img src="assets/logo-photo.png" alt="Good Day School" style="width:48px;height:48px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(0,0,0,.35));">
         <div>
           <div class="name" style="font-size:20px;color:var(--cream);">Good Day School</div>
           <div class="sub">Design System · v1.0 · May 2026</div>
@@ -862,10 +939,12 @@ a{color:inherit;text-decoration:none;}
       <h5>Applications</h5>
       <ul>
         <li><a href="../ui_kits/website/index.html">Marketing website</a></li>
-        <li><a href="../ui_kits/lms_web/index_v2.html">LMS portal</a></li>
+        <li><a href="../ui_kits/lms_web/index_unified.html">LMS (unified)</a></li>
+        <li><a href="../ui_kits/ai_companion/index.html">Noor AI Companion</a></li>
         <li><a href="../ui_kits/parent_app/index.html">Parent app</a></li>
         <li><a href="../ui_kits/driver_app/index.html">Driver app</a></li>
         <li><a href="../ui_kits/report_card/index.html">Report card</a></li>
+        <li><a href="../ui_kits/report_card/index_kg.html">KG report card</a></li>
       </ul>
     </div>
   </div>
