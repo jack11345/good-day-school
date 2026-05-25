@@ -504,3 +504,148 @@ body.lang-ur .keep-en { direction: ltr; font-family: var(--font-ui); }
 .gd-fadeUp   { animation: gd-fadeUp var(--duration-slow) var(--ease-out); }
 .gd-floaty   { animation: gd-floaty 4s ease-in-out infinite; }
 .gd-pulse    { animation: gd-pulse 2.4s ease-in-out infinite; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UTILITY LAYER
+   Composable helpers — use alongside
+   component classes, not instead of them.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── Display ── */
+.gd-block         { display: block; }
+.gd-inline        { display: inline; }
+.gd-inline-block  { display: inline-block; }
+.gd-hidden        { display: none !important; }
+.gd-sr-only       { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+
+/* ── Flexbox ── */
+.gd-flex          { display: flex; }
+.gd-flex-col      { display: flex; flex-direction: column; }
+.gd-flex-wrap     { flex-wrap: wrap; }
+.gd-flex-1        { flex: 1; }
+.gd-flex-shrink-0 { flex-shrink: 0; }
+.gd-items-start   { align-items: flex-start; }
+.gd-items-center  { align-items: center; }
+.gd-items-end     { align-items: flex-end; }
+.gd-justify-start { justify-content: flex-start; }
+.gd-justify-center{ justify-content: center; }
+.gd-justify-between{ justify-content: space-between; }
+.gd-justify-end   { justify-content: flex-end; }
+
+/* ── Gap (4px grid) ── */
+.gd-gap-1  { gap: 4px; }
+.gd-gap-2  { gap: 8px; }
+.gd-gap-3  { gap: 12px; }
+.gd-gap-4  { gap: 16px; }
+.gd-gap-5  { gap: 20px; }
+.gd-gap-6  { gap: 24px; }
+.gd-gap-8  { gap: 32px; }
+.gd-gap-10 { gap: 40px; }
+
+/* ── Grid ── */
+.gd-grid          { display: grid; }
+.gd-grid-2        { display: grid; grid-template-columns: repeat(2, 1fr); }
+.gd-grid-3        { display: grid; grid-template-columns: repeat(3, 1fr); }
+.gd-grid-4        { display: grid; grid-template-columns: repeat(4, 1fr); }
+.gd-grid-auto     { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+/* ── Spacing — margin (4px grid) ── */
+.gd-m-0   { margin: 0; }
+.gd-mt-1  { margin-top: 4px; }   .gd-mb-1  { margin-bottom: 4px; }
+.gd-mt-2  { margin-top: 8px; }   .gd-mb-2  { margin-bottom: 8px; }
+.gd-mt-3  { margin-top: 12px; }  .gd-mb-3  { margin-bottom: 12px; }
+.gd-mt-4  { margin-top: 16px; }  .gd-mb-4  { margin-bottom: 16px; }
+.gd-mt-5  { margin-top: 20px; }  .gd-mb-5  { margin-bottom: 20px; }
+.gd-mt-6  { margin-top: 24px; }  .gd-mb-6  { margin-bottom: 24px; }
+.gd-mt-8  { margin-top: 32px; }  .gd-mb-8  { margin-bottom: 32px; }
+.gd-mt-10 { margin-top: 40px; }  .gd-mb-10 { margin-bottom: 40px; }
+.gd-ml-auto { margin-left: auto; }
+.gd-mx-auto { margin-left: auto; margin-right: auto; }
+
+/* ── Spacing — padding (4px grid) ── */
+.gd-p-0  { padding: 0; }
+.gd-p-2  { padding: 8px; }
+.gd-p-3  { padding: 12px; }
+.gd-p-4  { padding: 16px; }
+.gd-p-5  { padding: 20px; }
+.gd-p-6  { padding: 24px; }
+.gd-px-3 { padding-left: 12px; padding-right: 12px; }
+.gd-px-4 { padding-left: 16px; padding-right: 16px; }
+.gd-px-5 { padding-left: 20px; padding-right: 20px; }
+.gd-px-6 { padding-left: 24px; padding-right: 24px; }
+.gd-py-2 { padding-top: 8px;  padding-bottom: 8px; }
+.gd-py-3 { padding-top: 12px; padding-bottom: 12px; }
+.gd-py-4 { padding-top: 16px; padding-bottom: 16px; }
+
+/* ── Width / overflow ── */
+.gd-w-full   { width: 100%; }
+.gd-max-w-sm { max-width: 480px; }
+.gd-max-w-md { max-width: 640px; }
+.gd-max-w-lg { max-width: 860px; }
+.gd-overflow-hidden  { overflow: hidden; }
+.gd-overflow-x-auto  { overflow-x: auto; }
+.gd-overflow-y-auto  { overflow-y: auto; }
+
+/* ── Text ── */
+.gd-text-xs   { font-size: 11px; }
+.gd-text-sm   { font-size: 12px; }
+.gd-text-base { font-size: 14px; }
+.gd-text-lg   { font-size: 16px; }
+.gd-text-xl   { font-size: 20px; }
+.gd-text-left   { text-align: left; }
+.gd-text-center { text-align: center; }
+.gd-text-right  { text-align: right; }
+.gd-font-normal { font-weight: 400; }
+.gd-font-medium { font-weight: 500; }
+.gd-font-semi   { font-weight: 600; }
+.gd-font-bold   { font-weight: 700; }
+.gd-uppercase   { text-transform: uppercase; letter-spacing: 0.1em; }
+.gd-truncate    { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.gd-line-clamp-2{ display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ── Color utilities ── */
+.gd-text-ink     { color: var(--ink); }
+.gd-text-soft    { color: var(--ink-soft); }
+.gd-text-muted   { color: var(--fg-muted); }
+.gd-text-maroon  { color: var(--maroon); }
+.gd-text-gold    { color: var(--gold); }
+.gd-text-cream   { color: var(--cream); }
+.gd-text-success { color: var(--status-success); }
+.gd-text-error   { color: var(--status-error); }
+.gd-text-warning { color: var(--status-warning); }
+.gd-bg-cream     { background-color: var(--cream); }
+.gd-bg-cream-deep{ background-color: var(--cream-deep); }
+.gd-bg-maroon    { background-color: var(--maroon); }
+.gd-bg-maroon-deep{ background-color: var(--maroon-deep); }
+.gd-bg-gold-soft { background-color: var(--gold-soft); }
+.gd-bg-white     { background-color: var(--white); }
+
+/* ── Border & radius ── */
+.gd-border        { border: 1px solid var(--line); }
+.gd-border-gold   { border: 1px solid var(--gold); }
+.gd-border-b      { border-bottom: 1px solid var(--line); }
+.gd-border-t      { border-top: 1px solid var(--line); }
+.gd-rounded-sm    { border-radius: var(--radius-sm); }
+.gd-rounded       { border-radius: var(--radius-card); }
+.gd-rounded-lg    { border-radius: var(--radius-lg); }
+.gd-rounded-full  { border-radius: 999px; }
+
+/* ── Shadow ── */
+.gd-shadow-sm  { box-shadow: var(--shadow-xs); }
+.gd-shadow     { box-shadow: var(--shadow-sm); }
+.gd-shadow-lg  { box-shadow: var(--shadow-lg); }
+
+/* ── Position ── */
+.gd-relative { position: relative; }
+.gd-absolute { position: absolute; }
+.gd-sticky   { position: sticky; top: 0; }
+
+/* ── Responsive visibility ── */
+@media (max-width: 900px) {
+  .gd-hide-tablet { display: none !important; }
+}
+@media (max-width: 600px) {
+  .gd-hide-mobile  { display: none !important; }
+  .gd-grid-2, .gd-grid-3, .gd-grid-4 { grid-template-columns: 1fr; }
+  .gd-flex-mobile-col { flex-direction: column !important; }
+}

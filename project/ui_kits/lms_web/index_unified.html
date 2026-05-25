@@ -183,6 +183,7 @@ const ROLES = {
       { key: 'dashboard', icon: '🏠', label: 'Dashboard' },
       { key: 'attendance', icon: '✅', label: 'Attendance' },
       { key: 'gradebook', icon: '📊', label: 'Grade Book' },
+      { key: 'reports', icon: '📈', label: 'Class Reports' },
       { key: 'assignments', icon: '📚', label: 'Assignments' },
       { key: 'announcements', icon: '📢', label: 'Announcements' },
     ],
@@ -539,6 +540,157 @@ function GradeBookScreen() {
             })}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+function ReportsScreen() {
+  const THRESHOLD = 70;
+  const studentReports = [
+    { name:'Zainab Fatima', roll:'07', english:85, urdu:79, math:91, science:87, islamiyat:95 },
+    { name:'Ahmed Raza',    roll:'02', english:72, urdu:68, math:88, science:74, islamiyat:80 },
+    { name:'Sara Malik',    roll:'11', english:61, urdu:55, math:64, science:59, islamiyat:72 },
+    { name:'Hassan Ali',    roll:'05', english:90, urdu:85, math:94, science:92, islamiyat:98 },
+    { name:'Ayesha Noor',   roll:'01', english:78, urdu:74, math:82, science:80, islamiyat:88 },
+    { name:'Bilal Ahmad',   roll:'03', english:55, urdu:48, math:61, science:52, islamiyat:65 },
+    { name:'Hira Zafar',    roll:'08', english:83, urdu:80, math:76, science:88, islamiyat:91 },
+    { name:'Umar Farooq',   roll:'09', english:69, urdu:72, math:85, science:71, islamiyat:84 },
+  ];
+  const subjects = ['english','urdu','math','science','islamiyat'];
+  const subjectLabels = { english:'English', urdu:'Urdu', math:'Math', science:'Science', islamiyat:'Islamiyat' };
+  const subjectColors = { english:'#1A4A8B', urdu:'#7D3C98', math:'#3A6B45', science:'#2E6B8B', islamiyat:'#8B4513' };
+
+  const avg = (arr) => Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+  const subjectAvgs = subjects.reduce((acc,s) => ({ ...acc, [s]: avg(studentReports.map(r=>r[s])) }), {});
+  const classAvg = avg(subjects.map(s=>subjectAvgs[s]));
+  const atRisk = studentReports.filter(r => subjects.some(s=>r[s]<THRESHOLD));
+
+  const exportCSV = () => {
+    const header = ['Name','Roll',  ...subjects.map(s=>subjectLabels[s]),'Average'].join(',');
+    const rows = studentReports.map(r => {
+      const rowAvg = avg(subjects.map(s=>r[s]));
+      return [r.name, r.roll, ...subjects.map(s=>r[s]), rowAvg].join(',');
+    });
+    const csv = [header, ...rows].join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv,' + encodeURIComponent(csv);
+    a.download = 'Grade3A_Term1_Report.csv';
+    a.click();
+  };
+
+  return (
+    <div className="content">
+      {/* Summary cards */}
+      <div className="stat-grid" style={{ marginBottom:20 }}>
+        <div className="stat-card"><div className="stat-label">Class average</div><div className="stat-value" style={{color: classAvg>=70?'var(--green)':'var(--red)'}}>{classAvg}%</div><div className="stat-delta">All subjects · Term 1</div></div>
+        <div className="stat-card"><div className="stat-label">At risk (&lt;70%)</div><div className="stat-value" style={{color:'var(--red)'}}>{atRisk.length}</div><div className="stat-delta neg">Students needing support</div></div>
+        <div className="stat-card"><div className="stat-label">Above 85%</div><div className="stat-value" style={{color:'var(--green)'}}>{studentReports.filter(r=>avg(subjects.map(s=>r[s]))>=85).length}</div><div className="stat-delta">High performers</div></div>
+        <div className="stat-card"><div className="stat-label">Students</div><div className="stat-value">{studentReports.length}</div><div className="stat-delta">Grade 3A enrolled</div></div>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16 }}>
+        {/* Subject averages bar chart */}
+        <div className="card">
+          <div className="card-header"><div className="card-title">Subject averages · Term 1</div></div>
+          <div style={{ padding:'16px 20px' }}>
+            {subjects.map(s => {
+              const val = subjectAvgs[s];
+              const color = subjectColors[s];
+              return (
+                <div key={s} style={{ marginBottom:14 }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
+                    <span style={{ fontSize:12, fontWeight:600, color:'var(--ink)' }}>{subjectLabels[s]}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color: val>=70?color:'var(--red)' }}>{val}%</span>
+                  </div>
+                  <div style={{ background:'var(--cream-dark)', borderRadius:999, height:8, overflow:'hidden' }}>
+                    <div style={{ width:`${val}%`, height:'100%', borderRadius:999, background: val>=THRESHOLD?color:'var(--red)', transition:'width .6s ease' }}/>
+                  </div>
+                  {val < THRESHOLD && <div style={{ fontSize:10, color:'var(--red)', marginTop:3, fontWeight:600 }}>⚠ Below threshold</div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* At-risk students */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">At-risk students</div>
+            <span className={`tag ${atRisk.length===0?'green':'red'}`}>{atRisk.length} students</span>
+          </div>
+          {atRisk.length === 0 ? (
+            <div style={{ padding:'24px 20px', textAlign:'center', color:'var(--muted)', fontSize:13 }}>
+              🎉 All students above {THRESHOLD}% threshold
+            </div>
+          ) : (
+            atRisk.map((r,i) => {
+              const weakSubjects = subjects.filter(s=>r[s]<THRESHOLD).map(s=>subjectLabels[s]);
+              const rowAvg = avg(subjects.map(s=>r[s]));
+              return (
+                <div key={i} style={{ padding:'12px 20px', borderBottom:'1px solid var(--cream-dark)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:600 }}>{r.name}</div>
+                    <div style={{ fontSize:11, color:'var(--red)', marginTop:2 }}>Weak in: {weakSubjects.join(', ')}</div>
+                  </div>
+                  <span style={{ fontFamily:'Cormorant Garamond,serif', fontSize:20, fontWeight:700, color:'var(--red)' }}>{rowAvg}%</span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Full grade table */}
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Full class performance · Grade 3A</div>
+          <button className="topbar-btn ghost" style={{ fontSize:11 }} onClick={exportCSV}>⬇ Export CSV</button>
+        </div>
+        <div style={{ overflowX:'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Roll</th>
+                {subjects.map(s=><th key={s} style={{color:subjectColors[s]}}>{subjectLabels[s]}</th>)}
+                <th>Average</th>
+                <th>Band</th>
+              </tr>
+            </thead>
+            <tbody>
+              {studentReports
+                .map(r=>({...r, avg: avg(subjects.map(s=>r[s]))}))
+                .sort((a,b)=>b.avg-a.avg)
+                .map((r,i)=>{
+                  const band = r.avg>=90?'A+':r.avg>=80?'A':r.avg>=70?'B':r.avg>=60?'C':'D';
+                  const bandColor = r.avg>=80?'green':r.avg>=70?'blue':r.avg>=60?'amber':'red';
+                  return (
+                    <tr key={i} style={{ background: r.avg<THRESHOLD?'#FFF8F8':'transparent' }}>
+                      <td style={{ fontWeight:600 }}>{r.name}</td>
+                      <td style={{ fontSize:12, color:'var(--muted)' }}>{r.roll}</td>
+                      {subjects.map(s=>(
+                        <td key={s} style={{ fontWeight: r[s]<THRESHOLD?700:400, color: r[s]<THRESHOLD?'var(--red)':r[s]>=85?'var(--green)':'var(--ink)' }}>
+                          {r[s]}
+                        </td>
+                      ))}
+                      <td style={{ fontWeight:700, fontFamily:'Cormorant Garamond,serif', fontSize:17 }}>{r.avg}%</td>
+                      <td><span className={`tag ${bandColor}`}>{band}</span></td>
+                    </tr>
+                  );
+                })}
+              {/* Averages row */}
+              <tr style={{ background:'var(--cream)', borderTop:'2px solid var(--line)' }}>
+                <td style={{ fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:'.06em', color:'var(--muted)' }} colSpan={2}>Class avg</td>
+                {subjects.map(s=>(
+                  <td key={s} style={{ fontWeight:700, color:subjectColors[s] }}>{subjectAvgs[s]}</td>
+                ))}
+                <td style={{ fontWeight:700, fontFamily:'Cormorant Garamond,serif', fontSize:17 }}>{classAvg}%</td>
+                <td/>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -979,6 +1131,7 @@ const SCREENS = {
   dashboard: { title:'Dashboard', component: TeacherDashboard },
   attendance: { title:'Attendance', component: AttendanceScreen },
   gradebook: { title:'Grade Book', component: GradeBookScreen },
+  reports: { title:'Class Reports', component: ReportsScreen },
   assignments: { title:'Assignments', component: AssignmentsScreen },
   admin_dash: { title:'Admin Dashboard', component: AdminDashboard },
   enrolment: { title:'Enrolment Pipeline', component: EnrolmentScreen },
